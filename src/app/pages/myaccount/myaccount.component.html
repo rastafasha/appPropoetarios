@@ -1,0 +1,97 @@
+<app-header></app-header>
+<app-loading *ngIf="isLoading"></app-loading>
+<div class="container" *ngIf="!identity && !isLoading">
+    <h3>Inicia sesión para acceder</h3>
+</div>
+<div class="about" id="page" *ngIf="identity && !isLoading">
+    <section style="height: calc(100vh - 100px); padding-top: 120px;">
+        <div class="container">
+            <div class="row blog-v reverse" style="margin-bottom: 20px;">
+                <div class="col-sm-4">
+                    <!-- <app-aside-cuenta></app-aside-cuenta> -->
+                </div>
+                <div class="col-md-8">
+                    <!-- <h1>Hola, {{identity.first_name}}!</h1>
+                    <h2 *ngIf="!identity.telefono">Gracias por Registrarte</h2>
+                    <p *ngIf="identity.telefono">Ten un Excelente día!</p> -->
+                </div>
+
+            </div>
+
+            <!-- <div *ngIf="!identity.telefono">
+                <h5>Por favor, llena tus datos para continuar con la experiencia</h5>
+            </div> -->
+            <div class="row ">
+                <div class="opciones">
+                    <div class="iconop ">
+                        <div class="card">
+                            <div class="card-body">
+                                <a [routerLink]="['/my-account/perfil', user.uid]">
+                                    <i class="fa fa-user"></i>
+                                    <p>Mis Datos</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="iconop " *ngIf="identity.telefono">
+                        <div class="card">
+                            <div class="card-body">
+                                <a [routerLink]="['/my-account/ordenes']">
+                                    <i class="fa fa-shopping-basket"></i>
+                                    <p>Ordenes</p>
+
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="iconop " *ngIf="identity.telefono">
+                        <div class="card">
+                            <div class="card-body">
+                                <a [routerLink]="['/my-account/pedidos']">
+                                    <i class="fa fa-shopping-basket"></i>
+                                    <p>Pedidos</p>
+
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="iconop " *ngIf="identity.telefono">
+                        <div class="card">
+                            <div class="card-body">
+                                <a [routerLink]="['/review']">
+                                    <i class="fa fa-shopping-cart"></i>
+                                    <p>Mi Carrito</p>
+
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="iconop " *ngIf="identity.telefono">
+                        <div class="card">
+                            <div class="card-body">
+                                <a [routerLink]="['/my-account/direcciones']">
+                                    <i class="fa fa-book"></i>
+                                    <p>Direcciones</p>
+
+                                </a>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="iconop ">
+                        <div class="card">
+                            <div class="card-body">
+                                <a (click)="slir()">
+                                    <i class="fa fa-power-off"></i>
+                                    <p>Salir</p>
+
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</div>
+<app-menufooter></app-menufooter>

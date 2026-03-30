@@ -1,0 +1,189 @@
+<app-header></app-header>
+<section class="sub-header d-flex justify-content-center mt-5" style="padding-top: 30px;">
+    <!-- <img class="rellax bg-overlay" src="images/sub-header/05.jpg" alt=""> -->
+    <div class="overlay-call-to-action"></div>
+    <h3 class="heading-style-3"> </h3>
+</section>
+<!-- Page Content-->
+<div class="container pb-5 mb-2 mb-md-3">
+    <div class="row">
+        <!-- Sidebar-->
+        <aside class="col-xs-12 col-lg-4 pt-4 pt-lg-0">
+            <app-aside-cuenta></app-aside-cuenta>
+        </aside>
+
+        <!-- Content  -->
+        <section class="col-xs-12 col-lg-8">
+            <app-loading *ngIf="isLoading"></app-loading>
+            <!-- Toolbar-->
+            <div class="d-none d-lg-flex justify-content-between align-items-center pt-lg-3 pb-4 pb-lg-5 mb-lg-3">
+                <h6 class="font-size-base text-light mb-0">Actualiza los datos de tu perfíl:</h6>
+            </div>
+            <!-- Profile form-->
+            <div class="col-sm-12" *ngIf="msm_error">
+                <div class="form-group">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" (click)="close_alert()">
+                        <span class="font-weight-medium">Error:</span> Por favor complete el formulario
+                        correctamente.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12" *ngIf="msm_success">
+                <div class="form-group">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <span class="font-weight-medium">Mensaje:</span> Se actualizó sus datos correctamente.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"
+                            (click)="close_alert()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Foto actual -->
+            <div class="product_list">
+                <div class="div1">
+                    <img [src]="(usuarioSeleccionado.img ?? '') | imagenPipe: 'profiles'" 
+                        [alt]="usuarioSeleccionado.first_name">
+                </div>
+                <div class="div2">
+                    <h3>{{usuarioSeleccionado.first_name}} {{usuarioSeleccionado.last_name}} </h3>
+                    <p>{{user.numdoc}}</p>
+                </div>
+            </div>
+            <form *ngIf="perfilForm && !isLoading" [formGroup]="perfilForm" (ngSubmit)="onUserSave()" autocomplete="off">
+                <!-- Foto -->
+                <div style="height: auto; margin-bottom: 20px;">
+                    <div class="col-xs-12 col-sm-">
+                        <div class="form-group">
+                            <div *ngIf="FILE_AVATAR">
+                                <img [src]="IMAGE_PREVISUALIZA" style="width: 250px;" alt="Preview">
+                            </div>
+                            <div class="cz-file-drop-area">
+                                <label for="file" class="upload labelgoogle">
+                                    <input type="file" accept="image/*" name="image" id="file"
+                                        (change)="cambiarImagen($event)" class="hide-input input">
+                                    <span class="label__name">
+                                        {{'Select a Photo'}}
+                                    </span>
+                                </label>
+                                <button type="button" (click)="subirImagen()"
+                                    class="btn btn-success waves-effect waves-light m-r-10 ">
+                                    <i class="fa fa-save"></i> Cambiar imagen
+                                </button>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <br>
+                <div class="container">
+                    <div class="row">
+                        <!-- Nombre -->
+                        <div class="col-xs-12 col-sm-6 ">
+                            <label for="validationCustom02" class="form-label labelgoogle">
+                                <input type="text" formControlName="first_name" class="form-control input"
+                                    id="validationCustom02" placeholder=" " required>
+                                <span class="label__name">
+                                    {{'Nombre'}} <span class="login-danger">*</span>
+                                </span>
+                            </label>
+                            @if(perfilForm.controls['first_name'].touched){
+
+                            <div class="text-danger">
+                                @if(perfilForm.controls['first_name'].errors?.['required']){
+                                <span>{{'Field Required'}}</span>
+                                }
+                                @if(perfilForm.controls['first_name'].errors?.['minlength']){
+                                <span>{{'3 Charecters Minimal'}}</span>
+                                }
+                            </div>
+                            }
+                        </div>
+                        <!-- Apellido -->
+                        <div class="col-xs-12 col-md-6 ">
+                            <label for="validationCustom02" class="form-label labelgoogle">
+                                <input type="text" formControlName="last_name" class="form-control input"
+                                    id="validationCustom02" placeholder=" " required>
+                                <span class="label__name">
+                                    {{'Apellido'}} <span class="login-danger">*</span>
+
+                                </span>
+                            </label>
+                            @if(perfilForm.controls['last_name'].touched){
+
+                            <div class="text-danger">
+                                @if(perfilForm.controls['last_name'].errors?.['required']){
+                                <span>{{'Field Required'}}</span>
+                                }
+                                @if(perfilForm.controls['last_name'].errors?.['minlength']){
+                                <span>{{'3 Charecters Minimal'}}</span>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        
+                        <!-- Teléfono Móvil -->
+                        <div class="col-xs-12 col-md-6 ">
+                            <label for="validationCustom02" class="form-label labelgoogle">
+                                <input type="text" formControlName="telhome" class="form-control input"
+                                    id="validationCustom02" placeholder=" " required>
+                                <span class="label__name">
+                                    {{'Teléfono Casa/Oficina'}}<span class="login-danger">*</span>
+                                </span>
+                            </label>
+                            @if(perfilForm.controls['telhome'].touched){
+
+                            <div class="text-danger">
+                                @if(perfilForm.controls['telhome'].errors?.['required']){
+                                <span>{{'Field Required'}}</span>
+                                }
+                                @if(perfilForm.controls['telhome'].errors?.['minlength']){
+                                <span>{{'3 Charecters Minimal'}}</span>
+                                }
+                            </div>
+                            }
+                        </div>
+                        <!-- Teléfono Móvil -->
+                        <div class="col-xs-12 col-md-6 ">
+                            <label for="validationCustom02" class="form-label labelgoogle">
+                                <input type="text" formControlName="telmovil" class="form-control input"
+                                    id="validationCustom02" placeholder=" " required>
+                                <span class="label__name">
+                                    {{'Teléfono Móvil'}}<span class="login-danger">*</span>
+                                </span>
+                            </label>
+                            @if(perfilForm.controls['telmovil'].touched){
+
+                            <div class="text-danger">
+                                @if(perfilForm.controls['telmovil'].errors?.['required']){
+                                <span>{{'Field Required'}}</span>
+                                }
+                                @if(perfilForm.controls['telmovil'].errors?.['minlength']){
+                                <span>{{'3 Charecters Minimal'}}</span>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-2 mb-3">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center">
+                            <div class="custom-control custom-checkbox d-block"></div>
+                            <button class="btn btn-outline-primary mt-3 mt-sm-0" type="submit">Actualizar
+                                perfíl</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+        </section>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+.img-thumbnail {
+    position: relative;
+    border-radius: 100px;
+    & img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 100px;
+
+    }
+}
+
+
+.list-unstyled{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    font-family: var( --font-Title);
+    & a{
+        color: #333;
+        text-decoration: none;
+    }
+}

@@ -1,0 +1,16 @@
+header{
+    height: 65px;
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 15px;
+} 
+
+.opciones .fa{
+    color: var(--azul);
+    padding: 5px;
+    font-size: 1.7em;
+}
+

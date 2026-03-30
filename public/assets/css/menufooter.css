@@ -1,0 +1,15 @@
+.menu_footer{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    position: fixed;
+    bottom: 0px;
+    width: 100vw;
+    background-color: #f2f2f2;
+}
+
+.menu_footer .fa{
+    color: var(--azul);
+    font-size: 20px;
+}

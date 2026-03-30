@@ -1,0 +1,149 @@
+.saludo h2 {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--azul);
+}
+
+.avisos {
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.avisos h2 {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--azul);
+}
+
+.avisos .fa {
+    border-radius: 100px;
+    color: var(--azul);
+    font-size: 20px;
+}
+
+.vistas-recientes {
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+}
+
+.vistas-recientes h2 {
+    display: flex;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--azul);
+}
+
+.products_recents {
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
+}
+
+
+.products_recents img {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #fff;
+    border-radius: 100px;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+
+}
+
+.options_tabs {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.option {
+    border-radius: 100px;
+    padding: 10px;
+    background: rgba(6, 81, 210, 0.148);
+    color: var(--azul);
+    font-size: 11px;
+}
+
+
+
+.list_products {
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.itemdelivery {
+    display: flex;
+    gap: 25px;
+    flex-direction: row;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.itemdeliveryDesc {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+
+.product_list {
+    display: grid;
+    /* grid-template-columns: repeat(3, 1fr); */
+    grid-template-columns: 20% 40% 20%;
+
+    /* grid-template-rows: repeat(5, 1fr); */
+        grid-column-gap: 20px;
+    grid-row-gap: 0px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.div1 {
+    grid-area: 1 / 1 / 2 / 2;
+}
+
+.div2 {
+    grid-area: 1 / 2 / 2 / 3;
+}
+
+.div2 h4,
+.div2 h5,
+.div2 h3{
+    font-weight: bold;
+    color: var(--azul);
+    margin: 0;
+    padding: 0;
+}
+.div3 p,
+.div2 p{
+    margin: 0;
+    padding: 0;
+}
+
+.div3 {
+    grid-area: 1 / 3 / 2 / 4;
+}
+.div2 p,
+.div3 p{
+    font-size: 12px;
+}
+
+
+.product_list img {
+    width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}

@@ -1,0 +1,90 @@
+.barra_progreso{
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    position: relative;
+}
+
+.barra_progreso__barra{
+    width: 100%;
+    height: 15px;
+    border: 3px solid #fff;
+    border-radius: 100px;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+   background: #2A7B9B;
+   background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+}
+
+.circulo_inicio{
+    width: 30px;
+    height: 30px;
+    border: 3px solid #fff;
+    border-radius: 100px;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+   background: #2A7B9B;
+    position: absolute;
+    left: 30px;
+    z-index: 4;
+}
+
+.circulo_progreso{
+    width: 30px;
+    height: 30px;
+    border: 3px solid #fff;
+    border-radius: 100px;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+   background: #9b2a90;
+   position: absolute;
+    left: 160px;
+    z-index: 4;
+}
+
+.circulo_llegada{
+    width: 30px;
+    height: 30px;
+    border: 3px solid #fff;
+    border-radius: 100px;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+   background: #08a405;
+   position: absolute;
+    left: 308px;
+    z-index: 4;
+}
+
+.num_tracking{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+}
+
+.num_tracking h3{
+    font-size: 14px;
+    color: var(--azul);
+}
+
+
+
+.status h1{
+    font-weight: bold;
+    color: var(--azul);
+}
+
+.empacado {
+    margin-bottom: 15px;
+    font-size: 14px;
+    background-color: #fafafa;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
+}
+
+.empacado h2{
+    font-weight: bold;
+    color: var(--azul);
+}
