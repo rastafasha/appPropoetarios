@@ -1,11 +1,11 @@
 <app-header></app-header>
-<app-loading *ngIf="isLoading"></app-loading>
+<app-skeleton-loader *ngIf="isLoading" [rows]="4" [columns]="1"></app-skeleton-loader>
 <div class="container" *ngIf="!identity && !isLoading">
     <h3>Inicia sesión para acceder</h3>
 </div>
 <div class="about" id="page" *ngIf="identity && !isLoading">
     <section>
-        <div class="container">
+        <div class="container" style="margin-bottom: 100px;">
             <div class="row blog-v reverse" style="margin-bottom: 20px;">
                 <div class="col-sm-4">
                     <!-- <app-aside-cuenta></app-aside-cuenta> -->
@@ -32,7 +32,37 @@
                 </button>
 
             </div>
+            <!-- mis propiedades -->
+            <div class="mt-4 px-3 mb-5">
+                <h6 class="text-muted fw-bold mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">MIS PROPIEDADES
+                </h6>
 
+                <div *ngFor="let prop of misPropiedades" class="card border-0 shadow-sm mb-3 clickable-card"
+                (click)="verDetalle(prop.tipo, prop._id)"
+                    style="border-radius: 15px; cursor: pointer;">
+                    <div class="card-body d-flex align-items-center p-3">
+                        <!-- Icono Circular -->
+                        <div class="rounded-circle bg-light p-3 me-3 d-flex align-items-center justify-content-center"
+                            style="width: 48px; height: 48px;">
+                            <i [class]="prop.icono" class="fs-5"></i>
+                        </div>
+
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 fw-bold">{{ prop.edificio }}</h6>
+                            <small class="text-muted">Piso {{ prop.piso }} - {{ prop.letra }}</small>
+                        </div>
+
+                        <div class="text-end">
+                            <span class="d-block fw-bold text-dark" style="font-size: 0.9rem;">${{ prop.montoMensual |
+            currency:'Bs.':'symbol':'1.2-2' }}</span>
+                            <span class="badge bg-light text-primary border" style="font-size: 0.65rem;">{{ prop.tipo
+                                }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- mis propiedades -->
+             <!-- editar perfil -->
             <div class="row ">
                 <div class="opciones">
                     <div class="iconop ">
@@ -62,29 +92,72 @@
                 </div>
 
             </div>
+
+            <!-- agregar propiedades -->
             <div class="container mt-4">
                 <h6 class="text-muted fw-bold text-uppercase mb-3" style="font-size: 0.75rem;">Gestión de
                     Propiedades</h6>
 
-                <div class="row g-3">
-                    <!-- Botón Agregar Residencia -->
-                    <div class="col-6">
-                        <div class="card border-0 shadow-sm text-center p-3 h-100" role="button">
-                            <i class="fas fa-house-add text-success fs-1 mb-2"></i>
-                            <span class="fw-bold small">Nueva Residencia</span>
-                        </div>
+                <div class="row g-3 px-3">
+                    <!-- BOTÓN RESIDENCIA -->
+                    <div class="col-12 col-md-4 text-center">
+                        <button class="btn btn-outline-primary w-100 p-3 shadow-sm bg-white"
+                            (click)="abrirModalPropiedad('residencia')">
+                            <i class="fas fa-home d-block mb-2 fs-3"></i>
+                            Nueva Residencia
+                        </button>
                     </div>
 
-                    <!-- Botón Agregar Oficina/Local -->
-                    <div class="col-6">
-                        <div class="card border-0 shadow-sm text-center p-3 h-100" role="button">
-                            <i class="fas fa-building-add text-primary fs-1 mb-2"></i>
-                            <span class="fw-bold small">Nuevo Local/Oficina</span>
-                        </div>
+                    <!-- BOTÓN OFICINA -->
+                    <div class="col-6 col-md-4 text-center">
+                        <button class="btn btn-outline-primary text-info w-100 p-3 shadow-sm bg-white"
+                            (click)="abrirModalPropiedad('oficina')">
+                            <i class="fas fa-briefcase d-block mb-2 fs-3"></i>
+                            Nueva Oficina
+                        </button>
+                    </div>
+
+                    <!-- BOTÓN LOCAL -->
+                    <div class="col-6 col-md-4 text-center">
+                        <button class="btn btn-outline-primary text-warning w-100 p-3 shadow-sm bg-white"
+                            (click)="abrirModalPropiedad('local')">
+                            <i class="fas fa-store d-block mb-2 fs-3"></i>
+                            Nuevo Local
+                        </button>
                     </div>
                 </div>
+
             </div>
         </div>
     </section>
 </div>
 <app-menufooter></app-menufooter>
+
+<!-- modal propiedades extras -->
+<div class="modal fade" id="modalPropiedad" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Agregar {{ tipoSeleccionado }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="propiedadExtraForm">
+                    <!-- REUTILIZAMOS TU COMPONENTE -->
+                    <app-selector-ubicacion [parentForm]="propiedadExtraForm"
+                        [tipoLabel]="tipoSeleccionado === 'residencia' ? 'residencia' : tipoSeleccionado" formEdif="edificio"
+                        formPiso="piso" formLetra="letra" [listaEdificios]="listaEdificios" [listaPisos]="listaPisos"
+                        [letras]="letras" [resumen]="resumenExtra">
+                    </app-selector-ubicacion>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="guardarPropiedadExtra()"
+                    [disabled]="propiedadExtraForm.invalid">
+                    Guardar Propiedad
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

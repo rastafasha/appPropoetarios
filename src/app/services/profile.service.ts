@@ -49,13 +49,14 @@ export class ProfileService {
         );
   }
 
-  getByUser(usuario:any) {
+  getByUser(usuario: any) {
     const url = `${baseUrl}/profile/user_profile/${usuario}`;
-    return this.http.get<any>(url,this.headers)
+    return this.http.get<any>(url, this.headers)
       .pipe(
-        map((resp:{ok: boolean, profile: Profile}) => resp.profile)
-      )
-  }
+        // Aquí extraemos el profile directamente
+        map((resp: { ok: boolean, profile: any }) => resp.profile)
+      );
+}
 
   listarUsuario(id:any):Observable<any>{
     const url = `${baseUrl}/profile/user_profile/${id}`;
@@ -81,8 +82,12 @@ export class ProfileService {
     return this.http.put(url, profile, this.headers);
   }
 
+  agregarPropiedadExtra(payload: { tipo: string, datos: any }) {
+    return this.http.post(`${baseUrl}/profile/crearpropiedadextra`, payload, this.headers);
+}
+
   deleteProfile(_id: string) {
-    const url = `${baseUrl}/profiles/borrar/${_id}`;
+    const url = `${baseUrl}/profile/borrar/${_id}`;
     return this.http.delete(url, this.headers);
   }
 

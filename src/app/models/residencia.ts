@@ -7,5 +7,4 @@ export class Residencia {
     public letra?: string;
     public piso?: string;
     public montoMensual?: number;
-    // public usuario?: User;
 }

@@ -7,6 +7,7 @@ import { MyaccountComponent } from './pages/myaccount/myaccount.component';
 import { PerfilComponent } from './pages/myaccount/perfil/perfil.component';
 import { MisPagosComponent } from './pages/mis-pagos/mis-pagos.component';
 import { MisFacturasComponent } from './pages/mis-facturas/mis-facturas.component';
+import { PropiedadDetalleComponent } from './pages/propiedad-detalle/propiedad-detalle.component';
 
 export const routes: Routes = [
     {
@@ -21,10 +22,16 @@ export const routes: Routes = [
             path:'registro',
             component: RegisterComponent
         },
+        {path: 'recovery-password', component: RecoveryComponent },
+        
         {path: 'mis-pagos', component: MisPagosComponent },
         {path: 'mis-facturas', component: MisFacturasComponent },
-
-        {path: 'recovery-password', component: RecoveryComponent },
         {path: 'my-account', component: MyaccountComponent },
         {path: 'my-account/perfil/:id', component: PerfilComponent },
+
+        { path: 'propiedad-detalle/:tipo/:id', component: PropiedadDetalleComponent },
+
+        
+        
+        
 ];

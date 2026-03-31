@@ -5,3 +5,28 @@
   background-color: #ff4d4d; /* Color de fondo personalizado para errores */
   color: #fff; /* Color del texto */
 }
+
+/* Forzar que los iconos usen su propia fuente */
+.fas, .far, .fab {
+    font-family: "Font Awesome 5 Free" !important;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+}
+
+.fas { font-weight: 900 !important; }
+.far { font-weight: 400 !important; }
+
+.clickable-card:active {
+    transform: scale(0.98);
+    transition: 0.1s;
+    background-color: #f8f9fa;
+}
+
+.bg-primary-light { background-color: #eef5ff; }
+.bg-warning-light { background-color: #fff9e6; }
+.rounded-4 { border-radius: 1rem !important; }
+.bg-success-light { background-color: rgba(40, 167, 69, 0.1); }
+.bg-warning-light { background-color: rgba(255, 193, 7, 0.1); }
