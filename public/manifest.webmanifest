@@ -1,57 +1,110 @@
 {
-  "name": "appPropietarios",
-  "short_name": "appPropietarios",
-  "display": "standalone",
-  "scope": "./",
+ "name": "Corpo Capital",
+  "short_name": "Propietarios Corpo",
+  "description": "Aplicacion para propietarios de Parque Central",
   "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0056b3",
   "icons": [
     {
-      "src": "icons/icon-72x72.png",
+      "src": "assets/icons/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "icons/icon-96x96.png",
+      "src": "assets/icons/icon-96x96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "icons/icon-128x128.png",
+      "src": "assets/icons/icon-128x128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "icons/icon-144x144.png",
+      "src": "assets/icons/icon-144x144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "icons/icon-152x152.png",
+      "src": "assets/icons/icon-152x152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "icons/icon-192x192.png",
+      "src": "assets/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "icons/icon-384x384.png",
+      "src": "assets/icons/icon-384x384.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "icons/icon-512x512.png",
+      "src": "assets/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable any"
+      "purpose": "any"
+    }
+  ],
+  "screenshots":[
+    {
+      "src": "assets/icons-ios/apple-launch-750x1334.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "purpose": "maskable any",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "assets/icons-ios/apple-launch-1290x2796.png",
+      "sizes": "1290x2796",
+      "type": "image/png",
+      "purpose": "maskable any",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "assets/icons-ios/apple-launch-1179x2556.png",
+      "sizes": "1179x2556",
+      "type": "image/png",
+      "purpose": "maskable any",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "assets/icons-ios/apple-launch-1170x2532.png",
+      "sizes": "1170x2532",
+      "type": "image/png",
+      "purpose": "maskable any",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "assets/icons-ios/apple-launch-1024x768.png",
+      "sizes": "1024x768",
+      "type": "image/png",
+      "purpose": "maskable any",
+      "form_factor": "wide"
+    },
+    {
+      "src": "assets/icons-ios/apple-launch-2048x1496.png",
+      "sizes": "2048x1496",
+      "type": "image/png",
+      "purpose": "maskable any",
+      "form_factor": "wide"
+    },
+    {
+      "src": "assets/icons-ios/apple-launch-800x1280.png",
+      "sizes": "800x1280",
+      "type": "image/png",
+      "purpose": "maskable any",
+      "form_factor": "wide"
     }
   ]
 }

@@ -44,7 +44,6 @@ export class HomeComponent {
     let USER = localStorage.getItem("user");
     this.user = JSON.parse(USER ? USER : '');
     this.identityId = this.user.uid;
-    console.log(this.identityId)
     this.loadIdentity();
   }
 
@@ -52,7 +51,6 @@ export class HomeComponent {
     this.isLoading = true;
     this.profileService.getByUser(this.identityId).subscribe((resp: any) => {
       this.identity = resp;
-      console.log(this.identity)
       // this.identityId = this.identity.uid;
       this.isLoading = false;
     })
