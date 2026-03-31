@@ -54,3 +54,45 @@ Login register and recover password Page
     flex-direction: column;
     align-items: anchor-center;
 }
+
+input[type="checkbox"] {
+    accent-color: #00c3f8; /* El color azul de tu botón */
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.labelgoogle {
+  position: relative; /* Importante para que el icono se ubique respecto a este div */
+}
+
+.password-icon {
+    position: absolute;
+    right: 1.2rem;
+    top: 50%; /* Centrado exacto */
+    transform: translateY(-100%); /* Ajuste fino según tu padding */
+    cursor: pointer;
+    z-index: 101;
+    color: #0d6efd; /* Veo que ya tiene color, ¡se ve genial! */
+}
+
+.password-icon:hover {
+  color: #0d6efd; /* Color azul al pasar el mouse */
+}
+
+/* Ajuste para que el texto no choque con el ojo al escribir mucho */
+.input {
+  padding-right: 3.5rem !important; 
+}
+
+.input:where(:focus, :not(:placeholder-shown)) + .label__name {
+    // transform: translateY(-140%) scale(.75); /* Cambiado de -50% a -140% */
+    background-color: #fff;
+    padding: 0 4px; /* Un poco de padding lateral para que el fondo blanco tape la línea del borde */
+    margin-left: 0.8rem;
+}
+
+// .input[type="password"], 
+// .input {
+//     padding-right: 3rem !important; /* Deja espacio para el icono */
+// }

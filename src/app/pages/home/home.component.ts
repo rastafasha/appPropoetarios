@@ -38,6 +38,7 @@ export class HomeComponent {
   public connectivity = inject(ConectividadService);
   public usuarioService = inject(UserService);
   public toastr = inject(ToastrService);
+  public router = inject(Router);
 
   ngOnInit() {
 
@@ -52,6 +53,9 @@ export class HomeComponent {
     this.profileService.getByUser(this.identityId).subscribe((resp: any) => {
       this.identity = resp;
       // this.identityId = this.identity.uid;
+      if(this.identity.telhome === null){
+        this.router.navigateByUrl('/my-account')
+      }
       this.isLoading = false;
     })
   }

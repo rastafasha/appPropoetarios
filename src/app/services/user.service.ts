@@ -23,6 +23,7 @@ export class UserService {
 
   public auth2: any;
   public usuario!: User;
+  public estaAutenticado = false;
 
   constructor(
     private http: HttpClient,
@@ -56,18 +57,24 @@ export class UserService {
 
   guardarLocalStorage(token: string, user: any){
     localStorage.setItem('token', token);
-    // localStorage.setItem('user', user);
+    localStorage.setItem('estaAutenticado', 'true');
     localStorage.setItem('user', JSON.stringify(user));
+    this.estaAutenticado = true;
   }
 
 
     getLocalStorage(){
+      const authStr = localStorage.getItem('estaAutenticado');
+      this.estaAutenticado = authStr === 'true';
       if(localStorage.getItem('token') && localStorage.getItem('user')){
         let USER = localStorage.getItem('user');
         this.usuario = JSON.parse(USER ? USER: '');
-        // this.router.navigateByUrl('/start-meet');
       }
     }
+
+  getEstaAutenticado(): boolean {
+    return this.estaAutenticado;
+  }
 
 
   // googleInit(){
@@ -90,7 +97,8 @@ export class UserService {
   logout(){
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    this.router.navigateByUrl('/login');
+    localStorage.removeItem('estaAutenticado');
+  this.router.navigateByUrl('/login');
 
     // this.auth2.signOut().then(()=>{
     //   this.ngZone.run(()=>{
@@ -114,6 +122,7 @@ export class UserService {
         this.guardarLocalStorage(resp.token, resp.user);
         return true;
       }),
+      tap(() => this.estaAutenticado = true),
       catchError(error => of(false))
     );
   }

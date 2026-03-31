@@ -50,18 +50,19 @@
           <div class="col-12  label">
              Deuda
           </div>
-          <div class="col-12  label" *ngIf="identity.deudaTotalAcumulada == 0">
-            <i class="fa fa-check-circle-o text-success" ></i>  ¡Estás al día!
+          <div class="col-12  label text-success" *ngIf="identity.deudaTotalAcumulada == 0">
+            <i class="fa fa-check-circle-o " ></i>  ¡Estás al día!
           </div>
           <div class="col-12  info" *ngIf="identity.deudaTotalAcumulada > 0">
             <b style="color: #ff7e93;">{{identity.deudaTotalAcumulada |
             currency:'Bs.':'symbol':'1.2-2'}}</b>
           </div>
         </div>
-        <button type="button" class="btn btn-outline-success" (click)="iraPagar(identity.deudaTotalAcumulada)" 
+        <button *ngIf="identity.deudaTotalAcumulada > 0" type="button" class="btn btn-outline-success" (click)="iraPagar(identity.deudaTotalAcumulada)" 
         [disabled]="!(connectivity.isOnline$ | async)"
         [ngClass]="{'btn-disabled': !(connectivity.isOnline$ | async)}">
-          {{ (connectivity.isOnline$ | async) ? 'Pagar Bs. 1.200' : 'Esperando conexión...' }}
+          {{ (connectivity.isOnline$ | async) ? ('Pagar ' + identity.deudaTotalAcumulada |
+            currency:'Bs.':'symbol':'1.2-2') : 'Esperando conexión...' }}
         </button>
       </div>
 

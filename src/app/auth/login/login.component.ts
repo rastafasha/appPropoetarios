@@ -30,6 +30,8 @@ export class LoginComponent implements OnInit {
   public auth2: any;
 
   loginForm: FormGroup;
+  hidePassword = true; // Por defecto está oculta
+
 
   constructor(
     private router: Router,
@@ -47,27 +49,34 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     // this.renderButton();
     this.usuarioService.getLocalStorage();
+    const savedEmail = localStorage.getItem('email');
+    if (savedEmail) {
+      this.loginForm.patchValue({
+        email: savedEmail,
+        remember: true
+      });
+    }
   }
-
+togglePassword() {
+  this.hidePassword = !this.hidePassword;
+}
 
   login() {
 
     this.usuarioService.login(this.loginForm.value).subscribe(
       resp => {
         // console.log('Login response:', resp);
+        // Set estaAutenticado always on success (for guard)
+        localStorage.setItem('estaAutenticado', 'true');
+        this.usuarioService.getLocalStorage();
+
         if (this.loginForm.get('remember')?.value) {
           localStorage.setItem('email', this.loginForm.get('email')?.value);
         } else {
           localStorage.removeItem('email');
         }
-        this.usuarioService.getLocalStorage();
-        if (localStorage.getItem('user') !== 'undefined') {
-          setTimeout(() => {
-            this.router.navigateByUrl('/my-account');
-          }, 500);
-        } else {
-          this.router.navigateByUrl('/login');
-        }
+
+        this.router.navigateByUrl('/home');
 
 
         // this.router.navigateByUrl('/my-account');

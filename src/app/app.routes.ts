@@ -11,7 +11,7 @@ import { PropiedadDetalleComponent } from './pages/propiedad-detalle/propiedad-d
 import {AuthGuard} from './guards/auth.guard';
 export const routes: Routes = [
     {
-            path:'',
+            path:'home',
             canActivate: [AuthGuard],
             component: HomeComponent
         },
@@ -25,9 +25,9 @@ export const routes: Routes = [
         },
         {path: 'recovery-password', component: RecoveryComponent },
         
-        {path: 'mis-pagos', component: MisPagosComponent },
+        {path: 'mis-pagos', canActivate: [AuthGuard], component: MisPagosComponent },
         {path: 'mis-facturas', component: MisFacturasComponent },
-        {path: 'my-account', component: MyaccountComponent },
+        {path: 'my-account', canActivate: [AuthGuard], component: MyaccountComponent },
         {path: 'my-account/perfil/:id', component: PerfilComponent },
 
         { path: 'propiedad-detalle/:tipo/:id', component: PropiedadDetalleComponent },

@@ -1,36 +1,56 @@
 <app-header></app-header>
-<div class="container mt-4 mb-5">
+<div class="container mt-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="400"
+  (scrolled)="onScroll()">
   <h4 class="fw-bold mb-3 text-dark">Historial de Pagos</h4>
 
-  <!-- Tarjeta de Pago Pendiente/En Revisión -->
-  <div class="card border-0 shadow-sm mb-3 border-start border-4 border-warning">
+  @for (payment of payments(); track payment._id) {
+  <div class="card border-0 shadow-sm mb-3 border-start border-4" [ngClass]="{
+           'border-success': payment.status === 'APROBADO',
+           'border-warning': payment.status === 'PENDIENTE',
+           'border-danger': payment.status === 'RECHAZADO'
+         }">
     <div class="card-body d-flex justify-content-between align-items-center">
       <div>
-        <h6 class="mb-1 fw-bold text-secondary text-uppercase" style="font-size: 0.8rem;">Marzo 2026</h6>
-        <p class="mb-0 fs-5 fw-bold">Bs. 1,200.00</p>
-        <small class="text-muted">Ref: #8527890</small>
+        <h6 class="mb-1 fw-bold text-secondary text-uppercase" style="font-size: 0.8rem;">
+          {{payment.fecha_pago | date:'dd/MM/yyyy'}}</h6>
+        <p class="mb-0 fs-5 fw-bold">{{payment.amount | currency:'Bs.':'symbol':'1.2-2'}}</p>
+        <small class="text-muted">Ref: #{{payment.referencia}}</small>
       </div>
-      <span class="badge rounded-pill bg-warning text-dark px-3">En Revisión</span>
-    </div>
-  </div>
 
-  <!-- Tarjeta de Pago Aprobado -->
-  <div class="card border-0 shadow-sm mb-3 border-start border-4 border-success">
-    <div class="card-body d-flex justify-content-between align-items-center">
-      <div>
-        <h6 class="mb-1 fw-bold text-secondary text-uppercase" style="font-size: 0.8rem;">Febrero 2026</h6>
-        <p class="mb-0 fs-5 fw-bold">Bs. 950.00</p>
-        <small class="text-muted">Ref: #7412580</small>
-      </div>
-      <span class="badge rounded-pill bg-success px-3">Aprobado</span>
+      <!-- Badges con colores y contraste -->
+      @if (payment.status === 'APROBADO') {
+      <span class="badge rounded-pill bg-success text-white px-3">Al día</span>
+      }
+
+      @if (payment.status === 'PENDIENTE') {
+      <span class="badge rounded-pill bg-warning text-dark px-3">Moroso</span>
+      }
+
+      @if (payment.status === 'RECHAZADO') {
+      <span class="badge rounded-pill bg-danger text-white px-3">En Revisión</span>
+      }
     </div>
   </div>
+  } @empty {
+  <p class="text-center text-muted">No hay pagos registrados.</p>
+  }
+
+  <!-- Spinner estilo Instagram usando la señal loading -->
+  @if (loading()) {
+  <div class="d-flex justify-content-center my-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+  }
 
 </div>
 
+
+
 <!-- Botón Flotante para Reportar Nuevo Pago -->
-<button class="btn btn-primary rounded-circle shadow-lg position-fixed" 
-        style="bottom: 80px; right: 20px; width: 60px; height: 60px;">
+<button class="btn btn-primary rounded-circle shadow-lg position-fixed"
+  style="bottom: 80px; right: 20px; width: 60px; height: 60px;">
   <i class="fas fa-plus fs-3"></i>
 </button>
 <app-menufooter></app-menufooter>

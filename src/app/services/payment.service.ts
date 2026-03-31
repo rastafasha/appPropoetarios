@@ -60,13 +60,16 @@ export class PaymentService {
       );
   }
 
-  getByUser(usuario: any) {
-    const url = `${baseUrl}/payments/user/${usuario}`;
-    return this.http.get<any>(url, this.headers)
-      .pipe(
-        map((resp: { ok: boolean, payment: Payment }) => resp.payment)
-      )
-  }
+ getByUser(usuario: any, page: number = 1, limit: number = 6) {
+  // Construimos la URL con parámetros de paginación
+  const url = `${baseUrl}/payments/user/${usuario}?page=${page}&limit=${limit}`;
+  
+  return this.http.get<any>(url, this.headers)
+    .pipe(
+      // Importante: Si la API devuelve un array, asegúrate que el tipado sea Payment[]
+      map((resp: { ok: boolean, payments: any[] }) => resp.payments)
+    );
+}
 
   getByStatus(status: string) {
     const url = `${baseUrl}/payments/status/${status}`;
