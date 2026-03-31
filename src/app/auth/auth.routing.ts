@@ -8,7 +8,6 @@ import { RecoveryComponent } from './recovery/recovery.component';
 //pages
 
 
-
 const routes: Routes = [
 
 
@@ -18,7 +17,6 @@ const routes: Routes = [
     { path: 'recovery-password', component: RecoveryComponent },
 
 ];
-
 
 
 

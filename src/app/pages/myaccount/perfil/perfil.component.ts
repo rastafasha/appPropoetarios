@@ -14,6 +14,7 @@ import { Profile } from '../../../models/profile';
 import { SkeletonLoaderComponent } from '../../../shared/skeleton-loader/skeleton-loader.component';
 import { ToastrService } from 'ngx-toastr';
 import { Location } from '@angular/common';
+import { SelectorUbicacionComponent } from '../../../components/selector-ubicacion-component/selector-ubicacion.component';
 declare var jQuery: any;
 declare var $: any;
 
@@ -30,7 +31,8 @@ interface HtmlInputEvent extends Event {
     ReactiveFormsModule,
     FormsModule,
     ImagenPipe,
-    SkeletonLoaderComponent
+    SkeletonLoaderComponent,
+    SelectorUbicacionComponent
 
   ],
   templateUrl: './perfil.component.html',
@@ -42,7 +44,6 @@ export class PerfilComponent implements OnInit {
   public paises: any;
   // public file !:File; // unused
   // public imgSelect !: String | ArrayBuffer; // unused
-  public data_paises: any = [];
   public msm_error = false;
   public msm_success = false;
   public pass_error = false;
@@ -54,7 +55,7 @@ export class PerfilComponent implements OnInit {
   public isLoading = false;
 
   public usuarioSeleccionado!: Profile;
-  listaResidencias:any;
+  listaResidencias: any;
 
   public perfilForm!: FormGroup;
   public imagenSubir!: File;
@@ -62,29 +63,25 @@ export class PerfilComponent implements OnInit {
   public FILE_AVATAR!: HTMLInputElement;
   public IMAGE_PREVISUALIZA: string | null = null;
   text_validation: any = null;
+  // 1. RESIDENCIAS (Apartamentos)
+  public edificiosResidenciales = ['Catuche', 'Tajamar', 'Tacagua', 'San Martín', 'Mohedano', 'Caruata', 'El Tejar'];
+  public PISOS_RESIDENCIALES = Array.from({ length: 19 }, (_, i) => ` ${i + 1}`);
 
-  public edificiosResidenciales = [
-    'Catuche', 'Tajamar', 'Tacagua', 'San Martín', 'Mohedano', 'Caruata', 'El Tejar'
-  ];
-  // Genera arreglo [1, 2, ..., 19]
-  public niveles = Array.from({ length: 19 }, (_, i) => i + 1);
+  // 2. OFICINAS (Torres 1-40 + Niveles especiales)
+  public TORRES = ['Torre Este', 'Torre Oeste'];
+  public PISOS_OFICINAS_TORRES = Array.from({ length: 40 }, (_, i) => `${i + 1}`);
+  public NIVELES_EXTRAS_OFICINAS = ['Sotano 1', 'Mezanina', 'Lecuna', 'Bolívar', 'Oficina 1', 'Oficina 2'];
+  // Combinamos todos los posibles niveles de oficina
+  public TODOS_NIVELES_OFICINA = [...this.NIVELES_EXTRAS_OFICINAS, ...this.PISOS_OFICINAS_TORRES];
 
-  // Genera arreglo ['A', 'B', ..., 'Z']
+  // 3. LOCALES (Solo niveles comerciales)
+  public NIVELES_LOCALES = ['Sotano 1', 'Mezanina', 'Lecuna', 'Bolívar'];
+
+  // Lista global de edificios para Oficinas y Locales
+  public todosLosEdificios = [...this.edificiosResidenciales, ...this.TORRES];
+
+  // Abecedario
   public letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-
-  public pisoOficinas =[
-    'Oficina 1', 'Oficina 2', 'Mezanina', 'Nivel Lecuna', 'Nivel Bolívar'
-  ]
-  public pisoLocales =[
-    'Nivel Lecuna', 'Nivel Bolívar', 'Mezanina', 'Sotano 1' 
-  ]
-
-  public edificiosOficinas = [
-    'Catuche', 'Tajamar', 'Tacagua', 'San Martín', 'Mohedano', 'Caruata', 'El Tejar', 'Torre Este', 'Torre Oeste'
-  ];
-  public edificiosLocales = [
-    'Catuche', 'Tajamar', 'Tacagua', 'San Martín', 'Mohedano', 'Caruata', 'El Tejar', 'Torre Este', 'Torre Oeste'
-  ];
 
 
   //DATA
@@ -98,7 +95,7 @@ export class PerfilComponent implements OnInit {
     private fileUploadService: FileUploadService,
     private toastr: ToastrService,
     private location: Location
-    
+
   ) {
     // this.usuario = usuarioService.usuario;
 
@@ -135,6 +132,7 @@ export class PerfilComponent implements OnInit {
     this.identityId = this.user.uid;
     // console.log(this.user);
     this.getUser();
+    this.escucharSwitches();
   }
 
 
@@ -144,33 +142,54 @@ export class PerfilComponent implements OnInit {
       this.usuarioSeleccionado = resp;
       if (!this.usuarioSeleccionado) {
         this._router.navigate(['/']);
+        return;
       }
-      // First initialize the form
-      this.validarFormulario();
-      // Then set the values (using patchValue for partial updates)
-      this.perfilForm.patchValue({
-        _id: this.usuarioSeleccionado._id || '',
-        first_name: this.usuarioSeleccionado.first_name || '',
-        last_name: this.usuarioSeleccionado.last_name || '',
-        telmovil: this.usuarioSeleccionado.telmovil || '',
-        telhome: this.usuarioSeleccionado.telhome || '',
-        img: this.usuarioSeleccionado.img || '',
-        haveResidencia: !!this.usuarioSeleccionado?.haveResidencia,
-        haveOficina: !!this.usuarioSeleccionado?.haveOficina,
-        haveLocal: !!this.usuarioSeleccionado?.haveLocal,
-        residencia: this.usuarioSeleccionado.residencia?.edificio || '',
-        pisoResidencia: this.usuarioSeleccionado.residencia?.piso || '',
-        letraResidencia: this.usuarioSeleccionado.residencia?.letra || '',
-        oficina: this.usuarioSeleccionado.oficina?.edificio || '',
-        pisoOficina: this.usuarioSeleccionado.oficina?.piso || '',
-        letraOficina: this.usuarioSeleccionado.oficina?.letra || '',
-        local: this.usuarioSeleccionado.local?.edificio || '',
-        pisoLocal: this.usuarioSeleccionado.local?.piso || '',
-        letraLocal: this.usuarioSeleccionado.local?.letra || ''
-      });
-      this.isLoading = false;
 
-    })
+      this.validarFormulario();
+
+      // 1. Extraemos el objeto completo [0] para mostrar el texto en los selectores
+      // Para Residencia
+      const resData = (this.usuarioSeleccionado.residencia as unknown as any[])?.[0];
+      const resId = resData?._id;
+
+      // Para Oficina
+      const ofiData = (this.usuarioSeleccionado.oficina as unknown as any[])?.[0];
+      const ofiId = ofiData?._id;
+
+      // Para Local
+      const locData = (this.usuarioSeleccionado.local as unknown as any[])?.[0];
+      const locId = locData?._id;
+
+      // 2. Mapeamos al formulario
+      this.perfilForm.patchValue({
+        _id: this.usuarioSeleccionado._id,
+        first_name: this.usuarioSeleccionado.first_name,
+        last_name: this.usuarioSeleccionado.last_name,
+        telmovil: this.usuarioSeleccionado.telmovil,
+        telhome: this.usuarioSeleccionado.telhome,
+        img: this.usuarioSeleccionado.img,
+
+        // Banderas de visibilidad
+        haveResidencia: !!this.usuarioSeleccionado.haveResidencia,
+        haveOficina: !!this.usuarioSeleccionado.haveOficina,
+        haveLocal: !!this.usuarioSeleccionado.haveLocal,
+
+        // Mostramos el TEXTO en los selectores del hijo
+        residencia: resData?.edificio || '',
+        pisoResidencia: resData?.piso || '',
+        letraResidencia: resData?.letra || '',
+
+        oficina: ofiData?.edificio || '',
+        pisoOficina: ofiData?.piso || '',
+        letraOficina: ofiData?.letra || '',
+
+        local: locData?.edificio || '',
+        pisoLocal: locData?.piso || '',
+        letraLocal: locData?.letra || ''
+      });
+
+      this.isLoading = false;
+    });
   }
 
   validarFormulario() {
@@ -178,15 +197,15 @@ export class PerfilComponent implements OnInit {
       _id: ['', Validators.required],
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
-      telmovil: ['', [Validators.required, Validators.pattern(/^[0-9+()\- ]*$/) ]],
+      telmovil: ['', [Validators.required, Validators.pattern(/^\+?[0-9\s\-]{7,20}$/)]],
       telhome: ['', [
-        Validators.required, 
-        Validators.pattern(/^[0-9+()\- ]*$/) 
+        Validators.required,
+        Validators.pattern(/^\+?[0-9\s\-]{7,20}$/)
       ]],
       img: [''],
-      haveResidencia: [''],
-      haveOficina: [''],
-      haveLocal: [''],
+      haveResidencia: [false], // Cambiado de '' a false
+      haveOficina: [false],
+      haveLocal: [false],
       residencia: [''],
       pisoResidencia: [''],
       letraResidencia: [''],
@@ -199,60 +218,92 @@ export class PerfilComponent implements OnInit {
     });
 
   }
+  // Logica edificios, locales, oficinas y residencias
+  private generarResumen(edif: string, nivel: string, identificador: string, tipo: 'Apto' | 'Oficina' | 'Local'): string {
+    if (!edif || !nivel || !identificador) return 'Complete los datos para previsualizar';
+
+    // Si el nivel ya es descriptivo (Mezanina, Oficina 1, Nivel Lecuna), no le ponemos "Piso"
+    const nivelesEspeciales = ['Mezanina', 'Oficina', 'Nivel', 'Sotano'];
+    const esEspecial = nivelesEspeciales.some(esp => nivel.includes(esp));
+
+    const prefijoNivel = esEspecial ? '' : 'Piso ';
+
+    // Retorna: "Catuche, Piso 5, Apto B" o "Torre Este, Mezanina, Oficina 10"
+    return `${edif}, ${prefijoNivel}${nivel}, ${tipo} ${identificador}`;
+  }
 
   get resumenResidencia(): string {
-    const edif = this.perfilForm.get('residencia')?.value;
-    const piso = this.perfilForm.get('pisoResidencia')?.value;
-    const letra = this.perfilForm.get('letraResidencia')?.value;
-
-    if (edif && piso && letra) {
-      return `${edif}, Piso ${piso}, Apto ${letra}`;
-    }
-    return 'Seleccione todos los campos...';
+    const f = this.perfilForm.value;
+    return this.generarResumen(f.residencia, f.pisoResidencia, f.letraResidencia, 'Apto');
   }
+
   get resumenOficina(): string {
-    const edif = this.perfilForm.get('oficina')?.value;
-    const piso = this.perfilForm.get('pisoOficina')?.value;
-    const letra = this.perfilForm.get('letraOficina')?.value;
-
-    if (edif && piso && letra) {
-      return `${edif}, Piso ${piso}, Oficina ${letra}`;
-    }
-    return 'Seleccione todos los campos...';
+    const f = this.perfilForm.value;
+    return this.generarResumen(f.oficina, f.pisoOficina, f.letraOficina, 'Oficina');
   }
+
   get resumenLocal(): string {
-    const edif = this.perfilForm.get('local')?.value;
-    const piso = this.perfilForm.get('pisoLocal')?.value;
-    const letra = this.perfilForm.get('letraLocal')?.value;
+    const f = this.perfilForm.value;
+    return this.generarResumen(f.local, f.pisoLocal, f.letraLocal, 'Local');
+  }
+  // Logica edificios, locales, oficinas y residencias
 
-    if (edif && piso && letra) {
-      return `${edif}, Nivel ${piso}, Local ${letra}`;
+  //selector
+  onCheckChange(tipo: 'residencia' | 'oficina' | 'local') {
+
+    // 1. Obtenemos el valor actual del booleano (true o false)
+    // Nota: Usamos los nombres exactos de tu Schema: haveResidencia, haveOficina, haveLocal
+    const fieldName = 'have' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
+    const estaActivado = this.perfilForm.get(fieldName)?.value;
+
+    if (estaActivado) {
+      console.log(`activó: ${tipo}. Mostrando campos adicionales...`);
+      // Aquí podrías cargar una lista de edificios desde tu API si fuera necesario
+    } else {
+      console.log(`desactivó: ${tipo}. Limpiando selección...`);
+      // Si lo apaga, es buena práctica limpiar el ID seleccionado para no enviar basura al backend
+      this.perfilForm.get(tipo)?.setValue([]);
     }
-    return 'Seleccione todos los campos...';
   }
 
+  escucharSwitches() {
+    // Resetear RESIDENCIA si se apaga el switch
+    this.perfilForm.get('haveResidencia')?.valueChanges.subscribe(value => {
+      if (!value) {
+        this.perfilForm.patchValue({
+          residencia: '',
+          pisoResidencia: '',
+          letraResidencia: ''
+        });
+      }
+    });
 
-onCheckChange(tipo: 'residencia' | 'oficina' | 'local') {
-  
-  // 1. Obtenemos el valor actual del booleano (true o false)
-  // Nota: Usamos los nombres exactos de tu Schema: haveResidencia, haveOficina, haveLocal
-  const fieldName = 'have' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
-  const estaActivado = this.perfilForm.get(fieldName)?.value;
+    // Resetear OFICINA si se apaga el switch
+    this.perfilForm.get('haveOficina')?.valueChanges.subscribe(value => {
+      if (!value) {
+        this.perfilForm.patchValue({
+          oficina: '',
+          pisoOficina: '',
+          letraOficina: ''
+        });
+      }
+    });
 
-  if (estaActivado) {
-    console.log(`activó: ${tipo}. Mostrando campos adicionales...`);
-    // Aquí podrías cargar una lista de edificios desde tu API si fuera necesario
-  } else {
-    console.log(`desactivó: ${tipo}. Limpiando selección...`);
-    // Si lo apaga, es buena práctica limpiar el ID seleccionado para no enviar basura al backend
-    this.perfilForm.get(tipo)?.setValue([]); 
+    // Resetear LOCAL si se apaga el switch
+    this.perfilForm.get('haveLocal')?.valueChanges.subscribe(value => {
+      if (!value) {
+        this.perfilForm.patchValue({
+          local: '',
+          pisoLocal: '',
+          letraLocal: ''
+        });
+      }
+    });
   }
-}
+  //selector
 
-  close_alert() {
-    this.msm_success = false;
-    this.msm_error = false;
-  }
+
+
 
   view_password() {
     let type = $('#password').attr('type');
@@ -279,89 +330,91 @@ onCheckChange(tipo: 'residencia' | 'oficina' | 'local') {
   onUserSave() {
 
     if (this.perfilForm.invalid) {
-    // Marcamos los campos para que se vean los errores en rojo si los hay
-    this.perfilForm.markAllAsTouched();
-    this.toastr.warning(
-      'Asegúrate de que los teléfonos tengan el formato correcto (+58 ...)', 
-      'Formato Inválido',
-      { positionClass: 'toast-bottom-right' }
-    );
-    this.toastr.error('Por favor, completa los campos requeridos correctamente.', 'Formulario Incompleto');
-    return;
-  }
-  
-    this.isLoading = true;
-
-    if (this.usuarioSeleccionado) {
-      //actualizar
-      // Transform flat form to nested structure for backend
-      const formData = this.perfilForm.value;
-      const data: any = {
-        ...formData,
-        _id: this.usuarioSeleccionado._id,
-        residencia: formData.haveResidencia ? {
-          edificio: formData.residencia,
-          piso: formData.pisoResidencia,
-          letra: formData.letraResidencia
-        } : null,
-        oficina: formData.haveOficina ? {
-          edificio: formData.oficina,
-          piso: formData.pisoOficina,
-          letra: formData.letraOficina
-        } : null,
-        local: formData.haveLocal ? {
-          edificio: formData.local,
-          piso: formData.pisoLocal,
-          letra: formData.letraLocal
-        } : null,
-      };
-      this.profileService.updateProfile(data).subscribe({
-        next: (res) =>{
-          this.toastr.success('Tus datos han sido actualizados con éxito.', '¡Excelente!');
-          this.isLoading = false;
-          this.getUser()
-        },
-         error: (err) => {
-          this.isLoading = false;
-          this.toastr.error('Hubo un problema al guardar los cambios.', 'Error de Servidor');
-        }
-
-      })
-      
-    } else {
-      //crear
-      // Transform flat form to nested structure for backend
-      const formData = this.perfilForm.value;
-      const data: any = {
-        ...formData,
-        residencia: formData.haveResidencia ? {
-          edificio: formData.residencia,
-          piso: formData.pisoResidencia,
-          letra: formData.letraResidencia
-        } : null,
-        oficina: formData.haveOficina ? {
-          edificio: formData.oficina,
-          piso: formData.pisoOficina,
-          letra: formData.letraOficina
-        } : null,
-        local: formData.haveLocal ? {
-          edificio: formData.local,
-          piso: formData.pisoLocal,
-          letra: formData.letraLocal
-        } : null,
-      };
-      this.profileService.createProfile(data).subscribe({
-        next: (res) =>{
-          this.toastr.success('Tus datos han sido creado con éxito.', '¡Excelente!');
-          this.isLoading = false;
-          this.getUser()
-        },
-         error: (err) => {
-          this.isLoading = false;
-          this.toastr.error('Hubo un problema al guardar los cambios.', 'Error de Servidor');
-        }
-       })
+      // Marcamos los campos para que se vean los errores en rojo si los hay
+      this.perfilForm.markAllAsTouched();
+      this.toastr.warning(
+        'Asegúrate de que los teléfonos tengan el formato correcto (+58 ...)',
+        'Formato Inválido',
+        { positionClass: 'toast-bottom-right' }
+      );
+      this.toastr.error('Por favor, completa los campos requeridos correctamente.', 'Formulario Incompleto');
+      return;
     }
+
+    this.isLoading = true;
+    const f = this.perfilForm.value;
+
+    // 1. Extraemos solo lo que NO es de ubicación para no duplicar datos en el envío
+    // Usamos destructuring para sacar los campos que vamos a reestructurar
+    const { residencia, pisoResidencia, letraResidencia, oficina, pisoOficina, letraOficina, local, pisoLocal, letraLocal, ...resto } = f;
+
+    // Extraemos los IDs originales del objeto que cargamos en getUser
+    // Para Residencia
+
+    const resOriginal = (this.usuarioSeleccionado.residencia as unknown as any[])?.[0];
+    const resId = resOriginal?._id;
+
+    // Para Oficina
+
+    const ofciOriginal = (this.usuarioSeleccionado.oficina as unknown as any[])?.[0];
+    const oficId = ofciOriginal?._id;
+
+
+    // Para Local
+    const localOriginal = (this.usuarioSeleccionado.local as unknown as any[])?.[0];
+    const localId = localOriginal?._id;
+
+    const locData = (this.usuarioSeleccionado.local as unknown as any[])?.[0];
+    const locId = locData?._id;
+
+    // 2. Construimos el objeto final limpio
+    const data: any = {
+      ...resto,
+      _id: this.usuarioSeleccionado._id,
+      // Enviamos el array de IDs que Mongoose espera
+     residencia: f.haveResidencia && resOriginal ? [{ 
+      _id: resOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
+      edificio: f.residencia, 
+      piso: f.pisoResidencia, 
+      letra: f.letraResidencia 
+      }] : [],
+       oficina: f.haveOficina && ofciOriginal ? [{ 
+      _id: ofciOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
+      edificio: f.oficina, 
+      piso: f.pisoOficina, 
+      letra: f.letraOficina 
+      }] : [],
+       local: f.haveLocal && localOriginal ? [{ 
+      _id: localOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
+      edificio: f.local, 
+      piso: f.pisoLocal, 
+      letra: f.letraLocal 
+      }] : [],
+
+      
+    };
+
+    // 3. Añadimos el ID si es actualización
+    if (this.usuarioSeleccionado) {
+      data._id = this.usuarioSeleccionado._id;
+    }
+
+    // 4. Llamada al servicio (unificada)
+    const peticion = this.usuarioSeleccionado
+      ? this.profileService.updateProfile(data)
+      : this.profileService.createProfile(data);
+
+    peticion.subscribe({
+      next: () => {
+        this.toastr.success(`Datos ${this.usuarioSeleccionado ? 'actualizados' : 'creados'} con éxito.`, '¡Excelente!');
+        this.isLoading = false;
+        this.getUser();
+      },
+      error: () => {
+        this.isLoading = false;
+        this.toastr.error('Hubo un problema al guardar los cambios.', 'Error de Servidor');
+      }
+    });
   }
 
 
@@ -395,7 +448,7 @@ onCheckChange(tipo: 'residencia' | 'oficina' | 'local') {
       .then(img => {
         this.usuarioSeleccionado.img = img;
         this.toastr.success('Foto de perfil actualizada.', 'Imagen Guardada'),
-        this.isLoading = false;
+          this.isLoading = false;
         this.ngOnInit()
       }).catch(err => {
         this.toastr.error('No se pudo subir la imagen.', 'Error')
@@ -404,7 +457,7 @@ onCheckChange(tipo: 'residencia' | 'oficina' | 'local') {
       })
   }
 
-  irAtras(){
+  irAtras() {
     this.location.back();
   }
 

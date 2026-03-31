@@ -1,0 +1,53 @@
+<div [formGroup]="parentForm" class="mb-4 p-3 border-start border-primary border-4 rounded shadow-sm bg-light animate__animated animate__fadeIn">
+    <!-- El value="" permite que al hacer reset('') se seleccione esta opción -->
+   
+    <!-- Edificio -->
+    <div class="mb-3">
+        <label class="form-label labelgoogle">
+            <select class="form-select input" [formControlName]="formEdif">
+                 <option value="" disabled selected>Seleccione Edificio...</option>
+                @for(edif of listaEdificios; track edif) { 
+                    <option [value]="edif">{{edif}}</option> 
+                }
+            </select>
+            <span class="label__name">Edificio</span>
+        </label>
+    </div>
+
+    <!-- Fila Piso/Letra -->
+    <div class="row g-2">
+        <div class="col-6">
+            <label class="form-label labelgoogle">
+                <select class="form-select input" [formControlName]="formPiso">
+                    <option value="" disabled selected>Piso/Nivel</option>
+                    @for(p of listaPisos; track p) { 
+                        <option [value]="p">{{p}}</option> 
+                    }
+                </select>
+                <span class="label__name">Nivel</span>
+            </label>
+        </div>
+        <div class="col-6">
+        <label class="form-label labelgoogle">
+            <select class="form-select input" [formControlName]="formLetra">
+                <option value="" disabled selected>Letra/Nro</option>
+                @for(l of letras; track l) { 
+                    <option [value]="l">{{l}}</option> 
+                }
+            </select>
+            <span class="label__name">{{tipoLabel}}</span>
+        </label>
+    </div>
+    </div>
+
+    <!-- Resumen -->
+    <div class="mt-3">
+        @if(resumen && resumen.includes(',')) {
+            <div class="p-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 text-center text-primary fw-bold">
+                <i class="bi bi-geo-alt-fill me-2"></i> {{ resumen }}
+            </div>
+        } @else {
+            <div class="text-center text-muted small fst-italic">Complete los datos para previsualizar</div>
+        }
+    </div>
+</div>

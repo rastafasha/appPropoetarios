@@ -145,228 +145,54 @@
                         </div>
                     </div>
 
-                    <!-- Switch para Residencia -->
+                    <!-- residencias locales y oficinas -->
+                    <!-- RESIDENCIA -->
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" formControlName="haveResidencia" id="swRes"
-                            (change)="onCheckChange('residencia')"> <!-- Opcional: para disparar lógica extra -->
+                        <input class="form-check-input" type="checkbox" formControlName="haveResidencia" id="swRes">
                         <label class="form-check-label" for="swRes">¿Posee Residencia?</label>
                     </div>
 
-                    <!-- Si el booleano es true, mostramos el selector o input -->
+                    <!-- SECCIÓN RESIDENCIA (Aptos 1-19) -->
                     @if(perfilForm.get('haveResidencia')?.value) {
-                    <div
-                        class="mb-4 p-3 border-start border-primary border-4 rounded shadow-sm bg-light animate__animated animate__fadeIn">
-
-                        <!-- Selector de Edificio -->
-                        <div class="mb-3">
-                            <label class="form-label labelgoogle">
-                                <select class="form-select input" formControlName="residencia">
-                                    <option value="" disabled selected>Seleccione Edificio...</option>
-                                    @for(edificio of edificiosResidenciales; track edificio) {
-                                    <option [value]="edificio">{{edificio}}</option>
-                                    }
-                                </select>
-                                <span class="label__name">Edificio</span>
-                            </label>
-                        </div>
-
-                        <!-- Fila para Piso y Letra -->
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <label class="form-label labelgoogle">
-                                    <select class="form-select input" formControlName="pisoResidencia">
-                                        <option value="" disabled selected>Piso</option>
-                                        @for(piso of niveles; track piso) {
-                                        <option [value]="piso">Piso {{piso}}</option>
-                                        }
-                                    </select>
-                                    <span class="label__name">Nivel</span>
-                                </label>
-                            </div>
-
-                            <div class="col-6">
-                                <label class="form-label labelgoogle">
-                                    <select class="form-select input" formControlName="letraResidencia">
-                                        <option value="" disabled selected>Letra</option>
-                                        @for(letra of letras; track letra) {
-                                        <option [value]="letra">{{letra}}</option>
-                                        }
-                                    </select>
-                                    <span class="label__name">Apto</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Vista previa dinámica -->
-                            @if(perfilForm.get('residencia')?.value && perfilForm.get('pisoResidencia')?.value &&
-                            perfilForm.get('letraResidencia')?.value) {
-                            <div
-                                class="mt-3 p-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 animate__animated animate__pulse">
-                                <div class="d-flex align-items-center justify-content-center text-primary fw-bold">
-                                    <i class="bi bi-house-check me-2"></i>
-                                    <span>{{ resumenResidencia }}</span>
-                                </div>
-                            </div>
-                            } @else {
-                            <div class="mt-3 text-center text-muted small italic">
-                                Complete los datos para previsualizar
-                            </div>
-                            }
-
-                        <div class="text-muted mt-2 small text-end">
-                            <i class="bi bi-info-circle"></i> Ejemplo: {{perfilForm.get('residencia')?.value}} - 14-C
-                        </div>
-                    </div>
+                    <app-selector-ubicacion [parentForm]="perfilForm" tipoLabel="Apto" formEdif="residencia"
+                        formPiso="pisoResidencia" formLetra="letraResidencia" [listaEdificios]="edificiosResidenciales"
+                        [listaPisos]="PISOS_RESIDENCIALES" [letras]="letras" [resumen]="resumenResidencia">
+                    </app-selector-ubicacion>
                     }
-                    
 
-                   
-                    <!-- Switch para Oficina -->
+                    <!-- OFICINA -->
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" formControlName="haveOficina" id="swOfi"
-                            (change)="onCheckChange('oficina')">
+                        <input class="form-check-input" type="checkbox" formControlName="haveOficina" id="swOfi">
                         <label class="form-check-label fw-bold" for="swOfi">¿Posee Oficina?</label>
                     </div>
-                     <!-- Si el booleano es true, mostramos el selector o input -->
+
+                    <!-- SECCIÓN OFICINA (Torres 1-40 y niveles especiales) -->
                     @if(perfilForm.get('haveOficina')?.value) {
-                    <div
-                        class="mb-4 p-3 border-start border-primary border-4 rounded shadow-sm bg-light animate__animated animate__fadeIn">
-
-                        <!-- Selector de Edificio -->
-                        <div class="mb-3">
-                            <label class="form-label labelgoogle">
-                                <select class="form-select input" formControlName="oficina">
-                                    <option value="" disabled selected>Seleccione Edificio...</option>
-                                    @for(edificio of edificiosOficinas; track edificio) {
-                                    <option [value]="edificio">{{edificio}}</option>
-                                    }
-                                </select>
-                                <span class="label__name">Edificio</span>
-                            </label>
-                        </div>
-
-                        <!-- Fila para Piso y Letra -->
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <label class="form-label labelgoogle">
-                                    <select class="form-select input" formControlName="pisoOficina">
-                                        <option value="" disabled selected>Piso</option>
-                                        @for(piso of pisoOficinas; track piso) {
-                                        <option [value]="piso">Piso {{piso}}</option>
-                                        }
-                                    </select>
-                                    <span class="label__name">Nivel</span>
-                                </label>
-                            </div>
-
-                            <div class="col-6">
-                                <label class="form-label labelgoogle">
-                                    <select class="form-select input" formControlName="letraOficina">
-                                        <option value="" disabled selected>Letra</option>
-                                        @for(letra of letras; track letra) {
-                                        <option [value]="letra">{{letra}}</option>
-                                        }
-                                    </select>
-                                    <span class="label__name">Oficina</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Vista previa dinámica -->
-                            @if(perfilForm.get('haveOficina')?.value && perfilForm.get('pisoOficina')?.value &&
-                            perfilForm.get('letraOficina')?.value) {
-                            <div
-                                class="mt-3 p-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 animate__animated animate__pulse">
-                                <div class="d-flex align-items-center justify-content-center text-primary fw-bold">
-                                    <i class="bi bi-house-check me-2"></i>
-                                    <span>{{ resumenOficina }}</span>
-                                </div>
-                            </div>
-                            } @else {
-                            <div class="mt-3 text-center text-muted small italic">
-                                Complete los datos para previsualizar
-                            </div>
-                            }
-
-                        <div class="text-muted mt-2 small text-end">
-                            <i class="bi bi-info-circle"></i> Ejemplo: {{perfilForm.get('oficina')?.value}} - 14-C
-                        </div>
-                    </div>
+                    <app-selector-ubicacion [parentForm]="perfilForm" tipoLabel="Oficina" formEdif="oficina"
+                        formPiso="pisoOficina" formLetra="letraOficina" [listaEdificios]="todosLosEdificios"
+                        [listaPisos]="TODOS_NIVELES_OFICINA" [letras]="letras" [resumen]="resumenOficina">
+                    </app-selector-ubicacion>
                     }
-                     <!-- Switch para Local -->
+
+                    <!-- LOCAL -->
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" formControlName="haveLocal" id="swRes"
-                            (change)="onCheckChange('local')"> <!-- Pasamos el tipo como texto -->
-                        <label class="form-check-label fw-bold" for="swRes">¿Posee Local?</label>
+                        <input class="form-check-input" type="checkbox" formControlName="haveLocal" id="swLoc">
+                        <label class="form-check-label fw-bold" for="swLoc">¿Posee Local?</label>
                     </div>
 
-                     <!-- Si el booleano es true, mostramos el selector o input -->
+                    <!-- SECCIÓN LOCAL (Solo niveles comerciales) -->
                     @if(perfilForm.get('haveLocal')?.value) {
-                    <div
-                        class="mb-4 p-3 border-start border-primary border-4 rounded shadow-sm bg-light animate__animated animate__fadeIn">
-
-                        <!-- Selector de Edificio -->
-                        <div class="mb-3">
-                            <label class="form-label labelgoogle">
-                                <select class="form-select input" formControlName="local">
-                                    <option value="" disabled selected>Seleccione Edificio...</option>
-                                    @for(edificio of edificiosLocales; track edificio) {
-                                    <option [value]="edificio">{{edificio}}</option>
-                                    }
-                                </select>
-                                <span class="label__name">Edificio</span>
-                            </label>
-                        </div>
-
-                        <!-- Fila para Piso y Letra -->
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <label class="form-label labelgoogle">
-                                    <select class="form-select input" formControlName="pisoLocal">
-                                        <option value="" disabled selected>Piso</option>
-                                        @for(piso of pisoLocales; track piso) {
-                                        <option [value]="piso">Piso {{piso}}</option>
-                                        }
-                                    </select>
-                                    <span class="label__name">Nivel</span>
-                                </label>
-                            </div>
-
-                            <div class="col-6">
-                                <label class="form-label labelgoogle">
-                                    <select class="form-select input" formControlName="letraLocal">
-                                        <option value="" disabled selected>Letra</option>
-                                        @for(letra of letras; track letra) {
-                                        <option [value]="letra">{{letra}}</option>
-                                        }
-                                    </select>
-                                    <span class="label__name">Local</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Vista previa dinámica -->
-                            @if(perfilForm.get('haveLocal')?.value && perfilForm.get('pisoLocal')?.value &&
-                            perfilForm.get('letraLocal')?.value) {
-                            <div
-                                class="mt-3 p-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 animate__animated animate__pulse">
-                                <div class="d-flex align-items-center justify-content-center text-primary fw-bold">
-                                    <i class="bi bi-house-check me-2"></i>
-                                    <span>{{ resumenLocal}}</span>
-                                </div>
-                            </div>
-                            } @else {
-                            <div class="mt-3 text-center text-muted small italic">
-                                Complete los datos para previsualizar
-                            </div>
-                            }
-
-                        <div class="text-muted mt-2 small text-end">
-                            <i class="bi bi-info-circle"></i> Ejemplo: {{perfilForm.get('local')?.value}} - 14-C
-                        </div>
-                    </div>
+                    <app-selector-ubicacion [parentForm]="perfilForm" tipoLabel="Local" formEdif="local"
+                        formPiso="pisoLocal" formLetra="letraLocal" [listaEdificios]="todosLosEdificios"
+                        [listaPisos]="NIVELES_LOCALES" [letras]="letras" [resumen]="resumenLocal">
+                    </app-selector-ubicacion>
                     }
-                    
+
+
+
+
+                    <!-- residencias locales y oficinas -->
+
 
                     <div class="col-12 mt-2 mb-3">
                         <div class="d-flex flex-wrap justify-content-between align-items-center">
