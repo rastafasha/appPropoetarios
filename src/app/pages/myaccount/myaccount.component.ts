@@ -11,6 +11,7 @@ import { MenufooterComponent } from '../../shared/menufooter/menufooter.componen
 import { ProfileService } from '../../services/profile.service';
 import { Profile } from '../../models/profile';
 import { LoadingComponent } from "../../shared/loading/loading.component";
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-myaccount',
@@ -39,7 +40,8 @@ export class MyaccountComponent implements OnInit {
     private profileService: ProfileService,
     private usuarioService: UserService,
     public activatedRoute: ActivatedRoute,
-    handler: HttpBackend
+    handler: HttpBackend,
+    public toastr: ToastrService
   ) {
     this.http = new HttpClient(handler);
   }
@@ -66,10 +68,19 @@ export class MyaccountComponent implements OnInit {
      this.isLoading = true;
     this.profileService.getByUser(this.identityId).subscribe((resp: any) => {
         this.identity = resp;
-        console.log(this.identity)
         this.isLoading = false;
       })
   }
+
+  mostrarAvisoToastr() {
+  this.toastr.warning(
+    'Debes completar tu perfil (especialmente el teléfono) antes de registrar propiedades.', 
+    'Acceso Restringido',
+    { timeOut: 4000, progressBar: true }
+  );
+}
+
+onCheckChange(){}
 
 
 

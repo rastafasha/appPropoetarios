@@ -1,0 +1,14 @@
+/* Efecto de elevación suave al pasar el dedo/mouse */
+.card.shadow-sm {
+  transition: transform 0.2s ease;
+}
+
+.card.shadow-sm:active {
+  transform: scale(0.98);
+}
+
+/* Color para el buscador */
+.form-control:focus {
+  box-shadow: none;
+  border-color: #dee2e6;
+}

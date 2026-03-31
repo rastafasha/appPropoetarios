@@ -5,10 +5,12 @@ import { RegisterComponent } from './auth/register/register.component';
 import { HomeComponent } from './pages/home/home.component';
 import { MyaccountComponent } from './pages/myaccount/myaccount.component';
 import { PerfilComponent } from './pages/myaccount/perfil/perfil.component';
+import { MisPagosComponent } from './pages/mis-pagos/mis-pagos.component';
+import { MisFacturasComponent } from './pages/mis-facturas/mis-facturas.component';
 
 export const routes: Routes = [
     {
-            path:'',
+            path:'home',
             component: HomeComponent
         },
         {
@@ -19,6 +21,9 @@ export const routes: Routes = [
             path:'registro',
             component: RegisterComponent
         },
+        {path: 'mis-pagos', component: MisPagosComponent },
+        {path: 'mis-facturas', component: MisFacturasComponent },
+
         {path: 'recovery-password', component: RecoveryComponent },
         {path: 'my-account', component: MyaccountComponent },
         {path: 'my-account/perfil/:id', component: PerfilComponent },

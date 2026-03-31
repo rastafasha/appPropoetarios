@@ -1,51 +1,29 @@
 <app-header></app-header>
-<section class="sub-header d-flex justify-content-center mt-5" style="padding-top: 30px;">
-    <!-- <img class="rellax bg-overlay" src="images/sub-header/05.jpg" alt=""> -->
-    <div class="overlay-call-to-action"></div>
-    <h3 class="heading-style-3"> </h3>
-</section>
+
+<div class="d-flex align-items-center mb-3">
+    <button type="button" class="btn btn-link text-dark p-0 me-2" (click)="irAtras()">
+        <i class="far fa-arrow-alt-circle-left" style="font-size: 1.5rem;"></i>
+    </button>
+    <h5 class="mb-0">Editar Perfil</h5>
+</div>
+
 <!-- Page Content-->
 <div class="container pb-5 mb-2 mb-md-3">
     <div class="row">
-        <!-- Sidebar-->
-        <aside class="col-xs-12 col-lg-4 pt-4 pt-lg-0">
-            <app-aside-cuenta></app-aside-cuenta>
-        </aside>
 
         <!-- Content  -->
         <section class="col-xs-12 col-lg-8">
-            <app-loading *ngIf="isLoading"></app-loading>
+            <app-skeleton-loader *ngIf="isLoading" [rows]="4" [columns]="1"></app-skeleton-loader>
             <!-- Toolbar-->
             <div class="d-none d-lg-flex justify-content-between align-items-center pt-lg-3 pb-4 pb-lg-5 mb-lg-3">
                 <h6 class="font-size-base text-light mb-0">Actualiza los datos de tu perfíl:</h6>
             </div>
             <!-- Profile form-->
-            <div class="col-sm-12" *ngIf="msm_error">
-                <div class="form-group">
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert" (click)="close_alert()">
-                        <span class="font-weight-medium">Error:</span> Por favor complete el formulario
-                        correctamente.
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-12" *ngIf="msm_success">
-                <div class="form-group">
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <span class="font-weight-medium">Mensaje:</span> Se actualizó sus datos correctamente.
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"
-                            (click)="close_alert()">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+
             <!-- Foto actual -->
-            <div class="product_list">
+            <div class="product_list" *ngIf="!isLoading">
                 <div class="div1">
-                    <img [src]="(usuarioSeleccionado.img ?? '') | imagenPipe: 'profiles'" 
+                    <img [src]="(usuarioSeleccionado.img ?? '') | imagenPipe: 'profiles'"
                         [alt]="usuarioSeleccionado.first_name">
                 </div>
                 <div class="div2">
@@ -53,30 +31,26 @@
                     <p>{{user.numdoc}}</p>
                 </div>
             </div>
-            <form *ngIf="perfilForm && !isLoading" [formGroup]="perfilForm" (ngSubmit)="onUserSave()" autocomplete="off">
+            <form *ngIf="perfilForm && !isLoading" [formGroup]="perfilForm" (ngSubmit)="onUserSave()"
+                autocomplete="off">
                 <!-- Foto -->
-                <div style="height: auto; margin-bottom: 20px;">
-                    <div class="col-xs-12 col-sm-">
-                        <div class="form-group">
-                            <div *ngIf="FILE_AVATAR">
-                                <img [src]="IMAGE_PREVISUALIZA" style="width: 250px;" alt="Preview">
-                            </div>
-                            <div class="cz-file-drop-area">
-                                <label for="file" class="upload labelgoogle">
-                                    <input type="file" accept="image/*" name="image" id="file"
-                                        (change)="cambiarImagen($event)" class="hide-input input">
-                                    <span class="label__name">
-                                        {{'Select a Photo'}}
-                                    </span>
-                                </label>
-                                <button type="button" (click)="subirImagen()"
-                                    class="btn btn-success waves-effect waves-light m-r-10 ">
-                                    <i class="fa fa-save"></i> Cambiar imagen
-                                </button>
+                <div class="d-flex flex-column align-items-center gap-2 mt-3">
+                    <!-- Área de previsualización circular para que parezca app nativa -->
+                    <div class="avatar-preview shadow-sm mb-2" *ngIf="FILE_AVATAR">
+                        <img [src]="IMAGE_PREVISUALIZA" class="rounded-circle border border-3 border-white"
+                            style="width: 120px; height: 120px; object-fit: cover;">
+                    </div>
 
+                    <div class="input-group">
+                        <label class="btn btn-outline-secondary w-100 rounded-pill mb-2">
+                            <i class="bi bi-camera me-2"></i> Elegir Foto
+                            <input type="file" accept="image/*" (change)="cambiarImagen($event)" hidden>
+                        </label>
 
-                            </div>
-                        </div>
+                        <button type="button" (click)="subirImagen()" *ngIf="FILE_AVATAR"
+                            class="btn btn-success w-100 rounded-pill shadow-sm">
+                            <i class="bi bi-cloud-arrow-up me-2"></i> Confirmar Cambio
+                        </button>
                     </div>
                 </div>
                 <hr>
@@ -92,15 +66,10 @@
                                     {{'Nombre'}} <span class="login-danger">*</span>
                                 </span>
                             </label>
-                            @if(perfilForm.controls['first_name'].touched){
-
-                            <div class="text-danger">
-                                @if(perfilForm.controls['first_name'].errors?.['required']){
-                                <span>{{'Field Required'}}</span>
-                                }
-                                @if(perfilForm.controls['first_name'].errors?.['minlength']){
-                                <span>{{'3 Charecters Minimal'}}</span>
-                                }
+                            @if(perfilForm.controls['first_name'].touched &&
+                            perfilForm.controls['first_name'].errors?.['required']){
+                            <div class="text-danger ps-2" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle me-1"></i> Este campo es obligatorio
                             </div>
                             }
                         </div>
@@ -114,69 +83,295 @@
 
                                 </span>
                             </label>
-                            @if(perfilForm.controls['last_name'].touched){
-
-                            <div class="text-danger">
-                                @if(perfilForm.controls['last_name'].errors?.['required']){
-                                <span>{{'Field Required'}}</span>
-                                }
-                                @if(perfilForm.controls['last_name'].errors?.['minlength']){
-                                <span>{{'3 Charecters Minimal'}}</span>
-                                }
+                            @if(perfilForm.controls['last_name'].touched &&
+                            perfilForm.controls['last_name'].errors?.['required']){
+                            <div class="text-danger ps-2" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle me-1"></i> Este campo es obligatorio
                             </div>
                             }
                         </div>
                     </div>
                     <div class="row">
-                        
+
                         <!-- Teléfono Móvil -->
                         <div class="col-xs-12 col-md-6 ">
                             <label for="validationCustom02" class="form-label labelgoogle">
-                                <input type="text" formControlName="telhome" class="form-control input"
-                                    id="validationCustom02" placeholder=" " required>
+                                <input type="tel" mask="(0000) 000-0000" formControlName="telhome"
+                                    class="form-control input" id="validationCustom02" placeholder="(0212) 123-4567"
+                                    required>
                                 <span class="label__name">
                                     {{'Teléfono Casa/Oficina'}}<span class="login-danger">*</span>
                                 </span>
                             </label>
-                            @if(perfilForm.controls['telhome'].touched){
+                            @if(perfilForm.controls['telhome'].touched &&
+                            perfilForm.controls['telhome'].errors?.['required']){
+                            <div class="text-danger ps-2" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle me-1"></i> Este campo es obligatorio
+                            </div>
 
-                            <div class="text-danger">
-                                @if(perfilForm.controls['telhome'].errors?.['required']){
-                                <span>{{'Field Required'}}</span>
-                                }
-                                @if(perfilForm.controls['telhome'].errors?.['minlength']){
-                                <span>{{'3 Charecters Minimal'}}</span>
-                                }
+                            }
+                            @if(perfilForm.controls['telhome'].touched &&
+                            perfilForm.controls['telhome'].errors?.['pattern']){
+                            <div class="text-danger ps-2" style="font-size: 0.75rem;">
+                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                Formato inválido (solo números, +, ( ), - y espacios)
                             </div>
                             }
                         </div>
                         <!-- Teléfono Móvil -->
                         <div class="col-xs-12 col-md-6 ">
                             <label for="validationCustom02" class="form-label labelgoogle">
-                                <input type="text" formControlName="telmovil" class="form-control input"
-                                    id="validationCustom02" placeholder=" " required>
+                                <input type="tel" mask="+58 (000) 000-0000" formControlName="telmovil"
+                                    class="form-control input" id="validationCustom02" placeholder="(0212) 123-4567"
+                                    required>
                                 <span class="label__name">
                                     {{'Teléfono Móvil'}}<span class="login-danger">*</span>
                                 </span>
                             </label>
-                            @if(perfilForm.controls['telmovil'].touched){
+                            @if(perfilForm.controls['telmovil'].touched &&
+                            perfilForm.controls['telmovil'].errors?.['required']){
+                            <div class="text-danger ps-2" style="font-size: 0.75rem;">
+                                <i class="bi bi-info-circle me-1"></i> Este campo es obligatorio
+                            </div>
 
-                            <div class="text-danger">
-                                @if(perfilForm.controls['telmovil'].errors?.['required']){
-                                <span>{{'Field Required'}}</span>
-                                }
-                                @if(perfilForm.controls['telmovil'].errors?.['minlength']){
-                                <span>{{'3 Charecters Minimal'}}</span>
-                                }
+                            }
+                            @if(perfilForm.controls['telmovil'].touched &&
+                            perfilForm.controls['telmovil'].errors?.['pattern']){
+                            <div class="text-danger ps-2" style="font-size: 0.75rem;">
+                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                Formato inválido (solo números, +, ( ), - y espacios)
                             </div>
                             }
                         </div>
                     </div>
 
+                    <!-- Switch para Residencia -->
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" formControlName="haveResidencia" id="swRes"
+                            (change)="onCheckChange('residencia')"> <!-- Opcional: para disparar lógica extra -->
+                        <label class="form-check-label" for="swRes">¿Posee Residencia?</label>
+                    </div>
+
+                    <!-- Si el booleano es true, mostramos el selector o input -->
+                    @if(perfilForm.get('haveResidencia')?.value) {
+                    <div
+                        class="mb-4 p-3 border-start border-primary border-4 rounded shadow-sm bg-light animate__animated animate__fadeIn">
+
+                        <!-- Selector de Edificio -->
+                        <div class="mb-3">
+                            <label class="form-label labelgoogle">
+                                <select class="form-select input" formControlName="residencia">
+                                    <option value="" disabled selected>Seleccione Edificio...</option>
+                                    @for(edificio of edificiosResidenciales; track edificio) {
+                                    <option [value]="edificio">{{edificio}}</option>
+                                    }
+                                </select>
+                                <span class="label__name">Edificio</span>
+                            </label>
+                        </div>
+
+                        <!-- Fila para Piso y Letra -->
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label labelgoogle">
+                                    <select class="form-select input" formControlName="pisoResidencia">
+                                        <option value="" disabled selected>Piso</option>
+                                        @for(piso of niveles; track piso) {
+                                        <option [value]="piso">Piso {{piso}}</option>
+                                        }
+                                    </select>
+                                    <span class="label__name">Nivel</span>
+                                </label>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label labelgoogle">
+                                    <select class="form-select input" formControlName="letraResidencia">
+                                        <option value="" disabled selected>Letra</option>
+                                        @for(letra of letras; track letra) {
+                                        <option [value]="letra">{{letra}}</option>
+                                        }
+                                    </select>
+                                    <span class="label__name">Apto</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vista previa dinámica -->
+                            @if(perfilForm.get('residencia')?.value && perfilForm.get('pisoResidencia')?.value &&
+                            perfilForm.get('letraResidencia')?.value) {
+                            <div
+                                class="mt-3 p-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 animate__animated animate__pulse">
+                                <div class="d-flex align-items-center justify-content-center text-primary fw-bold">
+                                    <i class="bi bi-house-check me-2"></i>
+                                    <span>{{ resumenResidencia }}</span>
+                                </div>
+                            </div>
+                            } @else {
+                            <div class="mt-3 text-center text-muted small italic">
+                                Complete los datos para previsualizar
+                            </div>
+                            }
+
+                        <div class="text-muted mt-2 small text-end">
+                            <i class="bi bi-info-circle"></i> Ejemplo: {{perfilForm.get('residencia')?.value}} - 14-C
+                        </div>
+                    </div>
+                    }
+                    
+
+                   
+                    <!-- Switch para Oficina -->
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" formControlName="haveOficina" id="swOfi"
+                            (change)="onCheckChange('oficina')">
+                        <label class="form-check-label fw-bold" for="swOfi">¿Posee Oficina?</label>
+                    </div>
+                     <!-- Si el booleano es true, mostramos el selector o input -->
+                    @if(perfilForm.get('haveOficina')?.value) {
+                    <div
+                        class="mb-4 p-3 border-start border-primary border-4 rounded shadow-sm bg-light animate__animated animate__fadeIn">
+
+                        <!-- Selector de Edificio -->
+                        <div class="mb-3">
+                            <label class="form-label labelgoogle">
+                                <select class="form-select input" formControlName="oficina">
+                                    <option value="" disabled selected>Seleccione Edificio...</option>
+                                    @for(edificio of edificiosOficinas; track edificio) {
+                                    <option [value]="edificio">{{edificio}}</option>
+                                    }
+                                </select>
+                                <span class="label__name">Edificio</span>
+                            </label>
+                        </div>
+
+                        <!-- Fila para Piso y Letra -->
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label labelgoogle">
+                                    <select class="form-select input" formControlName="pisoOficina">
+                                        <option value="" disabled selected>Piso</option>
+                                        @for(piso of pisoOficinas; track piso) {
+                                        <option [value]="piso">Piso {{piso}}</option>
+                                        }
+                                    </select>
+                                    <span class="label__name">Nivel</span>
+                                </label>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label labelgoogle">
+                                    <select class="form-select input" formControlName="letraOficina">
+                                        <option value="" disabled selected>Letra</option>
+                                        @for(letra of letras; track letra) {
+                                        <option [value]="letra">{{letra}}</option>
+                                        }
+                                    </select>
+                                    <span class="label__name">Oficina</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vista previa dinámica -->
+                            @if(perfilForm.get('haveOficina')?.value && perfilForm.get('pisoOficina')?.value &&
+                            perfilForm.get('letraOficina')?.value) {
+                            <div
+                                class="mt-3 p-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 animate__animated animate__pulse">
+                                <div class="d-flex align-items-center justify-content-center text-primary fw-bold">
+                                    <i class="bi bi-house-check me-2"></i>
+                                    <span>{{ resumenOficina }}</span>
+                                </div>
+                            </div>
+                            } @else {
+                            <div class="mt-3 text-center text-muted small italic">
+                                Complete los datos para previsualizar
+                            </div>
+                            }
+
+                        <div class="text-muted mt-2 small text-end">
+                            <i class="bi bi-info-circle"></i> Ejemplo: {{perfilForm.get('oficina')?.value}} - 14-C
+                        </div>
+                    </div>
+                    }
+                     <!-- Switch para Local -->
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" formControlName="haveLocal" id="swRes"
+                            (change)="onCheckChange('local')"> <!-- Pasamos el tipo como texto -->
+                        <label class="form-check-label fw-bold" for="swRes">¿Posee Local?</label>
+                    </div>
+
+                     <!-- Si el booleano es true, mostramos el selector o input -->
+                    @if(perfilForm.get('haveLocal')?.value) {
+                    <div
+                        class="mb-4 p-3 border-start border-primary border-4 rounded shadow-sm bg-light animate__animated animate__fadeIn">
+
+                        <!-- Selector de Edificio -->
+                        <div class="mb-3">
+                            <label class="form-label labelgoogle">
+                                <select class="form-select input" formControlName="local">
+                                    <option value="" disabled selected>Seleccione Edificio...</option>
+                                    @for(edificio of edificiosLocales; track edificio) {
+                                    <option [value]="edificio">{{edificio}}</option>
+                                    }
+                                </select>
+                                <span class="label__name">Edificio</span>
+                            </label>
+                        </div>
+
+                        <!-- Fila para Piso y Letra -->
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label labelgoogle">
+                                    <select class="form-select input" formControlName="pisoLocal">
+                                        <option value="" disabled selected>Piso</option>
+                                        @for(piso of pisoLocales; track piso) {
+                                        <option [value]="piso">Piso {{piso}}</option>
+                                        }
+                                    </select>
+                                    <span class="label__name">Nivel</span>
+                                </label>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label labelgoogle">
+                                    <select class="form-select input" formControlName="letraLocal">
+                                        <option value="" disabled selected>Letra</option>
+                                        @for(letra of letras; track letra) {
+                                        <option [value]="letra">{{letra}}</option>
+                                        }
+                                    </select>
+                                    <span class="label__name">Local</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vista previa dinámica -->
+                            @if(perfilForm.get('haveLocal')?.value && perfilForm.get('pisoLocal')?.value &&
+                            perfilForm.get('letraLocal')?.value) {
+                            <div
+                                class="mt-3 p-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 animate__animated animate__pulse">
+                                <div class="d-flex align-items-center justify-content-center text-primary fw-bold">
+                                    <i class="bi bi-house-check me-2"></i>
+                                    <span>{{ resumenLocal}}</span>
+                                </div>
+                            </div>
+                            } @else {
+                            <div class="mt-3 text-center text-muted small italic">
+                                Complete los datos para previsualizar
+                            </div>
+                            }
+
+                        <div class="text-muted mt-2 small text-end">
+                            <i class="bi bi-info-circle"></i> Ejemplo: {{perfilForm.get('local')?.value}} - 14-C
+                        </div>
+                    </div>
+                    }
+                    
+
                     <div class="col-12 mt-2 mb-3">
                         <div class="d-flex flex-wrap justify-content-between align-items-center">
                             <div class="custom-control custom-checkbox d-block"></div>
-                            <button class="btn btn-outline-primary mt-3 mt-sm-0" type="submit">Actualizar
+                            <button class="btn btn-glass-save  mt-3 mt-sm-0" type="submit">Actualizar
                                 perfíl</button>
                         </div>
                     </div>

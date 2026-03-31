@@ -1,0 +1,21 @@
+.cuadrohome{
+   display: flex;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    flex-direction: column;
+}
+
+.propiedades{
+    display: flex;
+    justify-content: space-around;
+    gap: 2px;
+    
+}
+
+.btn-disabled {
+  opacity: 0.5;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}

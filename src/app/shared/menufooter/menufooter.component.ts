@@ -1,13 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterLinkActive, RouterModule } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user';
 
 
 @Component({
   selector: 'app-menufooter',
-  imports: [
-    RouterModule],
+  imports: [ RouterModule, RouterLinkActive],
   templateUrl: './menufooter.component.html',
   styleUrl: './menufooter.component.css'
 })

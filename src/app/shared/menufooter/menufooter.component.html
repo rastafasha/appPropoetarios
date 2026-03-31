@@ -1,17 +1,21 @@
-<div class="menu_footer">
-    <a routerLink="/">
-      <i class="fa fa-home"></i>
-    </a>
-    <a routerLink="/mis-entregas">
-      <i class="fa fa-list"></i>
-    </a>
-    <!-- <a routerLink="/delivery-status">
-    <i class="fa fa-map"></i>
-  </a> -->
-  <!-- <a routerLink="/mapa-page">
-  <i class="fa fa-map-pin"></i>
-</a> -->
-<a routerLink="/my-account">
-  <i class="fa fa-user"></i>
-</a>
-</div>
+
+<nav class="navbar fixed-bottom navbar-light bg-light border-top">
+  <div class="container-fluid d-flex justify-content-around">
+     <a routerLink="/home" routerLinkActive="text-primary active-link" 
+     [routerLinkActiveOptions]="{exact: true}" class="nav-link text-secondary">
+    <i class="fas fa-home"></i>
+  </a>
+  <a routerLink="/mis-pagos" routerLinkActive="text-primary active-link" 
+  [routerLinkActiveOptions]="{exact: true}" class="nav-link text-secondary">
+    <i class="far fa-money-bill-alt"></i>
+  </a>
+  <a routerLink="/mis-facturas" routerLinkActive="text-primary active-link"
+   [routerLinkActiveOptions]="{exact: true}" class="nav-link text-secondary">
+    <i class="far fa-file-alt"></i>
+  </a>
+  <a routerLink="/my-account" routerLinkActive="text-primary active-link" 
+  [routerLinkActiveOptions]="{exact: true}" class="nav-link text-secondary">
+    <i class="fas fa-user"></i>
+  </a>
+  </div>
+</nav>

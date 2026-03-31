@@ -99,7 +99,7 @@
 .product_list {
     display: grid;
     /* grid-template-columns: repeat(3, 1fr); */
-    grid-template-columns: 20% 40% 20%;
+    grid-template-columns: 20% 70%;
 
     /* grid-template-rows: repeat(5, 1fr); */
         grid-column-gap: 20px;

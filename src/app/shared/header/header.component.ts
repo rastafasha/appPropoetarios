@@ -13,19 +13,17 @@ import { UserService } from '../../services/user.service';
 })
 export class HeaderComponent {
 
-   private usuarioService = inject(UserService);
    private router = inject(Router);
+   user: any;
   
   ngOnInit(){
-    let USER = localStorage.getItem("user");
-      if(!USER){
+   let USER = localStorage.getItem("user");
+    this.user = JSON.parse(USER ? USER : '');
+      if(!this.user){
         this.router.navigateByUrl('/login')
-      }
-    
+      } 
   }
 
-  logout(){
-    this.usuarioService.logout();
-  }
+  
 }
 

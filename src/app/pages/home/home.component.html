@@ -1,12 +1,70 @@
 <app-header></app-header>
 <div class="container">
   <div class="row">
+    <app-skeleton-loader *ngIf="isLoading" [rows]="4" [columns]="1"></app-skeleton-loader>
     <div class="col-12">
-      <h1>Welcome to the Home Page</h1>
-      <p>This is the main content of the home page.</p>
-       <div class="saludo">
-      <h2>Hola, {{identity?.first_name}}!</h2>
-    </div>
+      <div class="product_list" *ngIf="!isLoading">
+        <div class="div1" style="align-content: center;justify-self: center;">
+          <a (click)="logout()">
+                <i class="fa fa-power-off " style="font-size: 45px; display: flex;"></i>
+            </a> 
+        </div>
+        <div class="div2">
+          <h1>Hola, {{identity?.first_name}}! </h1>
+        <p>Gracias por usar la App de Corpo Capital PC.</p>
+        </div>
+        
+
+      </div>
+
+      <div class="product_list" *ngIf="!isLoading">
+        <div class="div1">
+          <img [src]="(identity.img ?? '') | imagenPipe: 'profiles'" [alt]="identity.first_name">
+        </div>
+        <div class="div2">
+          <p>{{user.numdoc}}</p>
+          <h4>Estatus Financiero</h4>
+          <span class="badge bg-success" *ngIf="identity.statusFinanciero === 'AL_DIA'">Al día</span>
+          <span class="badge bg-danger" *ngIf="identity.statusFinanciero === 'MOROSO'">Moroso</span>
+          <span class="badge bg-warning" *ngIf="identity.statusFinanciero === 'EN_REVISION'">En
+            Revisión</span>
+            
+            <span class="badge bg-info mt-2" *ngIf="identity.statusFinanciero === 'EN_REVISION'">
+              <i class="fa fa-info-circle"></i> &nbsp; Validando último pago.
+            </span>
+        </div>
+      </div>
+      <div class="clear"></div>
+      <div class="cuadrohome p-3 shadow-sm" *ngIf="!isLoading">
+        <h4>Propiedades Registradas</h4>
+        <div class="clear"></div>
+        <div class="propiedades">
+          <span class="badge rounded-pill bg-success" *ngIf="identity.haveResidencia === true ">Residencia</span>
+          <span class="badge rounded-pill bg-info" *ngIf="identity.haveOficina === true ">Oficina</span>
+          <span class="badge rounded-pill bg-warning" *ngIf="identity.haveLocal === true ">Local</span>
+        </div>
+      </div>
+
+      <div class="cuadrohome" *ngIf="!isLoading">
+        <div class="col-xs-6 col-sm-6 col-md-3 b-r" >
+          <div class="col-12  label">
+             Deuda
+          </div>
+          <div class="col-12  label" *ngIf="identity.deudaTotalAcumulada == 0">
+            <i class="fa fa-check-circle-o text-success" ></i>  ¡Estás al día!
+          </div>
+          <div class="col-12  info" *ngIf="identity.deudaTotalAcumulada > 0">
+            <b style="color: #ff7e93;">{{identity.deudaTotalAcumulada |
+            currency:'Bs.':'symbol':'1.2-2'}}</b>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline-success" (click)="iraPagar(identity.deudaTotalAcumulada)" 
+        [disabled]="!(connectivity.isOnline$ | async)"
+        [ngClass]="{'btn-disabled': !(connectivity.isOnline$ | async)}">
+          {{ (connectivity.isOnline$ | async) ? 'Pagar Bs. 1.200' : 'Esperando conexión...' }}
+        </button>
+      </div>
+
     </div>
   </div>
 </div>

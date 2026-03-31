@@ -1,20 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import Swal from 'sweetalert2';
+import { Router, RouterModule } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { AsideCuentaComponent } from '../aside-cuenta/aside-cuenta.component';
 import { environment } from '../../../../environments/environment';
-import { LoadingComponent } from '../../../shared/loading/loading.component';
 import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user';
 import { ImagenPipe } from '../../../pipes/imagen.pipe';
 import { ProfileService } from '../../../services/profile.service';
 import { Profile } from '../../../models/profile';
-
+import { SkeletonLoaderComponent } from '../../../shared/skeleton-loader/skeleton-loader.component';
+import { ToastrService } from 'ngx-toastr';
+import { Location } from '@angular/common';
 declare var jQuery: any;
 declare var $: any;
 
@@ -27,12 +26,11 @@ interface HtmlInputEvent extends Event {
   imports: [
     CommonModule,
     HeaderComponent,
-    AsideCuentaComponent,
     RouterModule,
     ReactiveFormsModule,
     FormsModule,
     ImagenPipe,
-    LoadingComponent
+    SkeletonLoaderComponent
 
   ],
   templateUrl: './perfil.component.html',
@@ -56,7 +54,7 @@ export class PerfilComponent implements OnInit {
   public isLoading = false;
 
   public usuarioSeleccionado!: Profile;
-
+  listaResidencias:any;
 
   public perfilForm!: FormGroup;
   public imagenSubir!: File;
@@ -65,6 +63,29 @@ export class PerfilComponent implements OnInit {
   public IMAGE_PREVISUALIZA: string | null = null;
   text_validation: any = null;
 
+  public edificiosResidenciales = [
+    'Catuche', 'Tajamar', 'Tacagua', 'San Martín', 'Mohedano', 'Caruata', 'El Tejar'
+  ];
+  // Genera arreglo [1, 2, ..., 19]
+  public niveles = Array.from({ length: 19 }, (_, i) => i + 1);
+
+  // Genera arreglo ['A', 'B', ..., 'Z']
+  public letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+  public pisoOficinas =[
+    'Oficina 1', 'Oficina 2', 'Mezanina', 'Nivel Lecuna', 'Nivel Bolívar'
+  ]
+  public pisoLocales =[
+    'Nivel Lecuna', 'Nivel Bolívar', 'Mezanina', 'Sotano 1' 
+  ]
+
+  public edificiosOficinas = [
+    'Catuche', 'Tajamar', 'Tacagua', 'San Martín', 'Mohedano', 'Caruata', 'El Tejar', 'Torre Este', 'Torre Oeste'
+  ];
+  public edificiosLocales = [
+    'Catuche', 'Tajamar', 'Tacagua', 'San Martín', 'Mohedano', 'Caruata', 'El Tejar', 'Torre Este', 'Torre Oeste'
+  ];
+
 
   //DATA
   public new_password = '';
@@ -72,12 +93,12 @@ export class PerfilComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private usuarioService: UserService,
     private profileService: ProfileService,
     private _router: Router,
-    private _route: ActivatedRoute,
-    private http: HttpClient,
-    private fileUploadService: FileUploadService
+    private fileUploadService: FileUploadService,
+    private toastr: ToastrService,
+    private location: Location
+    
   ) {
     // this.usuario = usuarioService.usuario;
 
@@ -91,6 +112,18 @@ export class PerfilComponent implements OnInit {
       telmovil: [''],
       telhome: [''],
       img: [''],
+      haveResidencia: [false],
+      haveOficina: [false],
+      haveLocal: [false],
+      residencia: [''],
+      pisoResidencia: [''],
+      letraResidencia: [''],
+      oficina: [[]],
+      pisoOficina: [''],
+      letraOficina: [''],
+      local: [[]],
+      pisoLocal: [''],
+      letraLocal: ['']
     });
   }
 
@@ -109,20 +142,31 @@ export class PerfilComponent implements OnInit {
     this.isLoading = true;
     this.profileService.getByUser(this.identityId).subscribe((resp: any) => {
       this.usuarioSeleccionado = resp;
-      console.log(this.usuarioSeleccionado)
       if (!this.usuarioSeleccionado) {
         this._router.navigate(['/']);
       }
       // First initialize the form
       this.validarFormulario();
-      // Then set the values
-      this.perfilForm.setValue({
-        _id: this.usuarioSeleccionado._id,
-        first_name: this.usuarioSeleccionado.first_name,
-        last_name: this.usuarioSeleccionado.last_name,
-        telmovil: this.usuarioSeleccionado.telmovil || null,
-        telhome: this.usuarioSeleccionado.telhome || null,
-        img: this.usuarioSeleccionado.img || null,
+      // Then set the values (using patchValue for partial updates)
+      this.perfilForm.patchValue({
+        _id: this.usuarioSeleccionado._id || '',
+        first_name: this.usuarioSeleccionado.first_name || '',
+        last_name: this.usuarioSeleccionado.last_name || '',
+        telmovil: this.usuarioSeleccionado.telmovil || '',
+        telhome: this.usuarioSeleccionado.telhome || '',
+        img: this.usuarioSeleccionado.img || '',
+        haveResidencia: !!this.usuarioSeleccionado?.haveResidencia,
+        haveOficina: !!this.usuarioSeleccionado?.haveOficina,
+        haveLocal: !!this.usuarioSeleccionado?.haveLocal,
+        residencia: this.usuarioSeleccionado.residencia?.edificio || '',
+        pisoResidencia: this.usuarioSeleccionado.residencia?.piso || '',
+        letraResidencia: this.usuarioSeleccionado.residencia?.letra || '',
+        oficina: this.usuarioSeleccionado.oficina?.edificio || '',
+        pisoOficina: this.usuarioSeleccionado.oficina?.piso || '',
+        letraOficina: this.usuarioSeleccionado.oficina?.letra || '',
+        local: this.usuarioSeleccionado.local?.edificio || '',
+        pisoLocal: this.usuarioSeleccionado.local?.piso || '',
+        letraLocal: this.usuarioSeleccionado.local?.letra || ''
       });
       this.isLoading = false;
 
@@ -134,14 +178,76 @@ export class PerfilComponent implements OnInit {
       _id: ['', Validators.required],
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
-      telmovil: ['', Validators.required],
-      telhome: ['', Validators.required],
+      telmovil: ['', [Validators.required, Validators.pattern(/^[0-9+()\- ]*$/) ]],
+      telhome: ['', [
+        Validators.required, 
+        Validators.pattern(/^[0-9+()\- ]*$/) 
+      ]],
       img: [''],
+      haveResidencia: [''],
+      haveOficina: [''],
+      haveLocal: [''],
+      residencia: [''],
+      pisoResidencia: [''],
+      letraResidencia: [''],
+      oficina: [''],
+      pisoOficina: [''],
+      letraOficina: [''],
+      local: [''],
+      pisoLocal: [''],
+      letraLocal: ['']
     });
 
   }
 
+  get resumenResidencia(): string {
+    const edif = this.perfilForm.get('residencia')?.value;
+    const piso = this.perfilForm.get('pisoResidencia')?.value;
+    const letra = this.perfilForm.get('letraResidencia')?.value;
 
+    if (edif && piso && letra) {
+      return `${edif}, Piso ${piso}, Apto ${letra}`;
+    }
+    return 'Seleccione todos los campos...';
+  }
+  get resumenOficina(): string {
+    const edif = this.perfilForm.get('oficina')?.value;
+    const piso = this.perfilForm.get('pisoOficina')?.value;
+    const letra = this.perfilForm.get('letraOficina')?.value;
+
+    if (edif && piso && letra) {
+      return `${edif}, Piso ${piso}, Oficina ${letra}`;
+    }
+    return 'Seleccione todos los campos...';
+  }
+  get resumenLocal(): string {
+    const edif = this.perfilForm.get('local')?.value;
+    const piso = this.perfilForm.get('pisoLocal')?.value;
+    const letra = this.perfilForm.get('letraLocal')?.value;
+
+    if (edif && piso && letra) {
+      return `${edif}, Nivel ${piso}, Local ${letra}`;
+    }
+    return 'Seleccione todos los campos...';
+  }
+
+
+onCheckChange(tipo: 'residencia' | 'oficina' | 'local') {
+  
+  // 1. Obtenemos el valor actual del booleano (true o false)
+  // Nota: Usamos los nombres exactos de tu Schema: haveResidencia, haveOficina, haveLocal
+  const fieldName = 'have' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
+  const estaActivado = this.perfilForm.get(fieldName)?.value;
+
+  if (estaActivado) {
+    console.log(`activó: ${tipo}. Mostrando campos adicionales...`);
+    // Aquí podrías cargar una lista de edificios desde tu API si fuera necesario
+  } else {
+    console.log(`desactivó: ${tipo}. Limpiando selección...`);
+    // Si lo apaga, es buena práctica limpiar el ID seleccionado para no enviar basura al backend
+    this.perfilForm.get(tipo)?.setValue([]); 
+  }
+}
 
   close_alert() {
     this.msm_success = false;
@@ -172,33 +278,89 @@ export class PerfilComponent implements OnInit {
 
   onUserSave() {
 
+    if (this.perfilForm.invalid) {
+    // Marcamos los campos para que se vean los errores en rojo si los hay
+    this.perfilForm.markAllAsTouched();
+    this.toastr.warning(
+      'Asegúrate de que los teléfonos tengan el formato correcto (+58 ...)', 
+      'Formato Inválido',
+      { positionClass: 'toast-bottom-right' }
+    );
+    this.toastr.error('Por favor, completa los campos requeridos correctamente.', 'Formulario Incompleto');
+    return;
+  }
+  
     this.isLoading = true;
 
     if (this.usuarioSeleccionado) {
       //actualizar
-      const data = {
-        ...this.perfilForm.value,
+      // Transform flat form to nested structure for backend
+      const formData = this.perfilForm.value;
+      const data: any = {
+        ...formData,
         _id: this.usuarioSeleccionado._id,
+        residencia: formData.haveResidencia ? {
+          edificio: formData.residencia,
+          piso: formData.pisoResidencia,
+          letra: formData.letraResidencia
+        } : null,
+        oficina: formData.haveOficina ? {
+          edificio: formData.oficina,
+          piso: formData.pisoOficina,
+          letra: formData.letraOficina
+        } : null,
+        local: formData.haveLocal ? {
+          edificio: formData.local,
+          piso: formData.pisoLocal,
+          letra: formData.letraLocal
+        } : null,
       };
-      this.profileService.updateProfile(data).subscribe(
-        resp => {
-          Swal.fire('Actualizado', `Actualizado correctamente`, 'success');
+      this.profileService.updateProfile(data).subscribe({
+        next: (res) =>{
+          this.toastr.success('Tus datos han sido actualizados con éxito.', '¡Excelente!');
           this.isLoading = false;
           this.getUser()
+        },
+         error: (err) => {
+          this.isLoading = false;
+          this.toastr.error('Hubo un problema al guardar los cambios.', 'Error de Servidor');
         }
-      );
+
+      })
+      
     } else {
       //crear
-      const data = {
-        ...this.perfilForm.value,
+      // Transform flat form to nested structure for backend
+      const formData = this.perfilForm.value;
+      const data: any = {
+        ...formData,
+        residencia: formData.haveResidencia ? {
+          edificio: formData.residencia,
+          piso: formData.pisoResidencia,
+          letra: formData.letraResidencia
+        } : null,
+        oficina: formData.haveOficina ? {
+          edificio: formData.oficina,
+          piso: formData.pisoOficina,
+          letra: formData.letraOficina
+        } : null,
+        local: formData.haveLocal ? {
+          edificio: formData.local,
+          piso: formData.pisoLocal,
+          letra: formData.letraLocal
+        } : null,
       };
-      this.profileService.createProfile(data)
-        .subscribe((resp: any) => {
-          Swal.fire('Creado', `Creado correctamente`, 'success');
+      this.profileService.createProfile(data).subscribe({
+        next: (res) =>{
+          this.toastr.success('Tus datos han sido creado con éxito.', '¡Excelente!');
           this.isLoading = false;
           this.getUser()
-          // this.router.navigateByUrl(`/dashboard/producto`);
-        });
+        },
+         error: (err) => {
+          this.isLoading = false;
+          this.toastr.error('Hubo un problema al guardar los cambios.', 'Error de Servidor');
+        }
+       })
     }
   }
 
@@ -222,19 +384,28 @@ export class PerfilComponent implements OnInit {
   }
 
   subirImagen() {
+    if (!this.FILE_AVATAR) {
+      this.toastr.info('Selecciona una imagen primero.', 'Aviso');
+      return;
+    }
+
     this.isLoading = true;
     this.fileUploadService
       .actualizarFoto(this.imagenSubir, 'profiles', this.usuarioSeleccionado._id || '')
       .then(img => {
         this.usuarioSeleccionado.img = img;
-        Swal.fire('Guardado', 'La imagen fue actualizada', 'success');
+        this.toastr.success('Foto de perfil actualizada.', 'Imagen Guardada'),
         this.isLoading = false;
         this.ngOnInit()
       }).catch(err => {
-        Swal.fire('Error', 'No se pudo subir la imagen', 'error');
+        this.toastr.error('No se pudo subir la imagen.', 'Error')
         this.isLoading = false;
         this.ngOnInit()
       })
+  }
+
+  irAtras(){
+    this.location.back();
   }
 
 }

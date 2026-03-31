@@ -4,23 +4,35 @@
     <h3>Inicia sesión para acceder</h3>
 </div>
 <div class="about" id="page" *ngIf="identity && !isLoading">
-    <section style="height: calc(100vh - 100px); padding-top: 120px;">
+    <section>
         <div class="container">
             <div class="row blog-v reverse" style="margin-bottom: 20px;">
                 <div class="col-sm-4">
                     <!-- <app-aside-cuenta></app-aside-cuenta> -->
                 </div>
                 <div class="col-md-8">
-                    <!-- <h1>Hola, {{identity.first_name}}!</h1>
-                    <h2 *ngIf="!identity.telefono">Gracias por Registrarte</h2>
-                    <p *ngIf="identity.telefono">Ten un Excelente día!</p> -->
+                    <h1>Hola, {{identity.first_name}}!</h1>
+                    <h2 *ngIf="!identity.telmovil">Gracias por Registrarte</h2>
+                    <p *ngIf="identity.telmovil">Ten un Excelente día!</p>
                 </div>
 
             </div>
 
-            <!-- <div *ngIf="!identity.telefono">
-                <h5>Por favor, llena tus datos para continuar con la experiencia</h5>
-            </div> -->
+
+            <div *ngIf="!identity.telmovil"
+                class="alert alert-warning border-0 shadow-sm mx-3 mt-3 d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                <div>
+                    <h6 class="alert-heading mb-1 fw-bold">Perfil Incompleto</h6>
+                    <p class="mb-0 small">Debes completar tus datos para habilitar el registro de propiedades.</p>
+                </div>
+                <div class="clear"></div>
+                <button type="button" class="btn btn-sm btn-outline-success">
+                    Completar
+                </button>
+
+            </div>
+
             <div class="row ">
                 <div class="opciones">
                     <div class="iconop ">
@@ -33,50 +45,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="iconop " *ngIf="identity.telefono">
-                        <div class="card">
-                            <div class="card-body">
-                                <a [routerLink]="['/my-account/ordenes']">
-                                    <i class="fa fa-shopping-basket"></i>
-                                    <p>Ordenes</p>
 
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="iconop " *ngIf="identity.telefono">
-                        <div class="card">
-                            <div class="card-body">
-                                <a [routerLink]="['/my-account/pedidos']">
-                                    <i class="fa fa-shopping-basket"></i>
-                                    <p>Pedidos</p>
-
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="iconop " *ngIf="identity.telefono">
-                        <div class="card">
-                            <div class="card-body">
-                                <a [routerLink]="['/review']">
-                                    <i class="fa fa-shopping-cart"></i>
-                                    <p>Mi Carrito</p>
-
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="iconop " *ngIf="identity.telefono">
-                        <div class="card">
-                            <div class="card-body">
-                                <a [routerLink]="['/my-account/direcciones']">
-                                    <i class="fa fa-book"></i>
-                                    <p>Direcciones</p>
-
-                                </a>
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="iconop ">
                         <div class="card">
                             <div class="card-body">
@@ -88,8 +57,32 @@
                             </div>
                         </div>
                     </div>
+
+
                 </div>
 
+            </div>
+            <div class="container mt-4">
+                <h6 class="text-muted fw-bold text-uppercase mb-3" style="font-size: 0.75rem;">Gestión de
+                    Propiedades</h6>
+
+                <div class="row g-3">
+                    <!-- Botón Agregar Residencia -->
+                    <div class="col-6">
+                        <div class="card border-0 shadow-sm text-center p-3 h-100" role="button">
+                            <i class="fas fa-house-add text-success fs-1 mb-2"></i>
+                            <span class="fw-bold small">Nueva Residencia</span>
+                        </div>
+                    </div>
+
+                    <!-- Botón Agregar Oficina/Local -->
+                    <div class="col-6">
+                        <div class="card border-0 shadow-sm text-center p-3 h-100" role="button">
+                            <i class="fas fa-building-add text-primary fs-1 mb-2"></i>
+                            <span class="fw-bold small">Nuevo Local/Oficina</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

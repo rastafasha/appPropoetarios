@@ -8,14 +8,16 @@ import { Observable } from 'rxjs';
 
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
+import { provideNgxMask } from 'ngx-mask'; //validador de telefono
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }),
   provideRouter(routes),
   provideHttpClient(),
   provideAnimations(),
+  provideNgxMask(),
     provideToastr({
-      positionClass: 'toast-bottom-right', // customize global options
+      positionClass: 'toast-top-center', // customize global options
       timeOut: 3000,
       // ... more options
     }),

@@ -15,7 +15,6 @@ import { ImagenPipe } from '../../pipes/imagen.pipe';
     RouterModule,
     NgIf,
     NgClass,
-    ImagenPipe
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']

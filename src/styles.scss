@@ -1,2 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @use 'ngx-toastr/toastr';
+
+.toast-error {
+  background-color: #ff4d4d; /* Color de fondo personalizado para errores */
+  color: #fff; /* Color del texto */
+}

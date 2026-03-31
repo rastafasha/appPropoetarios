@@ -1,0 +1,16 @@
+/* Suaviza el cambio de color */
+.nav-link {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Agranda un poco el icono cuando está activo */
+.active-link i {
+  transform: scale(1.2);
+  display: inline-block;
+  color: #007bff; /* Cambia el color del icono activo */
+}
+
+/* Asegúrate de que el contenido no quede detrás de la barra */
+body {
+  padding-bottom: 70px;
+}
