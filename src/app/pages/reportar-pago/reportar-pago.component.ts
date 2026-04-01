@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TasabcvService } from '../../services/tasabcv.service';
 import { ToastrService } from 'ngx-toastr';
 import { FacturacionService } from '../../services/facturacion.service';
+import { FileUploadService } from '../../services/file-upload.service';
 
 
 @Component({
@@ -35,6 +36,7 @@ export class ReportarPagoComponent {
   private tasaBcvService = inject(TasabcvService);
   public toastr = inject(ToastrService);
   private facturaService = inject(FacturacionService); 
+  private fileUploadService = inject(FileUploadService); 
 
   paymentForm: FormGroup = this.fb.group({
     metodo_pago: ['PAGO_MOVIL', Validators.required],
@@ -56,18 +58,19 @@ export class ReportarPagoComponent {
     // 2. Obtenemos los datos extendidos (monto, nroFactura) del historial
     const state = window.history.state;
    if (id) {
-        // Si venimos de la lista de facturas, los datos están en el 'state'
-        if (state && state.factura) {
-            this.factura.set(state.factura);
-            this.paymentForm.patchValue({ amount: state.factura.totalPagar });
-        } else {
-            // RESPALDO: Si el usuario refrescó la página (F5), buscamos la factura por API
-            this.facturaService.getFactura(id).subscribe(resp => {
-                this.factura.set(resp.factura);
-                this.paymentForm.patchValue({ amount: resp.factura.totalPagar });
-            });
-        }
+    if (state && state.factura) {
+      console.log('Factura desde state:', state.factura);
+      this.factura.set(state.factura);
+      this.paymentForm.patchValue({ amount: state.factura.totalPagar });
+    } else {
+      // Si el usuario recargó (F5), la buscamos por API
+      this.facturaService.getFactura(id).subscribe(resp => {
+        console.log('Factura desde API:', resp.factura);
+        this.factura.set(resp.factura);
+        this.paymentForm.patchValue({ amount: resp.factura.totalPagar });
+      });
     }
+  }
     
   }
 
@@ -87,45 +90,41 @@ export class ReportarPagoComponent {
     }
   }
 
-  enviarPago() {
-  if (this.paymentForm.invalid || this.loading()) return;
+ enviarPago() {
+  const facturaId = this.factura()?._id;
+  if (!facturaId || this.loading()) return;
 
   this.loading.set(true);
-  const formData = new FormData();
 
-  // 1. Campos del Formulario
-  formData.append('amount', this.paymentForm.get('amount')?.value);
-  formData.append('metodo_pago', this.paymentForm.get('metodo_pago')?.value);
-  formData.append('bank_destino', this.paymentForm.get('bank_destino')?.value);
-  formData.append('referencia', this.paymentForm.get('referencia')?.value);
+  // 1. Subimos la imagen PRIMERO a Cloudinary
+  this.fileUploadService
+    .actualizarFoto(this.selectedFile!, 'payments', this.userId)
+    .then(imgUrl => {
+      
+      // 2. Ahora enviamos un JSON normal (no FormData)
+      const payload = {
+        factura: facturaId,
+        cliente: this.userId,
+        amount: this.paymentForm.get('amount')?.value,
+        tasaBCV: this.tasa(),
+        referencia: this.paymentForm.get('referencia')?.value,
+        metodo_pago: this.paymentForm.get('metodo_pago')?.value,
+        bank_destino: this.paymentForm.get('bank_destino')?.value,
+        img: imgUrl // Enviamos la URL que nos dio Cloudinary
+      };
 
-  // 2. Datos de Contexto (Asegúrate de que tengan valor real)
-  // Usamos el ID de la factura del signal o del state
-  const facturaId = this.factura()?._id || this.factura();
-  if (facturaId) {
-    formData.append('factura', facturaId);
-  }
-
-  // IMPORTANTE: Estos dos campos te daban error en el backend
-  formData.append('cliente', this.userId); // Asegúrate que this.userId no sea null
-  formData.append('tasaBCV', this.tasa().toString());
-
-  // 3. Imagen
-  if (this.selectedFile) {
-    formData.append('img', this.selectedFile);
-  }
-
-  this.paymentService.createPayment(formData).subscribe({
-    next: (resp) => {
-      this.toastr.success('¡Pago reportado con éxito!', 'Completado');
-      this.router.navigate(['/mis-pagos']);
-    },
-    error: (err) => {
-      console.error('Error al enviar:', err);
-      this.loading.set(false);
-      this.toastr.error('Error al procesar el pago. Verifique los datos.', 'Error');
-    }
-  });
+      this.paymentService.createPayment(payload).subscribe({
+        next: () => {
+          this.toastr.success('¡Pago reportado!');
+          this.router.navigate(['/mis-pagos']);
+        },
+        error: () => {
+          this.loading.set(false);
+          this.toastr.error('Error al guardar en BD');
+        }
+      });
+    });
 }
+
 
 }

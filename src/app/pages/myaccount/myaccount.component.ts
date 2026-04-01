@@ -191,7 +191,7 @@ export class MyaccountComponent implements OnInit, AfterViewInit {
       this.listaPisos = [...this.NIVELES_EXTRAS, ...this.PISOS_OFICINAS_TORRES];
     } else { // Local
       this.listaEdificios = [...this.edificiosResidenciales, ...this.TORRES];
-      this.listaPisos = ['Mezanina', 'Nivel Lecuna', 'Nivel Bolívar'];
+      this.listaPisos = ['Sotano 1','Mezanina', 'Nivel Lecuna', 'Nivel Bolívar'];
     }
 
     this.propiedadExtraForm.reset({ edificio: '', piso: '', letra: '' });

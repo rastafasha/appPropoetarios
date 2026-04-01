@@ -21,15 +21,15 @@
       </button>
       <!-- Badges con colores y contraste -->
       @if (payment.status === 'APROBADO') {
-      <span class="badge rounded-pill bg-success text-white px-3">Al día</span>
+      <span class="badge rounded-pill bg-success text-white px-3">Aprobado</span>
       }
 
       @if (payment.status === 'PENDIENTE') {
-      <span class="badge rounded-pill bg-warning text-dark px-3">Moroso</span>
+      <span class="badge rounded-pill bg-warning text-dark px-3">Pendiente</span>
       }
 
       @if (payment.status === 'RECHAZADO') {
-      <span class="badge rounded-pill bg-danger text-white px-3">En Revisión</span>
+      <span class="badge rounded-pill bg-danger text-white px-3">Rechazado</span>
       }
     </div>
   </div>

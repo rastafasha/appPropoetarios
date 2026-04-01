@@ -111,33 +111,33 @@ export class MisFacturasComponent {
     return factura.detalles.reduce((acc: number, item: any) => acc + (item.montoIva || 0), 0);
   }
 
-  reportarPago(payment: any) {
-    // Verificamos si el objeto tiene el ID de la factura
-    const facturaId = payment.factura?._id || payment.factura;
+  reportarPago(id: string) {
+    // 1. Obtenemos la factura completa del Signal
+    const facturaCompleta = this.facturaSeleccionada();
 
-    // 1. Buscamos la instancia del Offcanvas y la cerramos
-  const element = document.getElementById('offcanvasDetalle');
-  if (element) {
-    const bsOffcanvas = bootstrap.Offcanvas.getInstance(element);
-    if (bsOffcanvas) bsOffcanvas.hide();
-  }
-
-  // 2. Navegamos pasando el ID en la URL y el objeto completo en el 'state'
-  // Esto evita el error de 'undefined' y llena el formulario al instante
-
-    if (facturaId) {
-      this.router.navigate(['/reportar-pago', facturaId]);
-    } else {
-      // Si no hay factura (pago huérfano), podrías mandarlo a una ruta general
-      console.warn('Este pago no tiene una factura asociada');
-      this.router.navigate(['/reportar-pago', 'nuevo']);
+    if (!facturaCompleta) {
+      this.toastr.error('Error al recuperar los datos de la factura');
+      return;
     }
-  }
+
+    // 2. Cerramos el Offcanvas (Bootstrap)
+    const element = document.getElementById('offcanvasDetalle');
+    if (element) {
+      const bsOffcanvas = (window as any).bootstrap?.Offcanvas?.getInstance(element);
+      if (bsOffcanvas) bsOffcanvas.hide();
+    }
+
+    // 3. ¡ESTA ES LA PARTE CLAVE! Enviamos el ID y el STATE
+    this.router.navigate(['/reportar-pago', id], {
+      state: { factura: facturaCompleta } // <--- Aquí viaja el monto, nroFactura, etc.
+    });
+}
+
 
   // Importa el portapapeles si usas Angular CDK o usa la versión nativa:
-copiarMonto(monto: number, tasa: number) {
+  copiarMonto(monto: number, tasa: number) {
     const montoBs = (monto * tasa).toFixed(2);
-    
+
     navigator.clipboard.writeText(montoBs).then(() => {
       // Usamos Toastr para dar el feedback visual
       this.toastr.success(`Monto de Bs. ${montoBs} copiado`, 'Portapapeles', {

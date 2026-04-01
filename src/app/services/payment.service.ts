@@ -80,7 +80,7 @@ export class PaymentService {
   }
 
 
-  createPayment(formData: FormData): Observable<any> {
+  createPayment(data: any): Observable<any> {
   // Asegúrate de NO pasar 'this.headers' si estos contienen 'Content-Type': 'application/json'
   // Solo pasa el Token si es necesario
   const headers = new HttpHeaders({
@@ -88,7 +88,7 @@ export class PaymentService {
     // ¡OJO! No pongas Content-Type aquí
   });
 
-  return this.http.post(`${baseUrl}/payments/store`, formData, { headers });
+  return this.http.post(`${baseUrl}/payments/store`, data, { headers });
 }
   
   validarPagoAdmin(payment: any) {

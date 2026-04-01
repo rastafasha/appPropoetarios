@@ -57,9 +57,8 @@ export class PropiedadDetalleComponent {
       // Mapeamos los nombres que vienen de la URL a las propiedades del JSON
       const mapaTipos: { [key: string]: string } = {
         'residencia': 'residencia', // Si en la URL pasas 'residencia'
-        'Apto': 'residencia',       // Por si acaso usas 'Apto'
-        'Oficina': 'oficina',
-        'Local': 'local'
+        'oficina': 'oficina',
+        'local': 'local'
       };
 
       const nombreColeccion = mapaTipos[this.tipo || ''] || 'residencia';
@@ -86,10 +85,9 @@ export class PropiedadDetalleComponent {
 
   obtenerIcono(tipo: string | null): string {
   switch(tipo) {
-    case 'residencia': 
-    case 'Apto': return 'fas fa-home';
-    case 'Oficina': return 'fas fa-briefcase';
-    case 'Local': return 'fas fa-store';
+    case 'residencia': return 'fas fa-home';
+    case 'oficina': return 'fas fa-briefcase';
+    case 'local': return 'fas fa-store';
     default: return 'fas fa-building';
   }
 }

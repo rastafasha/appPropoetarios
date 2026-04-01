@@ -1,5 +1,5 @@
 <app-header></app-header>
-<app-skeleton-loader *ngIf="isLoading" [rows]="4" [columns]="1"></app-skeleton-loader>
+<app-skeleton-loader *ngIf="isLoading" [rows]="10" [columns]="1"></app-skeleton-loader>
 <div class="container" *ngIf="!identity && !isLoading">
     <h3>Inicia sesión para acceder</h3>
 </div>
@@ -53,7 +53,7 @@
                         </div>
 
                         <div class="text-end">
-                            <span class="d-block fw-bold text-dark" style="font-size: 0.9rem;">${{ prop.montoMensual |
+                            <span class="d-block fw-bold text-dark" style="font-size: 0.9rem;">{{ prop.montoMensual |
             currency:'Bs.':'symbol':'1.2-2' }}</span>
                             <span class="badge bg-light text-primary border" style="font-size: 0.65rem;">{{ prop.tipo
                                 }}</span>

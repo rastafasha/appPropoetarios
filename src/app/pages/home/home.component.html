@@ -1,7 +1,7 @@
 <app-header></app-header>
 <div class="container">
   <div class="row">
-    <app-skeleton-loader *ngIf="isLoading" [rows]="4" [columns]="1"></app-skeleton-loader>
+    <app-skeleton-loader *ngIf="isLoading" [rows]="10" [columns]="1"></app-skeleton-loader>
     <div class="col-12">
       <div class="product_list" *ngIf="!isLoading">
         <div class="div1" style="align-content: center;justify-self: center;">
@@ -61,8 +61,7 @@
         <button *ngIf="identity.deudaTotalAcumulada > 0" type="button" class="btn btn-outline-success" (click)="iraPagar(identity.deudaTotalAcumulada)" 
         [disabled]="!(connectivity.isOnline$ | async)"
         [ngClass]="{'btn-disabled': !(connectivity.isOnline$ | async)}">
-          {{ (connectivity.isOnline$ | async) ? ('Pagar ' + identity.deudaTotalAcumulada |
-            currency:'Bs.':'symbol':'1.2-2') : 'Esperando conexión...' }}
+          {{ (connectivity.isOnline$ | async) ? ('Pagar ' + 'Bs.' + identity.deudaTotalAcumulada ) : 'Esperando conexión...' }}
         </button>
       </div>
 
