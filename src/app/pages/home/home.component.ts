@@ -11,6 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 import { NgxPullToRefreshComponent } from 'ngx-pull-to-refresh';
 import { lastValueFrom } from 'rxjs';
 import { PushNotificationService } from '../../services/push-notification.service';
+import { PwaNotifInstallerComponent } from "../../shared/pwa-notif-installer/pwa-notif-installer.component";
 
 
 @Component({
@@ -21,8 +22,9 @@ import { PushNotificationService } from '../../services/push-notification.servic
     RouterModule,
     CommonModule,
     NgClass,
-    NgxPullToRefreshComponent
-  ],
+    NgxPullToRefreshComponent,
+    PwaNotifInstallerComponent
+],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
