@@ -52,7 +52,7 @@ export class PaymentService {
     return this.http.get(url, this.headers);
   }
 
-  getPayment(_id: Payment) {
+  getPayment(_id: string) {
     const url = `${baseUrl}/payments/${_id}`;
     return this.http.get<any>(url, this.headers)
       .pipe(
@@ -80,7 +80,7 @@ export class PaymentService {
   }
 
 
-  createPayment(payment: Payment) {
+  createPayment(payment: any) {
     const url = `${baseUrl}/payments/store`;
     return this.http.post(url, payment, this.headers);
   }

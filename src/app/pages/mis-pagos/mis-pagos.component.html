@@ -16,7 +16,9 @@
         <p class="mb-0 fs-5 fw-bold">{{payment.amount | currency:'Bs.':'symbol':'1.2-2'}}</p>
         <small class="text-muted">Ref: #{{payment.referencia}}</small>
       </div>
-
+      <button class="btn btn-sm btn-light rounded-pill border" (click)="verDetallePago(payment)">
+        Ver Ticket
+      </button>
       <!-- Badges con colores y contraste -->
       @if (payment.status === 'APROBADO') {
       <span class="badge rounded-pill bg-success text-white px-3">Al día</span>
@@ -31,6 +33,12 @@
       }
     </div>
   </div>
+    <!-- Botón Flotante para Reportar Nuevo Pago -->
+  <button class="btn btn-primary rounded-circle shadow-lg position-fixed"
+    style="bottom: 80px; right: 20px; width: 60px; height: 60px;"
+    (click)="reportarPago(payment._id)">
+    <i class="fas fa-plus fs-3"></i>
+  </button>
   } @empty {
   <p class="text-center text-muted">No hay pagos registrados.</p>
   }
@@ -48,9 +56,63 @@
 
 
 
-<!-- Botón Flotante para Reportar Nuevo Pago -->
-<button class="btn btn-primary rounded-circle shadow-lg position-fixed"
-  style="bottom: 80px; right: 20px; width: 60px; height: 60px;">
-  <i class="fas fa-plus fs-3"></i>
-</button>
+
 <app-menufooter></app-menufooter>
+
+<!-- PANEL INFERIOR PARA DETALLE DE PAGO -->
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasPago"
+  style="height: auto; max-height: 85vh; border-radius: 25px 25px 0 0;">
+  <div class="offcanvas-header justify-content-center pb-0">
+    <div class="bg-secondary opacity-25 rounded" style="width: 40px; height: 5px;"></div>
+  </div>
+
+  @if (pagoSeleccionado()) {
+  <div class="offcanvas-body p-4">
+    <div class="text-center mb-4">
+      <!-- Badge de Estado Dinámico -->
+      <span class="badge rounded-pill px-3 py-2 mb-2" [ngClass]="{
+                'bg-success-subtle text-success': pagoSeleccionado().status === 'APROBADO',
+                'bg-warning-subtle text-warning': pagoSeleccionado().status === 'PENDIENTE',
+                'bg-danger-subtle text-danger': pagoSeleccionado().status === 'RECHAZADO'
+              }">
+        {{ pagoSeleccionado().status }}
+      </span>
+      <h2 class="display-6 fw-bold mb-0">${{ pagoSeleccionado().amount | number:'1.2-2' }}</h2>
+      <p class="text-muted small">Ref: #{{ pagoSeleccionado().referencia }}</p>
+    </div>
+
+    <!-- Datos de la Transacción -->
+    <div class="bg-light rounded-4 p-3 mb-4" style="border-radius: 15px;">
+      <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+        <span class="text-muted small">Método</span>
+        <span class="fw-bold small">{{ pagoSeleccionado().metodo_pago }}</span>
+      </div>
+      <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+        <span class="text-muted small">Banco Destino</span>
+        <span class="fw-bold small">{{ pagoSeleccionado().bank_destino }}</span>
+      </div>
+      <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+        <span class="text-muted small">Fecha</span>
+        <span class="fw-bold small">{{ pagoSeleccionado().fecha_pago | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span class="text-muted small">Tasa Aplicada</span>
+        <span class="fw-bold small">{{ pagoSeleccionado().tasaBCV }} Bs.</span>
+      </div>
+    </div>
+
+    <!-- Imagen del Soporte (Si existe) -->
+    @if (pagoSeleccionado().img) {
+    <div class="mb-4">
+      <p class="text-muted small mb-2">Comprobante adjunto:</p>
+      <img [src]="pagoSeleccionado().img" class="img-fluid rounded-3 shadow-sm border w-100"
+        style="max-height: 200px; object-fit: cover;">
+    </div>
+    }
+
+    <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold" data-bs-dismiss="offcanvas">
+      ENTENDIDO
+    </button>
+  </div>
+  }
+</div>

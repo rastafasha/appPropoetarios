@@ -7,8 +7,9 @@ import { MyaccountComponent } from './pages/myaccount/myaccount.component';
 import { PerfilComponent } from './pages/myaccount/perfil/perfil.component';
 import { MisPagosComponent } from './pages/mis-pagos/mis-pagos.component';
 import { MisFacturasComponent } from './pages/mis-facturas/mis-facturas.component';
-import { PropiedadDetalleComponent } from './pages/propiedad-detalle/propiedad-detalle.component';
 import {AuthGuard} from './guards/auth.guard';
+import { PropiedadDetalleComponent } from './pages/detalles/propiedad-detalle/propiedad-detalle.component';
+import { ReportarPagoComponent } from './pages/reportar-pago/reportar-pago.component';
 export const routes: Routes = [
     {
             path:'home',
@@ -31,6 +32,10 @@ export const routes: Routes = [
         {path: 'my-account/perfil/:id', component: PerfilComponent },
 
         { path: 'propiedad-detalle/:tipo/:id', component: PropiedadDetalleComponent },
+        { path: 'reportar-pago/:id', component: ReportarPagoComponent },
+
+        { path: '', redirectTo: '/home', pathMatch: 'full' },
+          { path: '**', component: LoginComponent },
 
         
         

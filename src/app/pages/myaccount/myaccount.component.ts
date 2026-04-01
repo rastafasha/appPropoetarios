@@ -1,5 +1,5 @@
 
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, signal } from '@angular/core';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { HeaderComponent } from "../../shared/header/header.component";
@@ -51,6 +51,8 @@ export class MyaccountComponent implements OnInit, AfterViewInit {
   identityId!: any;
   isLoading: boolean = false;
   modalInstance: any;
+
+
   // Listas que le pasaremos al componente hijo (Selector)
   public edificiosResidenciales = ['Catuche', 'Tajamar', 'Tacagua', 'San Martín', 'Mohedano', 'Caruata', 'El Tejar'];
   public TORRES = ['Torre Este', 'Torre Oeste'];
@@ -231,6 +233,8 @@ export class MyaccountComponent implements OnInit, AfterViewInit {
     // Navegamos pasando el tipo (residencia, Oficina, Local) y el ID
     this.router.navigate(['/propiedad-detalle', tipo, id]);
   }
+
+ 
 
 
 

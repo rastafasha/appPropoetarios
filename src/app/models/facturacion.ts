@@ -13,9 +13,9 @@ export class Facturacion {
     _id?: string;
     usuario?: User;
     nroFactura?: string;
-    mes!: number;
-    anio!: number;
-    tasaBCV!: number; // <--- VITAL guardar la tasa del día del lote
+    mes?: number;
+    anio?: number;
+    tasaBCV?: number; // <--- VITAL guardar la tasa del día del lote
 
     detalles: DetalleFactura[];
 

@@ -1,5 +1,6 @@
 
 import { environment } from '../../environments/environment';
+import { Facturacion } from './facturacion';
 import { User } from './user'; // Si tienes el modelo de usuario
 const base_url = environment.mediaUrlRemoto;
 
@@ -8,11 +9,11 @@ export class Payment {
     cliente?: User;
     amount!: number;
     tasaBCV!: number;
-    factura!: string;
+    factura!: Facturacion;
     referencia!: string;
     bank_destino!: string;
     img!: string;
-    usuario_validador!: string;
+    usuario_validador!: User;
     
     metodo_pago?: 'TRANSFERENCIA'| 'PAGO_MOVIL'| 'EFECTIVO'| 'ZELLE';
     status?: 'PENDIENTE'| 'APROBADO'| 'RECHAZADO';

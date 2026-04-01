@@ -24,84 +24,89 @@ export class FacturacionService {
 
   get headers() {
     return {
-    'x-token': this.token
-  };
+      'x-token': this.token
+    };
   }
 
 
- 
-  generarYDescargarFactura(datos: any) {
-  // 1. Llamamos al endpoint que acabas de configurar
-  this.http.post(`${baseUrl}/facturacion/individual`, datos, { 
-    responseType: 'blob', // <--- CRÍTICO: Indica que recibes un archivo
-    headers: this.headers 
-  }).subscribe({
-    next: (res: Blob) => {
-      // 2. Creamos una URL temporal para el archivo recibido
-      const url = window.URL.createObjectURL(res);
-      
-      // 3. Opción A: Abrir en pestaña nueva
-      window.open(url);
 
-      // 4. Opción B: Descarga automática con nombre (opcional)
-      /*
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `Factura_${datos.mes}_${datos.anio}.pdf`;
-      link.click();
-      */
-      
-      // Limpiamos la memoria
-      window.URL.revokeObjectURL(url);
-    },
-    error: (err) => {
-      console.error('Error al descargar el PDF', err);
-    }
-  });
-}
-facturacionIndividual(facturacion: Facturacion) {
+  generarYDescargarFactura(datos: any) {
+    // 1. Llamamos al endpoint que acabas de configurar
+    this.http.post(`${baseUrl}/facturacion/individual`, datos, {
+      responseType: 'blob', // <--- CRÍTICO: Indica que recibes un archivo
+      headers: this.headers
+    }).subscribe({
+      next: (res: Blob) => {
+        // 2. Creamos una URL temporal para el archivo recibido
+        const url = window.URL.createObjectURL(res);
+
+        // 3. Opción A: Abrir en pestaña nueva
+        window.open(url);
+
+        // 4. Opción B: Descarga automática con nombre (opcional)
+        /*
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Factura_${datos.mes}_${datos.anio}.pdf`;
+        link.click();
+        */
+
+        // Limpiamos la memoria
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error al descargar el PDF', err);
+      }
+    });
+  }
+  facturacionIndividual(facturacion: Facturacion) {
     const url = `${baseUrl}/facturacion/individual`;
     // Creamos el objeto de opciones completo
     const httpOptions: any = {
       headers: this.headers, // Aquí pasas tu objeto {'x-token': '...'}
-      responseType: 'blob' as 'json' 
+      responseType: 'blob' as 'json'
     };
 
     return this.http.post(url, facturacion, httpOptions);
   }
 
- getFacturaciones() {
+  getFacturaciones() {
     const url = `${baseUrl}/facturacion`;
-    
+
     return this.http.get<any>(url, { headers: this.headers })
       .pipe(
         map((resp: { ok: boolean, facturas: Facturacion }) => resp.facturas)
       )
   }
 
-  getFactura(_id: Facturacion) {
+  getFactura(_id: string) {
     const url = `${baseUrl}/facturacion/${_id}`;
-    return this.http.get<any>(url, { headers: this.headers })
-      .pipe(
-        map((resp: { ok: boolean, factura: Facturacion }) => resp.factura)
-      );
+    return this.http.get<any>(url, { headers: this.headers }); 
   }
 
   getByStatus(status: string) {
-      const url = `${baseUrl}/facturacion/status/${status}`;
-      return this.http.get<any>(url, { headers: this.headers })
-        .pipe(
-          map((resp: { ok: boolean, facturas: Facturacion }) => resp.facturas)
-        )
-    }
-  
-  getByStatusFaturas() {
-      const url = `${baseUrl}/facturacion/status/pagos`;
-      return this.http.get<any>(url, { headers: this.headers });
-    }
-  
+    const url = `${baseUrl}/facturacion/status/${status}`;
+    return this.http.get<any>(url, { headers: this.headers })
+      .pipe(
+        map((resp: { ok: boolean, facturas: Facturacion }) => resp.facturas)
+      )
+  }
 
+  getByStatusFaturas() {
+    const url = `${baseUrl}/facturacion/status/pagos`;
+    return this.http.get<any>(url, { headers: this.headers });
+  }
+
+  getFacturasByUser(userId: string, page: number = 1) {
+  const url = `${baseUrl}/facturacion/user/${userId}?page=${page}`;
   
+  // CAMBIO CLAVE: Usa <any> o el objeto de respuesta, NO <any[]>
+  return this.http.get<any>(url, { headers: this.headers }); 
+}
+
+
+
+
 
   facturacionMasiva(facturacion: Facturacion) {
     const url = `${baseUrl}/facturacion/masiva`;

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { SkeletonLoaderComponent } from '../../shared/skeleton-loader/skeleton-loader.component';
-import { Location } from '@angular/common';
-import { ProfileService } from '../../services/profile.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProfileService } from '../../../services/profile.service';
+import { SkeletonLoaderComponent } from '../../../shared/skeleton-loader/skeleton-loader.component';
+import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
 
 interface PropiedadUnificada {
   _id: string;
@@ -17,19 +17,20 @@ interface PropiedadUnificada {
 
 @Component({
   selector: 'app-propiedad-detalle',
-  imports: [CommonModule, SkeletonLoaderComponent],
+  imports: [CommonModule, SkeletonLoaderComponent, BackButtonComponent],
   templateUrl: './propiedad-detalle.component.html',
   styleUrl: './propiedad-detalle.component.scss'
 })
 export class PropiedadDetalleComponent {
   isLoading: boolean = false;
+  title= 'Detalle de Propiedad';
 
    propiedad?: PropiedadUnificada; 
   tipo: string | null = '';
 
   private activatedRoute = inject(ActivatedRoute);
-  private location = inject(Location);
   private profileService = inject(ProfileService);
+  private router = inject(Router);
 
   ngOnInit() {
    const id = this.activatedRoute.snapshot.paramMap.get('id');
@@ -49,10 +50,6 @@ export class PropiedadDetalleComponent {
   const userJson = localStorage.getItem('user');
   const userId = userJson ? JSON.parse(userJson).uid : null;
 
-  if (!userId) {
-    this.irAtras();
-    return;
-  }
 
   // 2. Consultamos al servicio
   this.profileService.getByUser(userId).subscribe({
@@ -96,10 +93,15 @@ export class PropiedadDetalleComponent {
     default: return 'fas fa-building';
   }
 }
-  irAtras() {
-    this.location.back();
+  
+  reportarPago(factura: any) {
+  this.router.navigate(['/reportar-pago', factura._id], { 
+    state: { factura: factura } // Aquí pasas el objeto completo
+  });
+}
+  verHistorial() {
+    // Navegamos pasando el tipo (residencia, Oficina, Local) y el ID
+    this.router.navigate(['/mis-facturas' ]);
   }
-
-  reportarPago(){}
 
 }

@@ -4,6 +4,9 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { MenufooterComponent } from '../../shared/menufooter/menufooter.component';
 import { PaymentService } from '../../services/payment.service';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { Router } from '@angular/router';
+
+declare var bootstrap: any;
 @Component({
   selector: 'app-mis-pagos',
   imports: [CommonModule, HeaderComponent, MenufooterComponent, InfiniteScrollModule],
@@ -18,7 +21,10 @@ export class MisPagosComponent implements OnInit{
   page = 1;
   userId!: string;
 
+  pagoSeleccionado = signal<any>(null);
+
   private paymentService = inject(PaymentService);
+  private router = inject(Router);
 
   ngOnInit() {
     window.scrollTo(0, 0);
@@ -60,5 +66,18 @@ export class MisPagosComponent implements OnInit{
     });
   }
   
+  verDetallePago(pago: any) {
+    this.pagoSeleccionado.set(pago);
+    
+    const el = document.getElementById('offcanvasPago');
+    const bsOffcanvas = new bootstrap.Offcanvas(el);
+    bsOffcanvas.show();
+  }
+
+  reportarPago(factura: any) {
+  this.router.navigate(['/reportar-pago', factura._id], { 
+    state: { factura: factura } // Aquí pasas el objeto completo
+  });
+}
 
 }

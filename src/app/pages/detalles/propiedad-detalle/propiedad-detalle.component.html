@@ -2,11 +2,7 @@
 
 <div *ngIf="!isLoading" class="container py-4 bg-light min-vh-100">
   <!-- Header con botón volver -->
-  <div class="d-flex align-items-center mb-4">
-    <button class="btn btn-link text-dark p-0 me-3" (click)="irAtras()"><i
-        class="fas fa-chevron-left fa-lg"></i></button>
-    <h2 class="h4 mb-0 fw-bold">Detalle de Propiedad</h2>
-  </div>
+  <app-back-button [title]="title"></app-back-button>
 
   <!-- Card Principal del Inmueble -->
   <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -51,10 +47,10 @@
 </div>
   <!-- Botones de Acción -->
   <div class="d-grid gap-3 mt-5">
-  <button class="btn btn-primary rounded-pill py-3 fw-bold shadow-sm" (click)="reportarPago()">
+  <button class="btn btn-primary rounded-pill py-3 fw-bold shadow-sm" (click)="reportarPago(propiedad?._id)">
     <i class="fas fa-receipt me-2"></i>Reportar Pago Mensual
   </button>
-  <button class="btn btn-outline-secondary rounded-pill py-3 fw-bold">
+  <button class="btn btn-outline-secondary rounded-pill py-3 fw-bold" (click)="verHistorial()">
     <i class="fas fa-history me-2"></i>Ver Historial de Recibos
   </button>
 </div>
