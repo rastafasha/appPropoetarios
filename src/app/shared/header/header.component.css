@@ -1,13 +1,15 @@
 .logo{
     display: flex;
     gap: 5px;
+    justify-content: center;
+    align-items: center;
     
 }
 .logo img{
     display: flex;
 
 }
-.logo h2{
-    display: flex;
+.logo h5{
+    font-size: 16px;
 
 }

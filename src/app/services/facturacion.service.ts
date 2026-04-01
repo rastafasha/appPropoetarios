@@ -59,16 +59,15 @@ export class FacturacionService {
       }
     });
   }
-  facturacionIndividual(facturacion: Facturacion) {
-    const url = `${baseUrl}/facturacion/individual`;
-    // Creamos el objeto de opciones completo
-    const httpOptions: any = {
-      headers: this.headers, // Aquí pasas tu objeto {'x-token': '...'}
-      responseType: 'blob' as 'json'
-    };
 
-    return this.http.post(url, facturacion, httpOptions);
-  }
+  descargarPDF(factura: any) {
+  // Solo enviamos el ID o el objeto que el backend espera para generar el PDF
+  return this.http.post(`${baseUrl}/facturacion/individual`, factura, {
+    responseType: 'blob',
+    headers: this.headers // Asegúrate de que el token vaya aquí
+  });
+}
+ 
 
   getFacturaciones() {
     const url = `${baseUrl}/facturacion`;
@@ -103,15 +102,6 @@ export class FacturacionService {
   // CAMBIO CLAVE: Usa <any> o el objeto de respuesta, NO <any[]>
   return this.http.get<any>(url, { headers: this.headers }); 
 }
-
-
-
-
-
-  facturacionMasiva(facturacion: Facturacion) {
-    const url = `${baseUrl}/facturacion/masiva`;
-    return this.http.post(url, facturacion, { headers: this.headers });
-  }
 
 
 }

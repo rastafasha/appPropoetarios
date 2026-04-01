@@ -13,8 +13,9 @@ import { UserService } from '../../services/user.service';
 })
 export class HeaderComponent {
 
+  user: any;
    private router = inject(Router);
-   user: any;
+   public usuarioService = inject(UserService);
   
   ngOnInit(){
    let USER = localStorage.getItem("user");
@@ -22,6 +23,11 @@ export class HeaderComponent {
       if(!this.user){
         this.router.navigateByUrl('/login')
       } 
+  }
+
+  
+  logout() {
+    this.usuarioService.logout();
   }
 
   

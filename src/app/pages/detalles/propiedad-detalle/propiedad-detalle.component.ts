@@ -33,6 +33,7 @@ export class PropiedadDetalleComponent {
   private router = inject(Router);
 
   ngOnInit() {
+    window.scrollTo(0, 0);
    const id = this.activatedRoute.snapshot.paramMap.get('id');
     // Guardamos el tipo que viene de la URL
     this.tipo = this.activatedRoute.snapshot.paramMap.get('tipo');

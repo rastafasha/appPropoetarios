@@ -6,10 +6,13 @@ import { ToastrService } from 'ngx-toastr';
 import { FacturacionService } from '../../services/facturacion.service';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { BusquedasService } from '../../services/busqueda.service';
 declare var bootstrap: any;
 @Component({
   selector: 'app-mis-facturas',
-  imports: [CommonModule, HeaderComponent, MenufooterComponent, InfiniteScrollModule],
+  imports: [CommonModule, HeaderComponent, MenufooterComponent,
+    FormsModule, InfiniteScrollModule],
   templateUrl: './mis-facturas.component.html',
   styleUrl: './mis-facturas.component.scss'
 })
@@ -22,10 +25,19 @@ export class MisFacturasComponent {
   userId!: string;
   facturaSeleccionada = signal<any>(null);
   toastVisible = signal(false);
+  showToastFactura = signal(false);
+isFilteringFactura = signal(false);
+
+  // Variables para Facturas
+  queryFactura: string = '';
+  statusFactura: string = '';
+  pageFactura: number = 1;
+  hasMoreFacturas = signal(true);
 
   public toastr = inject(ToastrService);
   public facturaService = inject(FacturacionService);
   private router = inject(Router);
+  private busquedasService = inject(BusquedasService);
 
   ngOnInit() {
     window.scrollTo(0, 0);
@@ -43,35 +55,98 @@ export class MisFacturasComponent {
     return nombres[mes - 1] || 'Mes';
   }
 
-  onScroll() {
+  onScroll(): void {
     if (this.loading()) return;
-    this.page++;
-    this.getFacturas();
+
+    // Si estás viendo facturas y no hay búsqueda por texto activa:
+    if (this.queryFactura.trim() === '' && this.hasMoreFacturas()) {
+      this.pageFactura++;
+      this.getFacturas();
+    }
   }
 
   getFacturas() {
-    this.loading.set(true);
+  if (!this.hasMoreFacturas()) return;
+  this.loading.set(true);
 
-    this.facturaService.getFacturasByUser(this.userId, this.page).subscribe({
-      next: (resp) => {
-        // Ahora 'resp' es el objeto que viene de tu API
-        if (resp.ok) {
-          // Actualizamos el signal con el array que viene dentro del objeto
-          this.facturas.update(prev => [...prev, ...resp.facturas]);
+  this.facturaService.getFacturasByUser(this.userId, this.pageFactura).subscribe({
+    next: (resp: any) => {
+      
+      // 1. EXTRAEMOS EL ARREGLO (Según tu JSON es resp.facturas)
+      const newData = resp.facturas || [];
 
-          // Si no vienen más facturas o es la última página, detenemos el scroll
-          if (resp.facturas.length < 10) {
-            this.hasMore.set(false);
-          }
-        }
+      if (newData.length === 0) {
+        this.hasMoreFacturas.set(false);
         this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Error:', err);
+        return;
+      }
+
+      // 2. FILTRADO LOCAL (Ojo: Tu JSON usa "estado", no "status")
+      let filteredData = newData;
+      if (this.statusFactura) {
+        filteredData = newData.filter((f: any) => f.estado === this.statusFactura);
+      }
+
+      // 3. ACTUALIZACIÓN DE LA SEÑAL
+      this.facturas.update(current => {
+        const ids = new Set(current.map(f => f._id));
+        const unique = filteredData.filter((f: any) => !ids.has(f._id));
+        return [...current, ...unique];
+      });
+
+      // 4. LÓGICA INSISTENTE
+      // Si el filtro dejó pocos resultados pero hay más páginas en el API
+      if (this.statusFactura && filteredData.length < 5 && resp.pages > this.pageFactura) {
+        this.pageFactura++;
+        this.getFacturas();
+      } else {
         this.loading.set(false);
       }
-    });
+    },
+    error: () => this.loading.set(false)
+  });
+}
+
+
+
+  searchFacturas(): void {
+    this.pageFactura = 1;
+    this.hasMoreFacturas.set(true);
+    this.facturas.set([]); // Limpiar lista actual
+
+    // Si hay búsqueda por texto, usamos el buscador global
+    if (this.queryFactura.trim() !== '') {
+      this.busquedasService.buscar('facturaciones', this.queryFactura).subscribe((res: any[]) => {
+        let filtered = res;
+        if (this.statusFactura) {
+          filtered = res.filter(f => f.status === this.statusFactura);
+        }
+        this.facturas.set(filtered);
+      });
+    } else {
+      // Si no hay texto, usamos la carga paginada con filtro local
+      this.getFacturas();
+    }
   }
+
+ clearFacturaFilters(): void {
+  if (navigator.vibrate) navigator.vibrate(50);
+  
+  this.queryFactura = '';
+  this.statusFactura = '';
+  this.isFilteringFactura.set(false);
+  this.pageFactura = 1;
+  this.hasMoreFacturas.set(true);
+  this.facturas.set([]); 
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Disparar el Toast
+  this.showToastFactura.set(true);
+  setTimeout(() => this.showToastFactura.set(false), 2500);
+
+  this.getFacturas();
+}
 
   descargarFactura(nombre: string) {
     // Simulación de descarga
@@ -131,7 +206,7 @@ export class MisFacturasComponent {
     this.router.navigate(['/reportar-pago', id], {
       state: { factura: facturaCompleta } // <--- Aquí viaja el monto, nroFactura, etc.
     });
-}
+  }
 
 
   // Importa el portapapeles si usas Angular CDK o usa la versión nativa:
@@ -147,6 +222,27 @@ export class MisFacturasComponent {
       });
     }).catch(err => {
       this.toastr.error('No se pudo copiar el monto', 'Error');
+    });
+  }
+
+  bajarFactura(factura: any) {
+    this.loading.set(true); // Para mostrar un spinner si quieres
+
+    this.facturaService.descargarPDF(factura).subscribe({
+      next: (res: Blob) => {
+        const url = window.URL.createObjectURL(res);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Factura_${factura.mes}_${factura.anio}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.loading.set(false);
+        this.toastr.success('Descarga iniciada');
+      },
+      error: (err) => {
+        this.loading.set(false);
+        this.toastr.error('No se pudo generar el PDF');
+      }
     });
   }
 

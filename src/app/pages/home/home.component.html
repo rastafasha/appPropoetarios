@@ -1,71 +1,121 @@
 <app-header></app-header>
-<div class="container">
-  <div class="row">
-    <app-skeleton-loader *ngIf="isLoading" [rows]="10" [columns]="1"></app-skeleton-loader>
-    <div class="col-12">
-      <div class="product_list" *ngIf="!isLoading">
-        <div class="div1" style="align-content: center;justify-self: center;">
-          <a (click)="logout()">
-                <i class="fa fa-power-off " style="font-size: 45px; display: flex;"></i>
-            </a> 
-        </div>
-        <div class="div2">
-          <h1>Hola, {{identity.first_name}}! </h1>
-        <p>Gracias por usar la App de Corpo Capital PC.</p>
-        </div>
-        
+<!-- Prueba quitando el *ngIf temporalmente para forzar que el botón se vea -->
 
+<ngx-pull-to-refresh (refresh)="myRefreshEvent($event)" [spinnerColor]="'#0d6efd'" [spinnerSize]="30">
+
+  <div class="container pb-5 mb-5 animate fadeIn" style="padding-bottom: 100px;">
+    <div class="row">
+      <!-- <app-skeleton-loader *ngIf="isLoading" [rows]="10" [columns]="1"></app-skeleton-loader> -->
+      <!-- SALUDO INICIAL -->
+      <div class="mt-4 mb-4 px-2 animate fadeIn" *ngIf="!isLoading">
+        <h2 class="fw-bold mb-1 text-dark">¡Hola, {{identity.first_name}}! 👋</h2>
+        <p class="text-muted small">Gracias por usar la App de Corpo Capital PC.</p>
+      </div>
+      <!-- El banner SOLO se muestra si NO está suscrito -->
+      <div *ngIf="(pushService.isSubscribed$ | async) === false && !isLoading" class="banner-notificaciones animate fadeIn">
+        <div class="mensaje">
+          <strong>📢 ¡No te pierdas nada!</strong>
+          <p>Activa las notificaciones para recibir avisos del condominio.</p>
+        </div>
+        <button type="button" (click)="verpropiedades()" class="btn btn-outline-info mb-3 animate fadeIn">
+          Configurar Notificaciones
+        </button>
       </div>
 
-      <div class="product_list" *ngIf="!isLoading">
-        <div class="div1">
-          <img [src]="(identity.img ?? '') | imagenPipe: 'profiles'" [alt]="identity.first_name">
-        </div>
-        <div class="div2">
-          <p>{{user.numdoc}}</p>
-          <h4>Estatus Financiero</h4>
-          <span class="badge bg-success" *ngIf="identity.statusFinanciero === 'AL_DIA'">Al día</span>
-          <span class="badge bg-danger" *ngIf="identity.statusFinanciero === 'MOROSO'">Moroso</span>
-          <span class="badge bg-warning" *ngIf="identity.statusFinanciero === 'EN_REVISION'">En
-            Revisión</span>
-            
-            <span class="badge bg-info mt-2" *ngIf="identity.statusFinanciero === 'EN_REVISION'">
-              <i class="fa fa-info-circle"></i> &nbsp; Validando último pago.
-            </span>
-        </div>
-      </div>
-      <div class="clear"></div>
-      <div class="cuadrohome p-3 shadow-sm" *ngIf="!isLoading">
-        <h4>Propiedades Registradas</h4>
-        <div class="clear"></div>
-        <div class="propiedades">
-          <span class="badge rounded-pill bg-success" *ngIf="identity.haveResidencia === true ">Residencia</span>
-          <span class="badge rounded-pill bg-info" *ngIf="identity.haveOficina === true ">Oficina</span>
-          <span class="badge rounded-pill bg-warning" *ngIf="identity.haveLocal === true ">Local</span>
-        </div>
-      </div>
+      <!-- Opcional: Mostrar un mensaje sutil si ya está suscrito -->
+      <p *ngIf="estaSuscrito$ | async" class="text-muted p-3 animate fadeIn">
+        <i class="fas fa-check-circle text-success"></i> Notificaciones activas
+      </p>
 
-      <div class="cuadrohome" *ngIf="!isLoading">
-        <div class="col-xs-6 col-sm-6 col-md-3 b-r" >
-          <div class="col-12  label">
-             Deuda
+
+      <!-- TARJETA ESTATUS FINANCIERO -->
+      <div class="card shadow-sm border-0 rounded-4 mb-3 overflow-hidden animate fadeIn" *ngIf="!isLoading">
+        <div class="card-body d-flex align-items-center p-3">
+          <!-- Foto de Perfil -->
+          <div class="me-3">
+
           </div>
+          <!-- Información -->
+          <div class="flex-grow-1">
+            <small class="text-muted fw-bold">{{user.numdoc}}</small>
+            <h5 class="mb-2 fw-bold text-dark">Estatus Financiero</h5>
+            <div class="d-flex flex-wrap gap-1">
+              <span class="badge bg-success" *ngIf="identity.statusFinanciero === 'AL_DIA'">Al día</span>
+              <span class="badge bg-danger" *ngIf="identity.statusFinanciero === 'MOROSO'">Moroso</span>
+              <span class="badge bg-warning" *ngIf="identity.statusFinanciero === 'EN_REVISION'">En
+                Revisión</span>
+            </div>
+          </div>
+          <!-- Aviso de validación -->
+
+          <small class="text-info fw-bold" *ngIf="identity.statusFinanciero === 'EN_REVISION'"><i
+              class="fa fa-info-circle me-1"></i> Validando último pago...</small>
+        </div>
+
+      </div>
+
+
+
+      <div class="clear"></div>
+
+      <!-- PROPIEDADES REGISTRADAS -->
+      <div class="card shadow-sm border-0 rounded-4 mb-3 animate fadeIn" *ngIf="!isLoading">
+        <div class="card-body p-3">
+          <h6 class="fw-bold text-secondary mb-3"><i class="fa fa-building-o me-2"></i>Propiedades</h6>
+          <div class="d-flex gap-2 flex-wrap">
+            <span class="badge rounded-pill bg-success" *ngIf="identity.haveResidencia === true ">Residencia</span>
+            <span class="badge rounded-pill bg-info" *ngIf="identity.haveOficina === true ">Oficina</span>
+            <span class="badge rounded-pill bg-warning" *ngIf="identity.haveLocal === true ">Local</span>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline-success mb-3" (click)="verpropiedades()">
+          Ver mis Propiedades
+        </button>
+      </div>
+
+      <!-- SECCIÓN DE DEUDA Y BOTÓN -->
+      <div class="card shadow-sm border-0 rounded-4 bg-white mb-4 animate fadeIn p-3" *ngIf="!isLoading">
+        <div class="card-body p-4 text-center">
+          <p class="text-muted small mb-1 fw-bold text-uppercase">Deuda Total Acumulada</p>
+
+          <!-- Caso: Al día -->
+
           <div class="col-12  label text-success" *ngIf="identity.deudaTotalAcumulada == 0">
-            <i class="fa fa-check-circle-o " ></i>  ¡Estás al día!
+            <i class="fa fa-check-circle-o "></i> ¡Estás al día!
           </div>
           <div class="col-12  info" *ngIf="identity.deudaTotalAcumulada > 0">
             <b style="color: #ff7e93;">{{identity.deudaTotalAcumulada |
-            currency:'Bs.':'symbol':'1.2-2'}}</b>
+              currency:'Bs.':'symbol':'1.2-2'}}</b>
           </div>
         </div>
-        <button *ngIf="identity.deudaTotalAcumulada > 0" type="button" class="btn btn-outline-success" (click)="iraPagar(identity.deudaTotalAcumulada)" 
-        [disabled]="!(connectivity.isOnline$ | async)"
-        [ngClass]="{'btn-disabled': !(connectivity.isOnline$ | async)}">
+
+        <!-- Caso: Con Deuda -->
+        <h1 class="display-5 fw-bold text-dark mb-0">
+          {{identity.deudaTotalAcumulada | currency:'Bs. ':'symbol':'1.2-2'}}
+        </h1>
+        <small class="text-danger fw-bold mb-3">Pago pendiente</small>
+        <!-- Botón de Pago Sólido -->
+        <button *ngIf="identity.deudaTotalAcumulada > 0" type="button" class="btn btn-outline-success mb-3"
+          (click)="iraPagar(identity.deudaTotalAcumulada)" [disabled]="!(connectivity.isOnline$ | async)"
+          [ngClass]="{'btn-disabled': !(connectivity.isOnline$ | async)}">
           {{ (connectivity.isOnline$ | async) ? ('Pagar ' + 'Bs.' + identity.deudaTotalAcumulada ) : 'Esperando conexión...' }}
         </button>
       </div>
 
     </div>
   </div>
-</div>
+
+</ngx-pull-to-refresh>
+
+
+
+<!-- Si tenías algo así, asegúrate de que 'swPush.isEnabled' sea true -->
+<!-- <div *ngIf="swPush.isEnabled">
+   <button (click)="btnActivarPush()">Suscribirme</button>
+</div> -->
+
+
+
+
+
 <app-menufooter></app-menufooter>

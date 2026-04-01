@@ -44,6 +44,18 @@
             </select>
           </div>
 
+          <!-- Tipo de Transferencia -->
+          <!-- <div class="mb-3 mt-2 col-12">
+            <label class="form-label">Tipo de Transferencia</label>
+            <select formControlName="metodo_pago" class="form-control" (change)="onChangePayment($event)"
+              name="metodo_pago" id="metodo_pago">
+              <option value=" ">Seleccione Tipo de Transferencia</option>
+              <option [value]="metodo_pago._id" *ngFor="let metodo_pago of paymentMethods">
+                {{metodo_pago.tipo}}
+              </option>
+            </select>
+          </div> -->
+
           <!-- Banco / Referencia -->
           <div class="col-6">
             <label class="form-label text-muted small fw-bold">BANCO DESTINO</label>
@@ -58,21 +70,22 @@
 
           <!-- Monto Pagado -->
           <div class="row g-3">
-          <!-- Monto en Dólares (Editable si hay pagos parciales) -->
-          <div class="col-6">
-            <label class="form-label text-muted small fw-bold">MONTO EN USD ($)</label>
-            <input type="number" formControlName="amount" 
-                  class="form-control border-0 bg-white py-3 shadow-sm rounded-3 fw-bold text-primary">
-          </div>
+            <!-- Monto en Dólares (Editable si hay pagos parciales) -->
+            <div class="col-6">
+              <label class="form-label text-muted small fw-bold">MONTO EN USD ($)</label>
+              <input type="number" formControlName="amount"
+                class="form-control border-0 bg-white py-3 shadow-sm rounded-3 fw-bold text-primary">
+            </div>
 
-          <!-- Monto en Bolívares (Informativo/Calculado) -->
-          <div class="col-6">
-            <label class="form-label text-muted small fw-bold">EQUIVALENTE BS.</label>
-            <div class="py-3 px-2 bg-success-subtle text-success fw-bold rounded-3 text-center border border-success border-opacity-10">
-              {{ (paymentForm.get('amount')?.value * tasa()) | number:'1.2-2' }}
+            <!-- Monto en Bolívares (Informativo/Calculado) -->
+            <div class="col-6">
+              <label class="form-label text-muted small fw-bold">EQUIVALENTE BS.</label>
+              <div
+                class="py-3 px-2 bg-success-subtle text-success fw-bold rounded-3 text-center border border-success border-opacity-10">
+                {{ (paymentForm.get('amount')?.value * tasa()) | number:'1.2-2' }}
+              </div>
             </div>
           </div>
-        </div>
 
 
           <!-- 3. Subida de Captura (Lo más importante) -->

@@ -14,6 +14,8 @@ import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SelectorUbicacionComponent } from '../../components/selector-ubicacion-component/selector-ubicacion.component';
 import { SkeletonLoaderComponent } from '../../shared/skeleton-loader/skeleton-loader.component';
+import { PushNotificationService } from '../../services/push-notification.service';
+import { ImagenPipe } from '../../pipes/imagen.pipe';
 
 declare var bootstrap: any;
 
@@ -34,9 +36,10 @@ interface PropiedadUnificada {
     CommonModule,
     HeaderComponent,
     MenufooterComponent,
-   SkeletonLoaderComponent,
+    SkeletonLoaderComponent,
     SelectorUbicacionComponent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ImagenPipe
 
   ],
   templateUrl: './myaccount.component.html',
@@ -82,6 +85,7 @@ export class MyaccountComponent implements OnInit, AfterViewInit {
     public activatedRoute: ActivatedRoute,
     handler: HttpBackend,
     public toastr: ToastrService,
+    public pushService: PushNotificationService,
   ) {
     this.http = new HttpClient(handler);
     this.initForm();
@@ -191,7 +195,7 @@ export class MyaccountComponent implements OnInit, AfterViewInit {
       this.listaPisos = [...this.NIVELES_EXTRAS, ...this.PISOS_OFICINAS_TORRES];
     } else { // Local
       this.listaEdificios = [...this.edificiosResidenciales, ...this.TORRES];
-      this.listaPisos = ['Sotano 1','Mezanina', 'Nivel Lecuna', 'Nivel Bolívar'];
+      this.listaPisos = ['Sotano 1', 'Mezanina', 'Nivel Lecuna', 'Nivel Bolívar'];
     }
 
     this.propiedadExtraForm.reset({ edificio: '', piso: '', letra: '' });
@@ -234,7 +238,29 @@ export class MyaccountComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/propiedad-detalle', tipo, id]);
   }
 
- 
+  async togglePush() {
+    this.pushService.isProcessing$.next(true); // Activa el cargando
+
+    try {
+      const estaSuscrito = this.pushService.isSubscribed$.value;
+      if (estaSuscrito) {
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+        if (sub) {
+          await sub.unsubscribe();
+          // Llamada opcional a tu backend para limpiar
+          this.pushService.setSubscriptionStatus(false);
+        }
+      } else {
+        await this.pushService.subscribeToNotifications();
+      }
+    } finally {
+      this.pushService.isProcessing$.next(false); // Desactiva el cargando
+    }
+  }
+
+
+
 
 
 

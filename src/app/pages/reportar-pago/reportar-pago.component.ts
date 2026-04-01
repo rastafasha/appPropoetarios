@@ -9,17 +9,19 @@ import { TasabcvService } from '../../services/tasabcv.service';
 import { ToastrService } from 'ngx-toastr';
 import { FacturacionService } from '../../services/facturacion.service';
 import { FileUploadService } from '../../services/file-upload.service';
+import { TiposdepagoService } from '../../services/tiposdepago.service';
+import { PaymentMethod } from '../../models/paymenthmethod.model';
 
 
 @Component({
   selector: 'app-reportar-pago',
-  imports: [CommonModule, SkeletonLoaderComponent, BackButtonComponent,ReactiveFormsModule],
+  imports: [CommonModule, SkeletonLoaderComponent, BackButtonComponent, ReactiveFormsModule],
   templateUrl: './reportar-pago.component.html',
   styleUrl: './reportar-pago.component.scss'
 })
 export class ReportarPagoComponent {
   isLoading: boolean = false;
-  title= 'Volver';
+  title = 'Volver';
 
   // Signals
   factura = signal<any>(null); // Viene de la pantalla anterior
@@ -27,26 +29,29 @@ export class ReportarPagoComponent {
   loading = signal(false);
   imagePreview = signal<string | null>(null);
   selectedFile: File | null = null;
-  userId!:string
+  userId!: string;
+  paymentSelected!: PaymentMethod;
+  paymentMethods: PaymentMethod[] = [];
 
   private fb = inject(FormBuilder);
   private paymentService = inject(PaymentService);
+  private paymenttiposService = inject(TiposdepagoService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private tasaBcvService = inject(TasabcvService);
   public toastr = inject(ToastrService);
-  private facturaService = inject(FacturacionService); 
-  private fileUploadService = inject(FileUploadService); 
+  private facturaService = inject(FacturacionService);
+  private fileUploadService = inject(FileUploadService);
 
   paymentForm: FormGroup = this.fb.group({
     metodo_pago: ['PAGO_MOVIL', Validators.required],
     bank_destino: ['', Validators.required],
     referencia: ['', [Validators.required, Validators.minLength(4)]],
     amount: [0, [Validators.required, Validators.min(0.01)]],
-    
+
   });
 
-  
+
 
   ngOnInit() {
     const USER = localStorage.getItem("user");
@@ -54,28 +59,44 @@ export class ReportarPagoComponent {
     this.getTasadelDia();
     // 1. Obtenemos el ID de la URL
     const id = this.activatedRoute.snapshot.paramMap.get('id');
-    
+
     // 2. Obtenemos los datos extendidos (monto, nroFactura) del historial
     const state = window.history.state;
-   if (id) {
-    if (state && state.factura) {
-      console.log('Factura desde state:', state.factura);
-      this.factura.set(state.factura);
-      this.paymentForm.patchValue({ amount: state.factura.totalPagar });
-    } else {
-      // Si el usuario recargó (F5), la buscamos por API
-      this.facturaService.getFactura(id).subscribe(resp => {
-        console.log('Factura desde API:', resp.factura);
-        this.factura.set(resp.factura);
-        this.paymentForm.patchValue({ amount: resp.factura.totalPagar });
-      });
+    if (id) {
+      if (state && state.factura) {
+        console.log('Factura desde state:', state.factura);
+        this.factura.set(state.factura);
+        this.paymentForm.patchValue({ amount: state.factura.totalPagar });
+      } else {
+        // Si el usuario recargó (F5), la buscamos por API
+        this.facturaService.getFactura(id).subscribe(resp => {
+          console.log('Factura desde API:', resp.factura);
+          this.factura.set(resp.factura);
+          this.paymentForm.patchValue({ amount: resp.factura.totalPagar });
+        });
+      }
     }
-  }
-    
+
   }
 
-  getTasadelDia(){
-    this.tasaBcvService.getUltimaTasa().subscribe((resp:any)=>{
+  getPaymentsMethods(){
+    this.paymenttiposService.getPaymentsActives().subscribe((resp:any)=>{
+      this.paymentMethods = resp;
+    })
+  }
+
+  // metodo para el cambio del select 'tipo de transferencia'
+    onChangePayment(event: Event) {
+      const target = event.target as HTMLSelectElement; //obtengo el valor
+      // console.log(target.value)
+  
+      // guardo el metodo seleccionado en la variable de clase paymentSelected
+      this.paymentSelected = this.paymentMethods.filter(method => method._id === target.value)[0]
+      console.log(this.paymentSelected)
+    }
+
+  getTasadelDia() {
+    this.tasaBcvService.getUltimaTasa().subscribe((resp: any) => {
       this.tasa.set(resp.precio_dia);
     })
   }
@@ -90,41 +111,41 @@ export class ReportarPagoComponent {
     }
   }
 
- enviarPago() {
-  const facturaId = this.factura()?._id;
-  if (!facturaId || this.loading()) return;
+  enviarPago() {
+    const facturaId = this.factura()?._id;
+    if (!facturaId || this.loading()) return;
 
-  this.loading.set(true);
+    this.loading.set(true);
 
-  // 1. Subimos la imagen PRIMERO a Cloudinary
-  this.fileUploadService
-    .actualizarFoto(this.selectedFile!, 'payments', this.userId)
-    .then(imgUrl => {
-      
-      // 2. Ahora enviamos un JSON normal (no FormData)
-      const payload = {
-        factura: facturaId,
-        cliente: this.userId,
-        amount: this.paymentForm.get('amount')?.value,
-        tasaBCV: this.tasa(),
-        referencia: this.paymentForm.get('referencia')?.value,
-        metodo_pago: this.paymentForm.get('metodo_pago')?.value,
-        bank_destino: this.paymentForm.get('bank_destino')?.value,
-        img: imgUrl // Enviamos la URL que nos dio Cloudinary
-      };
+    // 1. Subimos la imagen PRIMERO a Cloudinary
+    this.fileUploadService
+      .actualizarFoto(this.selectedFile!, 'payments', this.userId)
+      .then(imgUrl => {
 
-      this.paymentService.createPayment(payload).subscribe({
-        next: () => {
-          this.toastr.success('¡Pago reportado!');
-          this.router.navigate(['/mis-pagos']);
-        },
-        error: () => {
-          this.loading.set(false);
-          this.toastr.error('Error al guardar en BD');
-        }
+        // 2. Ahora enviamos un JSON normal (no FormData)
+        const payload = {
+          factura: facturaId,
+          cliente: this.userId,
+          amount: this.paymentForm.get('amount')?.value,
+          tasaBCV: this.tasa(),
+          referencia: this.paymentForm.get('referencia')?.value,
+          metodo_pago: this.paymentForm.get('metodo_pago')?.value,
+          bank_destino: this.paymentForm.get('bank_destino')?.value,
+          img: imgUrl // Enviamos la URL que nos dio Cloudinary
+        };
+
+        this.paymentService.createPayment(payload).subscribe({
+          next: () => {
+            this.toastr.success('¡Pago reportado!');
+            this.router.navigate(['/mis-pagos']);
+          },
+          error: () => {
+            this.loading.set(false);
+            this.toastr.error('Error al guardar en BD');
+          }
+        });
       });
-    });
-}
+  }
 
 
 }

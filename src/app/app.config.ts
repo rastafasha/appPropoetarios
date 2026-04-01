@@ -2,19 +2,22 @@ import { ApplicationConfig, provideZoneChangeDetection, isDevMode } from '@angul
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideServiceWorker } from '@angular/service-worker';
-import { HttpEvent, HttpHandlerFn, HttpRequest, provideHttpClient } from '@angular/common/http';
+
+import { HttpEvent, HttpHandlerFn, HttpRequest, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
 import { provideNgxMask } from 'ngx-mask'; //validador de telefono
-
+import { SwPush } from '@angular/service-worker';
+import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }),
   provideRouter(routes),
-  provideHttpClient(),
+  provideHttpClient(
+    withInterceptors([imageInterceptor])
+  ),
   provideAnimations(),
   provideNgxMask(),
     provideToastr({
@@ -23,7 +26,7 @@ export const appConfig: ApplicationConfig = {
       // ... more options
     }),
   provideServiceWorker('ngsw-worker.js', {
-    enabled: !isDevMode(),
+    enabled: true, 
     registrationStrategy: 'registerWhenStable:30000'
   })],
   

@@ -60,7 +60,7 @@ export class PaymentService {
       );
   }
 
- getByUser(usuario: any, page: number = 1, limit: number = 6) {
+ getByUser(usuario: any, page: number = 1, limit: number = 6,) {
   // Construimos la URL con parámetros de paginación
   const url = `${baseUrl}/payments/user/${usuario}?page=${page}&limit=${limit}`;
   
@@ -69,6 +69,8 @@ export class PaymentService {
       // Importante: Si la API devuelve un array, asegúrate que el tipado sea Payment[]
       map((resp: { ok: boolean, payments: any[] }) => resp.payments)
     );
+
+    
 }
 
   getByStatus(status: string) {
@@ -90,6 +92,8 @@ export class PaymentService {
 
   return this.http.post(`${baseUrl}/payments/store`, data, { headers });
 }
+
+
   
   validarPagoAdmin(payment: any) {
     const url = `${baseUrl}/payments/validarpago/${payment._id}`;

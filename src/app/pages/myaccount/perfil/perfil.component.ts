@@ -4,17 +4,15 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, FormsModule } 
 import { CommonModule } from '@angular/common';
 import { FileUploadService } from '../../../services/file-upload.service';
 import { HeaderComponent } from '../../../shared/header/header.component';
-import { AsideCuentaComponent } from '../aside-cuenta/aside-cuenta.component';
 import { environment } from '../../../../environments/environment';
-import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user';
 import { ImagenPipe } from '../../../pipes/imagen.pipe';
 import { ProfileService } from '../../../services/profile.service';
 import { Profile } from '../../../models/profile';
 import { SkeletonLoaderComponent } from '../../../shared/skeleton-loader/skeleton-loader.component';
 import { ToastrService } from 'ngx-toastr';
-import { Location } from '@angular/common';
 import { SelectorUbicacionComponent } from '../../../components/selector-ubicacion-component/selector-ubicacion.component';
+import { BackButtonComponent } from "../../../shared/back-button/back-button.component";
 declare var jQuery: any;
 declare var $: any;
 
@@ -32,9 +30,9 @@ interface HtmlInputEvent extends Event {
     FormsModule,
     ImagenPipe,
     SkeletonLoaderComponent,
-    SelectorUbicacionComponent
-
-  ],
+    SelectorUbicacionComponent,
+    BackButtonComponent
+],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.scss']
 })
@@ -47,6 +45,7 @@ export class PerfilComponent implements OnInit {
   public msm_error = false;
   public msm_success = false;
   public pass_error = false;
+  title='Editar Perfil'
 
   public user!: User;
   public identity!: User;
@@ -94,7 +93,6 @@ export class PerfilComponent implements OnInit {
     private _router: Router,
     private fileUploadService: FileUploadService,
     private toastr: ToastrService,
-    private location: Location
 
   ) {
     // this.usuario = usuarioService.usuario;
@@ -457,8 +455,5 @@ export class PerfilComponent implements OnInit {
       })
   }
 
-  irAtras() {
-    this.location.back();
-  }
 
 }

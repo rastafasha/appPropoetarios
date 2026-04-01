@@ -1,0 +1,77 @@
+.cuadrohome{
+   display: flex;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    flex-direction: column;
+}
+
+.propiedades{
+    display: flex;
+    justify-content: space-around;
+    gap: 2px;
+    
+}
+
+.btn-disabled {
+  opacity: 0.5;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+/* Fondos sutiles para los badges (Estilo Bootstrap 5.3) */
+.bg-success-subtle { background-color: #d1e7dd !important; color: #0f5132 !important; }
+.bg-danger-subtle { background-color: #f8d7da !important; color: #842029 !important; }
+.bg-warning-subtle { background-color: #fff3cd !important; color: #664d03 !important; }
+.bg-info-subtle { background-color: #cff4fc !important; color: #055160 !important; }
+
+/* Tarjetas redondeadas y sombras suaves */
+.rounded-4 { border-radius: 1.25rem !important; }
+
+.card {
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Animación de entrada */
+.fadeIn {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Ajuste para el botón cuando no hay internet */
+.btn-primary:disabled {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  opacity: 0.7;
+}
+
+.push-container {
+  background: #f8f9fa;
+  border-left: 4px solid #007bff;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .btn-push {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
