@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Payment } from '../models/payment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 const baseUrl = environment.apiUrl;
@@ -80,10 +80,16 @@ export class PaymentService {
   }
 
 
-  createPayment(payment: any) {
-    const url = `${baseUrl}/payments/store`;
-    return this.http.post(url, payment, this.headers);
-  }
+  createPayment(formData: FormData): Observable<any> {
+  // Asegúrate de NO pasar 'this.headers' si estos contienen 'Content-Type': 'application/json'
+  // Solo pasa el Token si es necesario
+  const headers = new HttpHeaders({
+    'x-token': localStorage.getItem('token') || '' 
+    // ¡OJO! No pongas Content-Type aquí
+  });
+
+  return this.http.post(`${baseUrl}/payments/store`, formData, { headers });
+}
   
   validarPagoAdmin(payment: any) {
     const url = `${baseUrl}/payments/validarpago/${payment._id}`;

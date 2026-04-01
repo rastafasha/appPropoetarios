@@ -94,10 +94,17 @@ export class PropiedadDetalleComponent {
   }
 }
   
-  reportarPago(factura: any) {
-  this.router.navigate(['/reportar-pago', factura._id], { 
-    state: { factura: factura } // Aquí pasas el objeto completo
-  });
+  reportarPago(payment: any) {
+  // Verificamos si el objeto tiene el ID de la factura
+  const facturaId = payment.factura?._id || payment.factura; 
+
+  if (facturaId) {
+    this.router.navigate(['/reportar-pago', facturaId]);
+  } else {
+    // Si no hay factura (pago huérfano), podrías mandarlo a una ruta general
+    console.warn('Este pago no tiene una factura asociada');
+    this.router.navigate(['/reportar-pago', 'nuevo']); 
+  }
 }
   verHistorial() {
     // Navegamos pasando el tipo (residencia, Oficina, Local) y el ID

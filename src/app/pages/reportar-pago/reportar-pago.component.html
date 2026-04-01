@@ -5,35 +5,37 @@
 
   <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
     <div class="card-body p-4">
-      
+
       <!-- 1. Selección de Factura / Monto -->
       <div class="mb-4">
         <label class="form-label text-muted small fw-bold">FACTURA A PAGAR</label>
         <div class="p-3 bg-primary-subtle rounded-3 d-flex justify-content-between align-items-center">
-         <div>
-          <!-- Si no hay nroFactura en el state, mostramos "Pago de Factura" -->
-          <h6 class="mb-0 fw-bold text-primary">
-              {{ factura()?.nroFactura ? 'Factura #' + factura().nroFactura : 'Pago de Factura' }}
-          </h6>
-          <small class="text-primary opacity-75">
-              Monto: ${{ factura()?.totalPagar || paymentForm.get('amount')?.value | number:'1.2-2' }}
-          </small>
-        </div>
+          <div>
+            <!-- Si no hay nroFactura en el state, mostramos "Pago de Factura" -->
+            <h6 class="mb-0 fw-bold text-primary">
+              {{ factura()?.nroFactura ? 'Factura #' + factura().nroFactura : 'Pago General' }}
+            </h6>
+            <small class="text-primary opacity-75">Monto sugerido: ${{ factura()?.totalPagar }}</small>
+          </div>
           <div class="text-end">
-            <h5 class="mb-0 fw-bold text-primary">{{ (factura()?.totalPagar * tasa) | currency:'Bs. ' }}</h5>
-            <small class="text-primary opacity-75">Tasa: {{ tasa }} Bs.</small>
+            <!-- Cálculo en tiempo real según la tasa del servicio -->
+            <h5 class="mb-0 fw-bold text-primary">
+              {{ (paymentForm.get('amount')?.value * tasa()) | currency:'Bs. ':'symbol':'1.2-2' }}
+            </h5>
+            <small class="text-primary opacity-75">Tasa BCV: {{ tasa() }} Bs.</small>
           </div>
         </div>
       </div>
 
       <!-- 2. Formulario de Datos -->
       <form [formGroup]="paymentForm" (ngSubmit)="enviarPago()">
-        
+
         <div class="row g-3">
           <!-- Método de Pago -->
           <div class="col-12">
             <label class="form-label text-muted small fw-bold">MÉTODO DE PAGO</label>
-            <select formControlName="metodo_pago" class="form-select form-select-lg rounded-3 border-light bg-light fs-6">
+            <select formControlName="metodo_pago"
+              class="form-select form-select-lg rounded-3 border-light bg-light fs-6">
               <option value="PAGO_MOVIL">Pago Móvil</option>
               <option value="ZELLE">Zelle</option>
               <option value="TRANSFERENCIA">Transferencia</option>
@@ -44,37 +46,48 @@
           <!-- Banco / Referencia -->
           <div class="col-6">
             <label class="form-label text-muted small fw-bold">BANCO DESTINO</label>
-            <input type="text" formControlName="bank_destino" class="form-control rounded-3 border-light bg-light" placeholder="Ej: Banesco">
+            <input type="text" formControlName="bank_destino" class="form-control rounded-3 border-light bg-light"
+              placeholder="Ej: Banesco">
           </div>
           <div class="col-6">
             <label class="form-label text-muted small fw-bold">REFERENCIA</label>
-            <input type="text" formControlName="referencia" class="form-control rounded-3 border-light bg-light" placeholder="Últimos 4 o 6">
+            <input type="text" formControlName="referencia" class="form-control rounded-3 border-light bg-light"
+              placeholder="Últimos 4 o 6">
           </div>
 
           <!-- Monto Pagado -->
-          <div class="col-12">
-            <label class="form-label text-muted small fw-bold">MONTO EN DÓLARES ($)</label>
-            <div class="input-group">
-              <span class="input-group-text border-0 bg-light fw-bold">$</span>
-              <input type="number" formControlName="amount" class="form-control form-control-lg border-light bg-light fw-bold">
+          <div class="row g-3">
+          <!-- Monto en Dólares (Editable si hay pagos parciales) -->
+          <div class="col-6">
+            <label class="form-label text-muted small fw-bold">MONTO EN USD ($)</label>
+            <input type="number" formControlName="amount" 
+                  class="form-control border-0 bg-white py-3 shadow-sm rounded-3 fw-bold text-primary">
+          </div>
+
+          <!-- Monto en Bolívares (Informativo/Calculado) -->
+          <div class="col-6">
+            <label class="form-label text-muted small fw-bold">EQUIVALENTE BS.</label>
+            <div class="py-3 px-2 bg-success-subtle text-success fw-bold rounded-3 text-center border border-success border-opacity-10">
+              {{ (paymentForm.get('amount')?.value * tasa()) | number:'1.2-2' }}
             </div>
           </div>
+        </div>
+
 
           <!-- 3. Subida de Captura (Lo más importante) -->
           <div class="col-12 mt-4">
             <label class="form-label text-muted small fw-bold">COMPROBANTE (CAPTURE)</label>
             <div class="upload-area border-2 border-dashed rounded-4 p-4 text-center cursor-pointer"
-                 (click)="fileInput.click()"
-                 [ngClass]="{'border-primary bg-primary-subtle': imagePreview()}">
-              
+              (click)="fileInput.click()" [ngClass]="{'border-primary bg-primary-subtle': imagePreview()}">
+
               <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept="image/*">
-              
+
               @if (!imagePreview()) {
-                <i class="bi bi-cloud-arrow-up fs-1 text-primary"></i>
-                <p class="mb-0 mt-2 small text-muted">Toca para subir o tomar foto</p>
+              <i class="bi bi-cloud-arrow-up fs-1 text-primary"></i>
+              <p class="mb-0 mt-2 small text-muted">Toca para subir o tomar foto</p>
               } @else {
-                <img [src]="imagePreview()" class="img-fluid rounded-3 shadow-sm mb-2" style="max-height: 200px;">
-                <p class="mb-0 small text-primary fw-bold">Cambiar imagen</p>
+              <img [src]="imagePreview()" class="img-fluid rounded-3 shadow-sm mb-2" style="max-height: 200px;">
+              <p class="mb-0 small text-primary fw-bold">Cambiar imagen</p>
               }
             </div>
           </div>
@@ -82,12 +95,12 @@
 
         <!-- Botón Enviar -->
         <div class="d-grid mt-5">
-          <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-sm" 
-                  [disabled]="paymentForm.invalid || loading()">
+          <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-sm"
+            [disabled]="paymentForm.invalid || loading()">
             @if (loading()) {
-              <span class="spinner-border spinner-border-sm me-2"></span> Procesando...
+            <span class="spinner-border spinner-border-sm me-2"></span> Procesando...
             } @else {
-              REPORTAR PAGO AHORA
+            REPORTAR PAGO AHORA
             }
           </button>
         </div>
@@ -96,4 +109,3 @@
     </div>
   </div>
 </div>
-
