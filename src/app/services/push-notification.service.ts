@@ -4,9 +4,11 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 const claveVapidApi = environment.VAPI_KEY_PUBLIC;
 const urlBackend = environment.urlBackedNotification;
+const BackendApi = environment.apiUrl;
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +19,7 @@ export class PushNotificationService {
   private swPush = inject(SwPush);
   private http = inject(HttpClient);
   public toastr = inject(ToastrService);
+  public router = inject(Router);
   // Este observable le dirá a cualquier componente si el usuario está suscrito
   public isSubscribed$ = new BehaviorSubject<boolean>(false);
   public isProcessing$ = new BehaviorSubject<boolean>(false);
@@ -72,6 +75,52 @@ export class PushNotificationService {
         this.toastr.success('¡Notificaciones activadas!'); // Feedback visual
       })
   }
+
+  // En tu PushNotificationService.ts
+
+checkUnreadNotifications() {
+  // 1. Cambiamos la petición para obtener las notificaciones (no solo el count)
+  this.http.get<{ok: boolean, notificaciones: any[]}>(`${BackendApi}/notificaciones-pendientes`)
+    .subscribe(res => {
+      if (res.ok && res.notificaciones.length > 0) {
+        
+        // Iteramos sobre las notificaciones nuevas para mostrar el Toastr correcto
+        res.notificaciones.forEach(notif => {
+          
+          let toast;
+          const config = { timeOut: 10000, closeButton: true, tapToDismiss: true };
+
+          // 2. Lógica de colores según el TIPO que viene de Node.js
+          switch (notif.tipo) {
+            case 'PAGO_RECHAZADO':
+              toast = this.toastr.error(notif.mensaje, '❌ Pago Rechazado', config);
+              break;
+            case 'PAGO_APROBADO':
+              toast = this.toastr.success(notif.mensaje, '✅ Pago Aprobado', config);
+              break;
+            case 'NUEVA_FACTURA':
+              toast = this.toastr.info(notif.mensaje, '📄 Nueva Factura', config);
+              break;
+            default:
+              toast = this.toastr.info(notif.mensaje, '🔔 Aviso Nuevo', config);
+          }
+
+          // 3. Al tocar el Toastr, navegamos según el tipo
+          toast.onTap.subscribe(() => {
+            this.marcarComoLeidas(); // Limpia la DB
+            const ruta = (notif.tipo === 'NUEVA_FACTURA') ? '/mis-facturas' : '/mis-pagos';
+            this.router.navigate([ruta]);
+          });
+        });
+      }
+    });
+}
+
+
+marcarComoLeidas() {
+  this.http.put(`${urlBackend}/marcar-leidas`, {}).subscribe();
+}
+  
 
 
 }

@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { ConectividadService } from './services/conectividad.service';
 import { SwPush } from '@angular/service-worker';
+import { PushNotificationService } from './services/push-notification.service';
 
 @Component({
   selector: 'app-root',
@@ -14,8 +15,10 @@ export class AppComponent implements OnInit{
   private swPush = inject(SwPush);
   private router = inject(Router);
   private connectivity = inject(ConectividadService);
+  private pollService = inject(PushNotificationService);
 
  ngOnInit() {
+  this.pollService.checkUnreadNotifications();
   // 1. Escuchar el CLICK en la notificación
   this.swPush.notificationClicks.subscribe(({ notification }) => {
     console.log('Notificación clickeada:', notification);

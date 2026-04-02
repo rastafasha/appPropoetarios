@@ -8,6 +8,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BusquedasService } from '../../services/busqueda.service';
+import { PushNotificationService } from '../../services/push-notification.service';
 declare var bootstrap: any;
 @Component({
   selector: 'app-mis-facturas',
@@ -39,9 +40,16 @@ isFilteringFactura = signal(false);
   private router = inject(Router);
   private busquedasService = inject(BusquedasService);
   private route = inject(ActivatedRoute);
+  private pollService = inject(PushNotificationService);
 
   ngOnInit() {
     window.scrollTo(0, 0);
+    // 1. Marcamos como leídas en la DB
+  this.pollService.marcarComoLeidas();
+  
+  // 2. Limpiamos cualquier Toastr que haya quedado abierto en pantalla
+  this.toastr.clear(); 
+  
     const USER = localStorage.getItem("user");
     this.userId = JSON.parse(USER || '{}').uid;
 
