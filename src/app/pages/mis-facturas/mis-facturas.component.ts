@@ -5,7 +5,7 @@ import { MenufooterComponent } from '../../shared/menufooter/menufooter.componen
 import { ToastrService } from 'ngx-toastr';
 import { FacturacionService } from '../../services/facturacion.service';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BusquedasService } from '../../services/busqueda.service';
 declare var bootstrap: any;
@@ -38,13 +38,25 @@ isFilteringFactura = signal(false);
   public facturaService = inject(FacturacionService);
   private router = inject(Router);
   private busquedasService = inject(BusquedasService);
+  private route = inject(ActivatedRoute);
 
   ngOnInit() {
     window.scrollTo(0, 0);
     const USER = localStorage.getItem("user");
     this.userId = JSON.parse(USER || '{}').uid;
 
-    this.getFacturas();
+    // LEER PARÁMETROS DE LA URL
+    this.route.queryParams.subscribe(params => {
+      if (params['estado']) {
+        // Asignamos 'POR PAGAR' o 'PENDIENTE' según envíes desde el Home
+        this.statusFactura = params['estado']; 
+        this.isFilteringFactura.set(true);
+      }
+      
+      // Ahora ejecutamos la carga (que ya usa this.statusFactura)
+      this.getFacturas();
+    });
+
   }
 
   getMesNombre(mes: number): string {

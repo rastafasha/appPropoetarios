@@ -84,10 +84,10 @@
         </h1>
         
         <!-- Botón de Pago Sólido -->
-        <button *ngIf="identity.deudaTotalAcumulada > 0" type="button" class="btn btn-outline-success mb-3"
+        <button *ngIf="identity.deudaTotalAcumulada > 0" type="button" class="btn btn-outline-success mb-3 mt-3"
           (click)="iraPagar(identity.deudaTotalAcumulada)" [disabled]="!(connectivity.isOnline$ | async)"
           [ngClass]="{'btn-disabled': !(connectivity.isOnline$ | async)}">
-          {{ (connectivity.isOnline$ | async) ? ('Pagar ' +  identity.deudaTotalAcumulada ) : 'Esperando conexión...' }}
+          {{ (connectivity.isOnline$ | async) ? ('Revisar Pendientes ' ) : 'Esperando conexión...' }}
         </button>
       </div>
 

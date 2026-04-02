@@ -39,7 +39,7 @@
             <select formControlName="metodo_pago" class="form-select form-select-lg rounded-3 border-light bg-light fs-6"
              (change)="onChangePayment($event)"
               name="metodo_pago" id="metodo_pago">
-              <option value="" disabled selected>Seleccione Tipo de Transferencia</option>
+              <option value="" disabled selected>Seleccione Método de Pago</option>
               <option [value]="metodo_pago.tipo" *ngFor="let metodo_pago of paymentMethods">
                 {{metodo_pago.tipo}}
               </option>

@@ -102,22 +102,11 @@ async myRefreshEvent(event: any) {
   }
 
 
-
- iraPagar(monto: number) {
+iraPagar(monto: number) {
   if (monto > 0) {
-    // Enviamos el string 'deuda-total' como ID
-    // Y en el state enviamos un objeto ficticio para que la interfaz no falle
-    this.router.navigate(['/reportar-pago', 'deuda-total'], {
-      state: { 
-        factura: { 
-          _id: 'DEUDA_TOTAL', 
-          totalPagar: monto, 
-          nroFactura: 'Saldo Total' 
-        } 
-      }
+    this.router.navigate(['/mis-facturas'], { 
+      queryParams: { estado: 'PENDIENTE' } 
     });
-  } else {
-    this.toastr.info('Tu cuenta está al día.', 'Excelente');
   }
 }
 
