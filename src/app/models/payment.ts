@@ -14,7 +14,7 @@ export class Payment {
     bank_destino!: string;
     img!: string;
     usuario_validador!: User;
-    motivoRechazo!: string;
+    observaciones!: string;
     
     metodo_pago?: 'TRANSFERENCIA'| 'PAGO_MOVIL'| 'EFECTIVO'| 'ZELLE';
     status?: 'PENDIENTE'| 'APROBADO'| 'RECHAZADO';
