@@ -32,35 +32,31 @@
 
         <div class="row g-3">
           <!-- Método de Pago -->
+          <!-- Tipo de Transferencia -->
           <div class="col-12">
             <label class="form-label text-muted small fw-bold">MÉTODO DE PAGO</label>
-            <select formControlName="metodo_pago"
-              class="form-select form-select-lg rounded-3 border-light bg-light fs-6">
-              <option value="">Seleccione</option>
-              <option value="PAGO_MOVIL">Pago Móvil</option>
-              <option value="ZELLE">Zelle</option>
-              <option value="TRANSFERENCIA">Transferencia</option>
-              <option value="EFECTIVO">Efectivo</option>
-            </select>
-          </div>
-
-          <!-- Tipo de Transferencia -->
-          <!-- <div class="mb-3 mt-2 col-12">
-            <label class="form-label">Tipo de Transferencia</label>
-            <select formControlName="metodo_pago" class="form-control" (change)="onChangePayment($event)"
+            <select formControlName="metodo_pago" class="form-select form-select-lg rounded-3 border-light bg-light fs-6"
+             (change)="onChangePayment($event)"
               name="metodo_pago" id="metodo_pago">
               <option value=" ">Seleccione Tipo de Transferencia</option>
-              <option [value]="metodo_pago._id" *ngFor="let metodo_pago of paymentMethods">
+              <option [value]="metodo_pago.tipo" *ngFor="let metodo_pago of paymentMethods">
                 {{metodo_pago.tipo}}
               </option>
             </select>
-          </div> -->
+          </div>
 
           <!-- Banco / Referencia -->
+          
           <div class="col-6">
             <label class="form-label text-muted small fw-bold">BANCO DESTINO</label>
-            <input type="text" formControlName="bank_destino" class="form-control rounded-3 border-light bg-light"
-              placeholder="Ej: Banesco">
+            <select formControlName="bank_destino" class="form-select form-select-lg rounded-3 border-light bg-light"
+             (change)="onChangePayment($event)"
+              name="bank_destino" id="bank_destino">
+              <option value=" ">Seleccione Banco</option>
+              <option [value]="banco.bankName" *ngFor="let banco of paymentMethods">
+                {{banco.bankName}}
+              </option>
+            </select>
           </div>
           <div class="col-6">
             <label class="form-label text-muted small fw-bold">REFERENCIA</label>

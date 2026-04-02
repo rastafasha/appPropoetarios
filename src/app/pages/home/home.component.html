@@ -90,10 +90,10 @@
         </div>
 
         <!-- Caso: Con Deuda -->
-        <h1 class="display-5 fw-bold text-dark mb-0">
+        <h1 class="display-5 fw-bold text-dark mb-0" *ngIf="identity.deudaTotalAcumulada > 0">
           {{identity.deudaTotalAcumulada | currency:'Bs. ':'symbol':'1.2-2'}}
         </h1>
-        <small class="text-danger fw-bold mb-3">Pago pendiente</small>
+        <small class="text-danger fw-bold mb-3" *ngIf="identity.deudaTotalAcumulada > 0">Pago pendiente</small>
         <!-- Botón de Pago Sólido -->
         <button *ngIf="identity.deudaTotalAcumulada > 0" type="button" class="btn btn-outline-success mb-3"
           (click)="iraPagar(identity.deudaTotalAcumulada)" [disabled]="!(connectivity.isOnline$ | async)"

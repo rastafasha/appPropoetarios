@@ -30,3 +30,10 @@
 .rounded-4 { border-radius: 1rem !important; }
 .bg-success-light { background-color: rgba(40, 167, 69, 0.1); }
 .bg-warning-light { background-color: rgba(255, 193, 7, 0.1); }
+
+//para el pull reloader
+html, body {
+  overscroll-behavior-y: none; /* Evita el pull-to-refresh nativo que suele fallar en PWAs viejas */
+  overflow: hidden;
+  height: 100%;
+}

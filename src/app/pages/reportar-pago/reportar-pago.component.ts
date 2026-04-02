@@ -76,6 +76,7 @@ export class ReportarPagoComponent {
         });
       }
     }
+    this.getPaymentsMethods();
 
   }
 
