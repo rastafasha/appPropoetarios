@@ -75,7 +75,9 @@
     }
     @if (payment.status === 'RECHAZADO') {
       <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3">Rechazado</span>
+      <p>{{payment.motivoRechazo}}</p>
     }
+
   </div>
 
   <!-- Fila Media: Monto -->
