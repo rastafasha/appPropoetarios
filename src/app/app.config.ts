@@ -9,7 +9,6 @@ import { Observable } from 'rxjs';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
 import { provideNgxMask } from 'ngx-mask'; //validador de telefono
-import { SwPush } from '@angular/service-worker';
 import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {

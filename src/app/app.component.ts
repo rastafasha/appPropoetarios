@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { ConectividadService } from './services/conectividad.service';
 import { SwPush } from '@angular/service-worker';
@@ -9,7 +9,7 @@ import { SwPush } from '@angular/service-worker';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   title = 'appPropietarios';
   private swPush = inject(SwPush);
   private router = inject(Router);
@@ -35,6 +35,8 @@ export class AppComponent {
   this.swPush.messages.subscribe(msg => {
     console.log('Mensaje recibido con la app abierta:', msg);
   });
+
+  
 }
 
 
