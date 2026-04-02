@@ -76,29 +76,29 @@
       <!-- SECCIÓN DE DEUDA Y BOTÓN -->
       <div class="card shadow-sm border-0 rounded-4 bg-white mb-4 animate fadeIn p-3" *ngIf="!isLoading">
         <div class="card-body p-4 text-center">
-          <p class="text-muted small mb-1 fw-bold text-uppercase">Deuda Total Acumulada</p>
-
           <!-- Caso: Al día -->
-
           <div class="col-12  label text-success" *ngIf="identity.deudaTotalAcumulada == 0">
             <i class="fa fa-check-circle-o "></i> ¡Estás al día!
           </div>
-          <div class="col-12  info" *ngIf="identity.deudaTotalAcumulada > 0">
-            <b style="color: #ff7e93;">{{identity.deudaTotalAcumulada |
-              currency:'Bs.':'symbol':'1.2-2'}}</b>
-          </div>
+          
         </div>
 
         <!-- Caso: Con Deuda -->
         <h1 class="display-5 fw-bold text-dark mb-0" *ngIf="identity.deudaTotalAcumulada > 0">
-          {{identity.deudaTotalAcumulada | currency:'Bs. ':'symbol':'1.2-2'}}
+          <small class="text-muted d-block mb-1">Deuda Total Acumulada</small>
+          <h1 class="display-6 fw-bold text-dark mb-0">
+            {{ identity.deudaTotalAcumulada | currency:'USD':'symbol':'1.2-2' }}
+          </h1>
         </h1>
-        <small class="text-danger fw-bold mb-3" *ngIf="identity.deudaTotalAcumulada > 0">Pago pendiente</small>
+        <small class="text-danger fw-bold mb-3 d-block">
+          Estado: {{ identity.statusFinanciero }}
+        </small>
+        
         <!-- Botón de Pago Sólido -->
         <button *ngIf="identity.deudaTotalAcumulada > 0" type="button" class="btn btn-outline-success mb-3"
           (click)="iraPagar(identity.deudaTotalAcumulada)" [disabled]="!(connectivity.isOnline$ | async)"
           [ngClass]="{'btn-disabled': !(connectivity.isOnline$ | async)}">
-          {{ (connectivity.isOnline$ | async) ? ('Pagar ' + 'Bs.' + identity.deudaTotalAcumulada ) : 'Esperando conexión...' }}
+          {{ (connectivity.isOnline$ | async) ? ('Pagar ' +  identity.deudaTotalAcumulada ) : 'Esperando conexión...' }}
         </button>
       </div>
 

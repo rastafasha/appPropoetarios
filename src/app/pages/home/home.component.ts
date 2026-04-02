@@ -103,16 +103,23 @@ async myRefreshEvent(event: any) {
 
 
 
-  iraPagar(monto: number) {
-
-    // Aquí iría tu servicio de integración con la pasarela de pagos
-    this.toastr.info(`Procesando pago de Bs. ${monto}...`, 'Transacción');
-
-    // Simulación de éxito
-    setTimeout(() => {
-      this.toastr.success('¡Pago realizado con éxito!', 'Confirmación');
-    }, 2000);
+ iraPagar(monto: number) {
+  if (monto > 0) {
+    // Enviamos el string 'deuda-total' como ID
+    // Y en el state enviamos un objeto ficticio para que la interfaz no falle
+    this.router.navigate(['/reportar-pago', 'deuda-total'], {
+      state: { 
+        factura: { 
+          _id: 'DEUDA_TOTAL', 
+          totalPagar: monto, 
+          nroFactura: 'Saldo Total' 
+        } 
+      }
+    });
+  } else {
+    this.toastr.info('Tu cuenta está al día.', 'Excelente');
   }
+}
 
 
   logout() {

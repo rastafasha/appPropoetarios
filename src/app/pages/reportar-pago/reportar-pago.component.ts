@@ -11,6 +11,7 @@ import { FacturacionService } from '../../services/facturacion.service';
 import { FileUploadService } from '../../services/file-upload.service';
 import { TiposdepagoService } from '../../services/tiposdepago.service';
 import { PaymentMethod } from '../../models/paymenthmethod.model';
+import { Profile } from '../../models/profile';
 
 
 @Component({
@@ -32,6 +33,7 @@ export class ReportarPagoComponent {
   userId!: string;
   paymentSelected!: PaymentMethod;
   paymentMethods: PaymentMethod[] = [];
+  user!: Profile;
 
   private fb = inject(FormBuilder);
   private paymentService = inject(PaymentService);
@@ -44,7 +46,7 @@ export class ReportarPagoComponent {
   private fileUploadService = inject(FileUploadService);
 
   paymentForm: FormGroup = this.fb.group({
-    metodo_pago: ['PAGO_MOVIL', Validators.required],
+    metodo_pago: ['', Validators.required],
     bank_destino: ['', Validators.required],
     referencia: ['', [Validators.required, Validators.minLength(4)]],
     amount: [0, [Validators.required, Validators.min(0.01)]],
@@ -56,45 +58,50 @@ export class ReportarPagoComponent {
   ngOnInit() {
     const USER = localStorage.getItem("user");
     this.userId = JSON.parse(USER || '{}').uid;
+    this.user = JSON.parse(USER || '{}');
     this.getTasadelDia();
+    this.getPaymentsMethods();
     // 1. Obtenemos el ID de la URL
     const id = this.activatedRoute.snapshot.paramMap.get('id');
 
     // 2. Obtenemos los datos extendidos (monto, nroFactura) del historial
     const state = window.history.state;
-    if (id) {
-      if (state && state.factura) {
-        console.log('Factura desde state:', state.factura);
-        this.factura.set(state.factura);
-        this.paymentForm.patchValue({ amount: state.factura.totalPagar });
-      } else {
-        // Si el usuario recargó (F5), la buscamos por API
-        this.facturaService.getFactura(id).subscribe(resp => {
-          console.log('Factura desde API:', resp.factura);
-          this.factura.set(resp.factura);
-          this.paymentForm.patchValue({ amount: resp.factura.totalPagar });
-        });
-      }
+   if (id === 'deuda-total') {
+    // Caso: Viene del Home con el monto acumulado
+    if (state && state.factura) {
+      this.factura.set(state.factura);
+      this.paymentForm.patchValue({ amount: state.factura.totalPagar });
     }
-    this.getPaymentsMethods();
-
+  } else if (id && id !== 'nuevo') {
+    // Caso: Viene de una factura específica
+    if (state && state.factura) {
+      this.factura.set(state.factura);
+      this.paymentForm.patchValue({ amount: state.factura.totalPagar });
+    } else {
+      // Solo llamamos a la API si NO es 'deuda-total'
+      this.facturaService.getFactura(id).subscribe(resp => {
+        this.factura.set(resp.factura);
+        this.paymentForm.patchValue({ amount: resp.factura.totalPagar });
+      });
+    }
+  }
   }
 
-  getPaymentsMethods(){
-    this.paymenttiposService.getPaymentsActives().subscribe((resp:any)=>{
+  getPaymentsMethods() {
+    this.paymenttiposService.getPaymentsActives().subscribe((resp: any) => {
       this.paymentMethods = resp;
     })
   }
 
   // metodo para el cambio del select 'tipo de transferencia'
-    onChangePayment(event: Event) {
-      const target = event.target as HTMLSelectElement; //obtengo el valor
-      // console.log(target.value)
-  
-      // guardo el metodo seleccionado en la variable de clase paymentSelected
-      this.paymentSelected = this.paymentMethods.filter(method => method._id === target.value)[0]
-      console.log(this.paymentSelected)
-    }
+  onChangePayment(event: Event) {
+    const target = event.target as HTMLSelectElement; //obtengo el valor
+    // console.log(target.value)
+
+    // guardo el metodo seleccionado en la variable de clase paymentSelected
+    this.paymentSelected = this.paymentMethods.filter(method => method._id === target.value)[0]
+    console.log(this.paymentSelected)
+  }
 
   getTasadelDia() {
     this.tasaBcvService.getUltimaTasa().subscribe((resp: any) => {
@@ -113,40 +120,45 @@ export class ReportarPagoComponent {
   }
 
   enviarPago() {
-    const facturaId = this.factura()?._id;
-    if (!facturaId || this.loading()) return;
+  const facturaData = this.factura();
+  if (!facturaData || this.loading()) return;
 
-    this.loading.set(true);
+  // Si es un pago de deuda total, el ID será 'DEUDA_TOTAL' o null según prefiera tu backend
+  const facturaId = facturaData._id;
 
-    // 1. Subimos la imagen PRIMERO a Cloudinary
-    this.fileUploadService
-      .actualizarFoto(this.selectedFile!, 'payments', this.userId)
-      .then(imgUrl => {
+  this.loading.set(true);
 
-        // 2. Ahora enviamos un JSON normal (no FormData)
-        const payload = {
-          factura: facturaId,
-          cliente: this.userId,
-          amount: this.paymentForm.get('amount')?.value,
-          tasaBCV: this.tasa(),
-          referencia: this.paymentForm.get('referencia')?.value,
-          metodo_pago: this.paymentForm.get('metodo_pago')?.value,
-          bank_destino: this.paymentForm.get('bank_destino')?.value,
-          img: imgUrl // Enviamos la URL que nos dio Cloudinary
-        };
+  this.fileUploadService
+    .actualizarFoto(this.selectedFile!, 'payments', this.userId)
+    .then(imgUrl => {
+      const payload = {
+        factura: facturaId === 'DEUDA_TOTAL' ? null : facturaId, // Enviamos null si es abono general
+        esPagoTotal: facturaId === 'DEUDA_TOTAL', // Flag útil para el backend
+        cliente: this.userId,
+        amount: this.paymentForm.get('amount')?.value,
+        tasaBCV: this.tasa(),
+        referencia: this.paymentForm.get('referencia')?.value,
+        metodo_pago: this.paymentForm.get('metodo_pago')?.value,
+        bank_destino: this.paymentForm.get('bank_destino')?.value,
+        img: imgUrl
+      };
 
-        this.paymentService.createPayment(payload).subscribe({
-          next: () => {
-            this.toastr.success('¡Pago reportado!');
-            this.router.navigate(['/mis-pagos']);
-          },
-          error: () => {
-            this.loading.set(false);
-            this.toastr.error('Error al guardar en BD');
-          }
-        });
+      this.paymentService.createPayment(payload).subscribe({
+        next: () => {
+          this.toastr.success('¡Pago reportado con éxito!');
+          this.router.navigate(['/mis-pagos']);
+        },
+        error: () => {
+          this.loading.set(false);
+          this.toastr.error('Error al registrar el pago');
+        }
       });
-  }
+    })
+    .catch(err => {
+      this.loading.set(false);
+      this.toastr.error('Error al subir el comprobante');
+    });
+}
 
 
 }
