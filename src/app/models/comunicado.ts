@@ -1,6 +1,7 @@
 import { User } from "./user";
 
 export class Comunicado{
+    _id?:string;
     titulo?:string;
     mensaje?:string;
     tipo?: 'EVENTO'| 'MANTENIMIENTO'| 'REUNION' | 'URGENTE' | 'CARTELERA';

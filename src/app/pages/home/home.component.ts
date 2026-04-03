@@ -66,9 +66,14 @@ export class HomeComponent {
   }
 
   obtenerMisComunicados() {
-    this.comunicadosService.obtenerMisComunicados().subscribe(
-      comunicados => this.listaComunicados = comunicados
-    );
+    this.comunicadosService.obtenerMisComunicados().subscribe({
+  next: (res: any) => {
+    // ERROR: this.comunicados = res; <--- Esto causa el error NG02200
+    
+    // CORRECTO: Extrae solo la lista
+    this.listaComunicados = res.comunicados; 
+  }
+});
   }
   
   obetnerContadorPendiente() {
