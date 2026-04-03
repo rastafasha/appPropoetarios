@@ -1,16 +1,38 @@
 <header>
-        <div class="logo">
-            <a routerLink="/">
-                <img src="./assets/img/logoBuildPC.jpeg" alt="">
-            </a>
-            <h5>Corpo Capital Propietarios App</h5>
-        </div>
-        <div class="opciones">
-            <a (click)="logout()">
-                <i class="fa fa-power-off " style="font-size: 30px; display: flex;"></i>
-            </a> 
-            
-        </div>
+    <!-- <div class="logo">
+        <a routerLink="/">
+            <img src="./assets/img/logoBuildPC.jpeg" alt="">
+        </a>
+        <h5>Corpo Capital Propietarios App</h5>
+    </div>
+    <div class="opciones">
+        <a (click)="logout()">
+            <i class="fa fa-power-off " style="font-size: 30px; display: flex;"></i>
+        </a>
 
-    </header>
+    </div> -->
+
+
+<!-- Navbar Superior -->
+<div class="d-flex justify-content-between align-items-center p-3 w-100">
+    <div class="d-flex align-items-center">
+        <img src="assets/img/logoBuildPC.jpeg" width="30" class="me-2">
+        <span class="fw-bold small">Corpo Capital Propietarios</span>
+    </div>
     
+    <div class="d-flex align-items-center">
+        <!-- CAMPANA CON BADGE -->
+        <div class="position-relative me-3" routerLink="/notificaciones" style="cursor: pointer;">
+            <i class="fas fa-regular fas fa-bell fs-4 text-dark"></i>
+            <span *ngIf="notificacionesPendientes > 0" 
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  style="font-size: 0.6rem;">
+                {{ notificacionesPendientes }}
+            </span>
+        </div>
+        <i class="fas fa-solid fas fa-power-off fs-4 text-primary" (click)="logout()"></i>
+    </div>
+</div>
+
+</header>
+

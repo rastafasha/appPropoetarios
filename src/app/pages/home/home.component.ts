@@ -12,6 +12,9 @@ import { NgxPullToRefreshComponent } from 'ngx-pull-to-refresh';
 import { lastValueFrom } from 'rxjs';
 import { PushNotificationService } from '../../services/push-notification.service';
 import { PwaNotifInstallerComponent } from "../../shared/pwa-notif-installer/pwa-notif-installer.component";
+import { ComunicadoService } from '../../services/comunicado.service';
+import { Comunicado } from '../../models/comunicado';
+import { NotificacionService } from '../../services/notificacion.service';
 
 
 @Component({
@@ -24,7 +27,7 @@ import { PwaNotifInstallerComponent } from "../../shared/pwa-notif-installer/pwa
     NgClass,
     NgxPullToRefreshComponent,
     PwaNotifInstallerComponent
-],
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -36,7 +39,9 @@ export class HomeComponent {
   user!: any;
   isLoading = false;
   isOnline = navigator.onLine;
-  swPush:boolean =false;
+  swPush: boolean = false;
+  listaComunicados!: Comunicado[]
+  totalPendientes: any;
 
   private profileService = inject(ProfileService);
   public connectivity = inject(ConectividadService);
@@ -44,6 +49,8 @@ export class HomeComponent {
   public toastr = inject(ToastrService);
   public router = inject(Router);
   public pushService = inject(PushNotificationService);
+  public notificacionService = inject(NotificacionService);
+  public comunicadosService = inject(ComunicadoService);
 
   estaSuscrito$ = this.pushService.isSubscribed$;
 
@@ -52,34 +59,51 @@ export class HomeComponent {
     let USER = localStorage.getItem("user");
     this.user = JSON.parse(USER ? USER : '');
     this.identityId = this.user.uid;
+
     this.loadIdentity();
+    this.obtenerMisComunicados();
+    this.obetnerContadorPendiente();
   }
 
+  obtenerMisComunicados() {
+    this.comunicadosService.obtenerMisComunicados().subscribe(
+      comunicados => this.listaComunicados = comunicados
+    );
+  }
+  
+  obetnerContadorPendiente() {
+    this.notificacionService.obtenerContadorPendientes().subscribe({
+      next: (res) => {
+        this.totalPendientes = res.count; // Aquí guardas el número para el badge
+      },
+      error: (err) => console.error('Error al obtener conteo', err)
+    });
+  }
   btnActivarPush() {
     this.pushService.subscribeToNotifications();
   }
 
   // Función que dispara el refresco
-async myRefreshEvent(event: any) {
-  // Solo intentamos vibrar si es un móvil (evita el error en Chrome Desktop)
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  
-  if (isMobile && navigator.vibrate) {
-    try { navigator.vibrate(40); } catch (e) { /* Silencio */ }
-  }
+  async myRefreshEvent(event: any) {
+    // Solo intentamos vibrar si es un móvil (evita el error en Chrome Desktop)
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-  // Lógica de carga
-  try {
-    await this.loadIdentity(); 
-  } finally {
-    // Si event.complete() no funciona, forzamos con un pequeño retraso
-    setTimeout(() => {
-      if (event && typeof event.complete === 'function') {
-        event.complete();
-      }
-    }, 100); 
+    if (isMobile && navigator.vibrate) {
+      try { navigator.vibrate(40); } catch (e) { /* Silencio */ }
+    }
+
+    // Lógica de carga
+    try {
+      await this.loadIdentity();
+    } finally {
+      // Si event.complete() no funciona, forzamos con un pequeño retraso
+      setTimeout(() => {
+        if (event && typeof event.complete === 'function') {
+          event.complete();
+        }
+      }, 100);
+    }
   }
-}
 
 
 
@@ -102,13 +126,13 @@ async myRefreshEvent(event: any) {
   }
 
 
-iraPagar(monto: number) {
-  if (monto > 0) {
-    this.router.navigate(['/mis-facturas'], { 
-      queryParams: { estado: 'PENDIENTE' } 
-    });
+  iraPagar(monto: number) {
+    if (monto > 0) {
+      this.router.navigate(['/mis-facturas'], {
+        queryParams: { estado: 'PENDIENTE' }
+      });
+    }
   }
-}
 
 
   logout() {
@@ -118,7 +142,7 @@ iraPagar(monto: number) {
   verpropiedades() {
     this.router.navigateByUrl('/my-account')
   }
-  
+
 
 
 }

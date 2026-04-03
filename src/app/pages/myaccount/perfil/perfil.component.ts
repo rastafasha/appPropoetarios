@@ -32,7 +32,7 @@ interface HtmlInputEvent extends Event {
     SkeletonLoaderComponent,
     SelectorUbicacionComponent,
     BackButtonComponent
-],
+  ],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.scss']
 })
@@ -45,7 +45,7 @@ export class PerfilComponent implements OnInit {
   public msm_error = false;
   public msm_success = false;
   public pass_error = false;
-  title='Editar Perfil'
+  title = 'Editar Perfil'
 
   public user!: User;
   public identity!: User;
@@ -370,26 +370,26 @@ export class PerfilComponent implements OnInit {
       ...resto,
       _id: this.usuarioSeleccionado._id,
       // Enviamos el array de IDs que Mongoose espera
-     residencia: f.haveResidencia && resOriginal ? [{ 
-      _id: resOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
-      edificio: f.residencia, 
-      piso: f.pisoResidencia, 
-      letra: f.letraResidencia 
+      residencia: f.haveResidencia && resOriginal ? [{
+        _id: resOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
+        edificio: f.residencia,
+        piso: f.pisoResidencia,
+        letra: f.letraResidencia
       }] : [],
-       oficina: f.haveOficina && ofciOriginal ? [{ 
-      _id: ofciOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
-      edificio: f.oficina, 
-      piso: f.pisoOficina, 
-      letra: f.letraOficina 
+      oficina: f.haveOficina && ofciOriginal ? [{
+        _id: ofciOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
+        edificio: f.oficina,
+        piso: f.pisoOficina,
+        letra: f.letraOficina
       }] : [],
-       local: f.haveLocal && localOriginal ? [{ 
-      _id: localOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
-      edificio: f.local, 
-      piso: f.pisoLocal, 
-      letra: f.letraLocal 
+      local: f.haveLocal && localOriginal ? [{
+        _id: localOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
+        edificio: f.local,
+        piso: f.pisoLocal,
+        letra: f.letraLocal
       }] : [],
 
-      
+
     };
 
     // 3. Añadimos el ID si es actualización

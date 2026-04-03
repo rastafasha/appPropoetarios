@@ -1,5 +1,5 @@
 <app-header></app-header>
-<div class="container mt-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="500" (scrolled)="onScroll()">
+<div class="container mt-4 animate fadeIn" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="500" (scrolled)="onScroll()">
   <h4 class="fw-bold mb-3 text-dark">Historial de Facturas</h4>
 
   <!-- bloque de busqueda -->
@@ -52,7 +52,7 @@
             </div>
         </div>
     </div>
-</div>
+  </div>
 
   @for (factura of facturas(); track factura._id) {
   <div class="card border-0 shadow-sm mb-3 border-start border-4" [ngClass]="{

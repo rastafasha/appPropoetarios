@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BusquedasService } from '../../services/busqueda.service';
 import { PushNotificationService } from '../../services/push-notification.service';
+import { NotificacionService } from '../../services/notificacion.service';
 declare var bootstrap: any;
 @Component({
   selector: 'app-mis-facturas',
@@ -27,7 +28,7 @@ export class MisFacturasComponent {
   facturaSeleccionada = signal<any>(null);
   toastVisible = signal(false);
   showToastFactura = signal(false);
-isFilteringFactura = signal(false);
+  isFilteringFactura = signal(false);
 
   // Variables para Facturas
   queryFactura: string = '';
@@ -40,16 +41,16 @@ isFilteringFactura = signal(false);
   private router = inject(Router);
   private busquedasService = inject(BusquedasService);
   private route = inject(ActivatedRoute);
-  private pollService = inject(PushNotificationService);
+  public notificacionService = inject(NotificacionService);
 
   ngOnInit() {
     window.scrollTo(0, 0);
     // 1. Marcamos como leídas en la DB
-  this.pollService.marcarComoLeidas();
-  
-  // 2. Limpiamos cualquier Toastr que haya quedado abierto en pantalla
-  this.toastr.clear(); 
-  
+    this.notificacionService.marcarComoLeidas();
+
+    // 2. Limpiamos cualquier Toastr que haya quedado abierto en pantalla
+    this.toastr.clear();
+
     const USER = localStorage.getItem("user");
     this.userId = JSON.parse(USER || '{}').uid;
 
@@ -57,10 +58,10 @@ isFilteringFactura = signal(false);
     this.route.queryParams.subscribe(params => {
       if (params['estado']) {
         // Asignamos 'POR PAGAR' o 'PENDIENTE' según envíes desde el Home
-        this.statusFactura = params['estado']; 
+        this.statusFactura = params['estado'];
         this.isFilteringFactura.set(true);
       }
-      
+
       // Ahora ejecutamos la carga (que ya usa this.statusFactura)
       this.getFacturas();
     });
@@ -86,46 +87,46 @@ isFilteringFactura = signal(false);
   }
 
   getFacturas() {
-  if (!this.hasMoreFacturas()) return;
-  this.loading.set(true);
+    if (!this.hasMoreFacturas()) return;
+    this.loading.set(true);
 
-  this.facturaService.getFacturasByUser(this.userId, this.pageFactura).subscribe({
-    next: (resp: any) => {
-      
-      // 1. EXTRAEMOS EL ARREGLO (Según tu JSON es resp.facturas)
-      const newData = resp.facturas || [];
+    this.facturaService.getFacturasByUser(this.userId, this.pageFactura).subscribe({
+      next: (resp: any) => {
 
-      if (newData.length === 0) {
-        this.hasMoreFacturas.set(false);
-        this.loading.set(false);
-        return;
-      }
+        // 1. EXTRAEMOS EL ARREGLO (Según tu JSON es resp.facturas)
+        const newData = resp.facturas || [];
 
-      // 2. FILTRADO LOCAL (Ojo: Tu JSON usa "estado", no "status")
-      let filteredData = newData;
-      if (this.statusFactura) {
-        filteredData = newData.filter((f: any) => f.estado === this.statusFactura);
-      }
+        if (newData.length === 0) {
+          this.hasMoreFacturas.set(false);
+          this.loading.set(false);
+          return;
+        }
 
-      // 3. ACTUALIZACIÓN DE LA SEÑAL
-      this.facturas.update(current => {
-        const ids = new Set(current.map(f => f._id));
-        const unique = filteredData.filter((f: any) => !ids.has(f._id));
-        return [...current, ...unique];
-      });
+        // 2. FILTRADO LOCAL (Ojo: Tu JSON usa "estado", no "status")
+        let filteredData = newData;
+        if (this.statusFactura) {
+          filteredData = newData.filter((f: any) => f.estado === this.statusFactura);
+        }
 
-      // 4. LÓGICA INSISTENTE
-      // Si el filtro dejó pocos resultados pero hay más páginas en el API
-      if (this.statusFactura && filteredData.length < 5 && resp.pages > this.pageFactura) {
-        this.pageFactura++;
-        this.getFacturas();
-      } else {
-        this.loading.set(false);
-      }
-    },
-    error: () => this.loading.set(false)
-  });
-}
+        // 3. ACTUALIZACIÓN DE LA SEÑAL
+        this.facturas.update(current => {
+          const ids = new Set(current.map(f => f._id));
+          const unique = filteredData.filter((f: any) => !ids.has(f._id));
+          return [...current, ...unique];
+        });
+
+        // 4. LÓGICA INSISTENTE
+        // Si el filtro dejó pocos resultados pero hay más páginas en el API
+        if (this.statusFactura && filteredData.length < 5 && resp.pages > this.pageFactura) {
+          this.pageFactura++;
+          this.getFacturas();
+        } else {
+          this.loading.set(false);
+        }
+      },
+      error: () => this.loading.set(false)
+    });
+  }
 
 
 
@@ -149,24 +150,24 @@ isFilteringFactura = signal(false);
     }
   }
 
- clearFacturaFilters(): void {
-  if (navigator.vibrate) navigator.vibrate(50);
-  
-  this.queryFactura = '';
-  this.statusFactura = '';
-  this.isFilteringFactura.set(false);
-  this.pageFactura = 1;
-  this.hasMoreFacturas.set(true);
-  this.facturas.set([]); 
-  
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  clearFacturaFilters(): void {
+    if (navigator.vibrate) navigator.vibrate(50);
 
-  // Disparar el Toast
-  this.showToastFactura.set(true);
-  setTimeout(() => this.showToastFactura.set(false), 2500);
+    this.queryFactura = '';
+    this.statusFactura = '';
+    this.isFilteringFactura.set(false);
+    this.pageFactura = 1;
+    this.hasMoreFacturas.set(true);
+    this.facturas.set([]);
 
-  this.getFacturas();
-}
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Disparar el Toast
+    this.showToastFactura.set(true);
+    setTimeout(() => this.showToastFactura.set(false), 2500);
+
+    this.getFacturas();
+  }
 
   descargarFactura(nombre: string) {
     // Simulación de descarga

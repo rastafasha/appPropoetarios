@@ -1,5 +1,5 @@
 <app-header></app-header>
-<div class="container mt-4" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="400"
+<div class="container mt-4 animate fadeIn" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="400"
   (scrolled)="onScroll()">
   <h4 class="fw-bold mb-3 text-dark">Historial de Pagos</h4>
 
@@ -59,44 +59,45 @@
            'border-danger': payment.status === 'RECHAZADO'
          }">
     <div class="card-body p-3">
-  <!-- Fila Superior: Fecha y Estatus -->
-  <div class="d-flex justify-content-between align-items-start mb-2">
-    <div>
-      <h6 class="mb-0 fw-bold text-secondary text-uppercase" style="font-size: 0.75rem;">
-        {{payment.fecha_pago | date:'dd/MM/yyyy'}}
-      </h6>
+      <!-- Fila Superior: Fecha y Estatus -->
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <h6 class="mb-0 fw-bold text-secondary text-uppercase" style="font-size: 0.75rem;">
+            {{payment.fecha_pago | date:'dd/MM/yyyy'}}
+          </h6>
+        </div>
+        <!-- Badge más estilizado -->
+        @if (payment.status === 'APROBADO') {
+        <span
+          class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3">Aprobado</span>
+        }
+        @if (payment.status === 'PENDIENTE') {
+        <span
+          class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3">Pendiente</span>
+        }
+        @if (payment.status === 'RECHAZADO') {
+        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3">Rechazado</span>
+        <p>Motivo: {{payment.observaciones}}</p>
+        }
+
+      </div>
+
+      <!-- Fila Media: Monto -->
+      <div class="mb-2">
+        <p class="mb-0 h4 fw-bold text-dark">
+          {{payment.amount | currency:'Bs. ':'symbol':'1.2-2'}}
+        </p>
+        <small class="text-muted d-block">Ref: #{{payment.referencia}}</small>
+      </div>
+
+      <!-- Fila Inferior: Botón de Acción -->
+      <div class="d-flex justify-content-end  border-top border-light">
+        <button class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-bold" style="font-size: 0.8rem;"
+          (click)="verDetallePago(payment)">
+          <i class="fas fa-receipt me-1"></i> Ver Ticket
+        </button>
+      </div>
     </div>
-    <!-- Badge más estilizado -->
-    @if (payment.status === 'APROBADO') {
-      <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3">Aprobado</span>
-    }
-    @if (payment.status === 'PENDIENTE') {
-      <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3">Pendiente</span>
-    }
-    @if (payment.status === 'RECHAZADO') {
-      <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3">Rechazado</span>
-      <p>Motivo: {{payment.observaciones}}</p>
-    }
-
-  </div>
-
-  <!-- Fila Media: Monto -->
-  <div class="mb-2">
-    <p class="mb-0 h4 fw-bold text-dark">
-      {{payment.amount | currency:'Bs. ':'symbol':'1.2-2'}}
-    </p>
-    <small class="text-muted d-block">Ref: #{{payment.referencia}}</small>
-  </div>
-
-  <!-- Fila Inferior: Botón de Acción -->
-  <div class="d-flex justify-content-end  border-top border-light">
-    <button class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-bold" 
-            style="font-size: 0.8rem;"
-            (click)="verDetallePago(payment)">
-      <i class="fas fa-receipt me-1"></i> Ver Ticket
-    </button>
-  </div>
-</div>
   </div>
   <!-- Botón Flotante para Reportar Nuevo Pago -->
   <button class="btn btn-primary rounded-circle shadow-lg position-fixed"
@@ -122,16 +123,16 @@
   <!-- Mensaje de Fin de Resultados con el botón de Reset -->
   <!-- Solo mostrar el spinner si NO hay filtros activos -->
   @if (loading() && !query && !status) {
-    <div class="d-flex justify-content-center my-4">
-      <div class="spinner-border text-primary" role="status"></div>
-    </div>
+  <div class="d-flex justify-content-center my-4">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
   }
 
   <!-- Mostrar mensaje de fin de resultados si estamos filtrando -->
   @if ((query || status) && !loading()) {
-    <div class="text-center my-4 text-muted small animate fadeIn">
-      <i class="fas fa-info-circle me-1"></i> Fin de resultados filtrados
-    </div>
+  <div class="text-center my-4 text-muted small animate fadeIn">
+    <i class="fas fa-info-circle me-1"></i> Fin de resultados filtrados
+  </div>
   }
 
   }

@@ -1,0 +1,59 @@
+.rounded-4 { border-radius: 18px !important; }
+
+/* Indicador lateral */
+.tipo-indicador {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+}
+
+/* Colores suaves para los badges */
+.bg-danger-soft { background-color: #fee2e2; color: #dc2626; }
+.bg-warning-soft { background-color: #fef3c7; color: #d97706; }
+.bg-info-soft { background-color: #e0f2fe; color: #0284c7; }
+.bg-success-soft { background-color: #dcfce7; color: #16a34a; }
+
+.card {
+    transition: transform 0.2s ease;
+}
+
+.card:active {
+    transform: scale(0.98);
+}
+
+.btn-back {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.rounded-top-5 {
+    border-top-left-radius: 30px !important;
+    border-top-right-radius: 30px !important;
+    border-bottom: none;
+}
+
+.clickable {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.clickable:active {
+    background-color: #f1f5f9;
+}
+
+/* Estilo para que el Offcanvas no ocupe toda la pantalla (estilo móvil) */
+.offcanvas-bottom {
+    border-top: 1px solid #eee;
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+}
+
+.bg-info-soft { background-color: #e0f2fe; color: #0369a1; }
+

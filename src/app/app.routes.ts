@@ -10,6 +10,8 @@ import { MisFacturasComponent } from './pages/mis-facturas/mis-facturas.componen
 import {AuthGuard} from './guards/auth.guard';
 import { PropiedadDetalleComponent } from './pages/detalles/propiedad-detalle/propiedad-detalle.component';
 import { ReportarPagoComponent } from './pages/reportar-pago/reportar-pago.component';
+import { MisComunicadosComponent } from './pages/mis-comunicados/mis-comunicados.component';
+import { MisNotificacionesComponent } from './pages/mis-notificaciones/mis-notificaciones.component';
 export const routes: Routes = [
     {
             path:'home',
@@ -33,6 +35,9 @@ export const routes: Routes = [
 
         { path: 'propiedad-detalle/:tipo/:id', component: PropiedadDetalleComponent },
         { path: 'reportar-pago/:id', component: ReportarPagoComponent },
+
+        { path: 'cartelera', component: MisComunicadosComponent },
+        { path: 'notificaciones', component: MisNotificacionesComponent },
 
         { path: '', redirectTo: '/home', pathMatch: 'full' },
           { path: '**', component: LoginComponent },

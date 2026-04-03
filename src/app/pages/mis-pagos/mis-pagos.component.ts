@@ -26,7 +26,7 @@ export class MisPagosComponent implements OnInit {
   isFiltering = signal(false);
   showToast = signal(false);
   showToastFactura = signal(false);
-isFilteringFactura = signal(false);
+  isFilteringFactura = signal(false);
   page = 1;
   userId!: string;
   query: string = '';
@@ -46,85 +46,85 @@ isFilteringFactura = signal(false);
     this.getPagosUsuario();
   }
 
- onScroll(): void {
-  if (this.loading() || !this.hasMore()) return;
+  onScroll(): void {
+    if (this.loading() || !this.hasMore()) return;
 
-  // Si hay búsqueda por TEXTO (query), normalmente el backend devuelve todo de golpe.
-  // Pero si es por ESTATUS, queremos seguir bajando:
-  this.page++;
-  this.getPagosUsuario(); 
-}
+    // Si hay búsqueda por TEXTO (query), normalmente el backend devuelve todo de golpe.
+    // Pero si es por ESTATUS, queremos seguir bajando:
+    this.page++;
+    this.getPagosUsuario();
+  }
 
-getPagosUsuario() {
-  if (!this.hasMore()) return; // Si ya sabemos que no hay más en el servidor, paramos.
-  this.loading.set(true);
-  
-  this.paymentService.getByUser(this.userId, this.page).subscribe({
-    next: (newData: any[]) => {
-      if (newData.length === 0) {
-        this.hasMore.set(false);
-        this.loading.set(false);
-      } else {
-        // 1. Filtrado local por estatus
-        let filteredData = newData;
-        if (this.status) {
-          filteredData = newData.filter(p => p.status === this.status);
-        }
-
-        // 2. Agregamos los únicos a la lista visible
-        this.payments.update(current => {
-          const ids = new Set(current.map(p => p._id));
-          const unique = filteredData.filter(p => !ids.has(p._id));
-          return [...current, ...unique];
-        });
-
-        // 3. LA CLAVE: Si estamos filtrando y trajo muy pocos (ej. menos de 5) 
-        // o ninguno, pero el API dice que hay más páginas, pedimos la siguiente YA.
-        if (this.status && filteredData.length < 5 && newData.length > 0) {
-          this.page++;
-          this.getPagosUsuario(); // Llamada recursiva controlada
-        } else {
-          this.loading.set(false);
-        }
-      }
-    },
-    error: () => this.loading.set(false)
-  });
-}
-
-search(): void {
-  // 1. Resetear estados de paginación cada vez que filtramos
-  this.page = 1;
-  this.hasMore.set(true);
-  this.payments.set([]); 
-
-  // CASO A: El usuario escribió algo en el buscador (Texto)
-  if (this.query && this.query.trim() !== '') {
-    this.isFiltering.set(true);
+  getPagosUsuario() {
+    if (!this.hasMore()) return; // Si ya sabemos que no hay más en el servidor, paramos.
     this.loading.set(true);
 
-    this.busquedasService.buscar('payments', this.query).subscribe({
-      next: (resultados: any[]) => {
-        let filtered = resultados;
-        // Si además de texto seleccionó un estatus, filtramos el array
-        if (this.status) {
-          filtered = resultados.filter((p: any) => p.status === this.status);
+    this.paymentService.getByUser(this.userId, this.page).subscribe({
+      next: (newData: any[]) => {
+        if (newData.length === 0) {
+          this.hasMore.set(false);
+          this.loading.set(false);
+        } else {
+          // 1. Filtrado local por estatus
+          let filteredData = newData;
+          if (this.status) {
+            filteredData = newData.filter(p => p.status === this.status);
+          }
+
+          // 2. Agregamos los únicos a la lista visible
+          this.payments.update(current => {
+            const ids = new Set(current.map(p => p._id));
+            const unique = filteredData.filter(p => !ids.has(p._id));
+            return [...current, ...unique];
+          });
+
+          // 3. LA CLAVE: Si estamos filtrando y trajo muy pocos (ej. menos de 5) 
+          // o ninguno, pero el API dice que hay más páginas, pedimos la siguiente YA.
+          if (this.status && filteredData.length < 5 && newData.length > 0) {
+            this.page++;
+            this.getPagosUsuario(); // Llamada recursiva controlada
+          } else {
+            this.loading.set(false);
+          }
         }
-        this.payments.set(filtered);
-        this.loading.set(false);
       },
       error: () => this.loading.set(false)
     });
-  } 
-  
-  // CASO B: No hay texto, pero quizás seleccionó un Estatus (o "Todos")
-  else {
-    // Si seleccionó un estatus o volvió a "Todos", usamos la carga normal
-    // getPagosUsuario ahora debe enviar this.status al servicio
-    this.isFiltering.set(this.status !== ''); 
-    this.getPagosUsuario(); 
   }
-}
+
+  search(): void {
+    // 1. Resetear estados de paginación cada vez que filtramos
+    this.page = 1;
+    this.hasMore.set(true);
+    this.payments.set([]);
+
+    // CASO A: El usuario escribió algo en el buscador (Texto)
+    if (this.query && this.query.trim() !== '') {
+      this.isFiltering.set(true);
+      this.loading.set(true);
+
+      this.busquedasService.buscar('payments', this.query).subscribe({
+        next: (resultados: any[]) => {
+          let filtered = resultados;
+          // Si además de texto seleccionó un estatus, filtramos el array
+          if (this.status) {
+            filtered = resultados.filter((p: any) => p.status === this.status);
+          }
+          this.payments.set(filtered);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false)
+      });
+    }
+
+    // CASO B: No hay texto, pero quizás seleccionó un Estatus (o "Todos")
+    else {
+      // Si seleccionó un estatus o volvió a "Todos", usamos la carga normal
+      // getPagosUsuario ahora debe enviar this.status al servicio
+      this.isFiltering.set(this.status !== '');
+      this.getPagosUsuario();
+    }
+  }
 
 
   clearFilters(): void {
