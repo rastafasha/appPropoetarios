@@ -29,8 +29,8 @@ export const routes: Routes = [
         {path: 'recovery-password', component: RecoveryComponent },
         
         {path: 'mis-pagos', canActivate: [AuthGuard], component: MisPagosComponent },
-        {path: 'mis-facturas', component: MisFacturasComponent },
-        {path: 'my-account', canActivate: [AuthGuard], component: MyaccountComponent },
+        {path: 'mis-facturas', canActivate: [AuthGuard], component: MisFacturasComponent },
+        {path: 'my-account',  component: MyaccountComponent },
         {path: 'my-account/perfil/:id', component: PerfilComponent },
 
         { path: 'propiedad-detalle/:tipo/:id', component: PropiedadDetalleComponent },

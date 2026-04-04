@@ -17,12 +17,13 @@
 
             <!-- Foto actual -->
             <div class="product_list" *ngIf="!isLoading">
-                <div class="div1">
+                <div class="div1" *ngIf="usuarioSeleccionado">
                     <img [src]="(usuarioSeleccionado.img ?? '') | imagenPipe: 'profiles'"
                         [alt]="usuarioSeleccionado.first_name">
                 </div>
                 <div class="div2">
-                    <h3>{{usuarioSeleccionado.first_name}} {{usuarioSeleccionado.last_name}} </h3>
+                    <h3>{{user.username}} </h3>
+                    <h4 *ngIf="usuarioSeleccionado">{{usuarioSeleccionado.first_name}} {{usuarioSeleccionado.last_name}} </h4>
                     <p>{{user.numdoc}}</p>
                 </div>
             </div>
@@ -116,8 +117,10 @@
                         <!-- Teléfono Móvil -->
                         <div class="col-xs-12 col-md-6 ">
                             <label for="validationCustom02" class="form-label labelgoogle">
-                                <input type="tel" mask="+58 (000) 000-0000" formControlName="telmovil"
-                                    class="form-control input" id="validationCustom02" placeholder="(0212) 123-4567"
+                                <input type="tel" mask="+58 (000) 000-0000" showMaskTyped="true"
+                                dropSpecialCharacters="false"
+                                 formControlName="telmovil"
+                                    class="form-control input" id="validationCustom02" placeholder="+58 (000) 000-0000"
                                     required>
                                 <span class="label__name">
                                     {{'Teléfono Móvil'}}<span class="login-danger">*</span>
@@ -134,7 +137,7 @@
                             perfilForm.controls['telmovil'].errors?.['pattern']){
                             <div class="text-danger ps-2" style="font-size: 0.75rem;">
                                 <i class="bi bi-exclamation-triangle me-1"></i>
-                                Formato inválido (solo números, +, ( ), - y espacios)
+                                Formato inválido (solo números, +58, ( ), - y espacios)
                             </div>
                             }
                         </div>

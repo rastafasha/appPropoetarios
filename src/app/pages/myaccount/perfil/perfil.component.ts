@@ -128,51 +128,48 @@ export class PerfilComponent implements OnInit {
     let USER = localStorage.getItem("user");
     this.user = JSON.parse(USER ? USER : '');
     this.identityId = this.user.uid;
-    // console.log(this.user);
+    console.log(this.user);
     this.getUser();
     this.escucharSwitches();
   }
 
 
   getUser() {
-    this.isLoading = true;
     this.profileService.getByUser(this.identityId).subscribe((resp: any) => {
-      this.usuarioSeleccionado = resp;
-      if (!this.usuarioSeleccionado) {
-        this._router.navigate(['/']);
+      // Si no hay respuesta o no hay perfil, inicializamos un objeto base
+      this.usuarioSeleccionado = resp || { _id: this.identityId };
+
+      if (!resp) {
+        // Si es un usuario nuevo sin perfil, solo inicializamos el form y salimos
+        this.validarFormulario();
+        this.isLoading = false;
         return;
       }
 
+      // Aseguramos que existan como arrays para que no explote el resto del código
+      if (!this.usuarioSeleccionado.residencia) this.usuarioSeleccionado.residencia = [];
+      if (!this.usuarioSeleccionado.oficina) this.usuarioSeleccionado.oficina = [];
+      if (!this.usuarioSeleccionado.local) this.usuarioSeleccionado.local = [];
+
       this.validarFormulario();
 
-      // 1. Extraemos el objeto completo [0] para mostrar el texto en los selectores
-      // Para Residencia
-      const resData = (this.usuarioSeleccionado.residencia as unknown as any[])?.[0];
-      const resId = resData?._id;
+      // Acceso seguro con encadenamiento opcional ?.
+      const resData = (this.usuarioSeleccionado.residencia as any[])?.[0];
+      const ofiData = (this.usuarioSeleccionado.oficina as any[])?.[0];
+      const locData = (this.usuarioSeleccionado.local as any[])?.[0];
 
-      // Para Oficina
-      const ofiData = (this.usuarioSeleccionado.oficina as unknown as any[])?.[0];
-      const ofiId = ofiData?._id;
-
-      // Para Local
-      const locData = (this.usuarioSeleccionado.local as unknown as any[])?.[0];
-      const locId = locData?._id;
-
-      // 2. Mapeamos al formulario
       this.perfilForm.patchValue({
         _id: this.usuarioSeleccionado._id,
-        first_name: this.usuarioSeleccionado.first_name,
-        last_name: this.usuarioSeleccionado.last_name,
-        telmovil: this.usuarioSeleccionado.telmovil,
-        telhome: this.usuarioSeleccionado.telhome,
-        img: this.usuarioSeleccionado.img,
+        first_name: this.usuarioSeleccionado.first_name || '',
+        last_name: this.usuarioSeleccionado.last_name || '',
+        telmovil: this.usuarioSeleccionado.telmovil || '',
+        telhome: this.usuarioSeleccionado.telhome || '',
+        img: this.usuarioSeleccionado.img || '',
 
-        // Banderas de visibilidad
         haveResidencia: !!this.usuarioSeleccionado.haveResidencia,
         haveOficina: !!this.usuarioSeleccionado.haveOficina,
         haveLocal: !!this.usuarioSeleccionado.haveLocal,
 
-        // Mostramos el TEXTO en los selectores del hijo
         residencia: resData?.edificio || '',
         pisoResidencia: resData?.piso || '',
         letraResidencia: resData?.letra || '',
@@ -190,16 +187,17 @@ export class PerfilComponent implements OnInit {
     });
   }
 
+
   validarFormulario() {
     this.perfilForm = this.fb.group({
       _id: ['', Validators.required],
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
-      telmovil: ['', [Validators.required, Validators.pattern(/^\+?[0-9\s\-]{7,20}$/)]],
       telhome: ['', [
         Validators.required,
         Validators.pattern(/^\+?[0-9\s\-]{7,20}$/)
       ]],
+      telmovil: ['', [Validators.required, Validators.pattern(/^\+58[0-9\s\-]{10,15}$/)]],
       img: [''],
       haveResidencia: [false], // Cambiado de '' a false
       haveOficina: [false],
@@ -326,15 +324,8 @@ export class PerfilComponent implements OnInit {
   }
 
   onUserSave() {
-
     if (this.perfilForm.invalid) {
-      // Marcamos los campos para que se vean los errores en rojo si los hay
       this.perfilForm.markAllAsTouched();
-      this.toastr.warning(
-        'Asegúrate de que los teléfonos tengan el formato correcto (+58 ...)',
-        'Formato Inválido',
-        { positionClass: 'toast-bottom-right' }
-      );
       this.toastr.error('Por favor, completa los campos requeridos correctamente.', 'Formulario Incompleto');
       return;
     }
@@ -342,75 +333,62 @@ export class PerfilComponent implements OnInit {
     this.isLoading = true;
     const f = this.perfilForm.value;
 
-    // 1. Extraemos solo lo que NO es de ubicación para no duplicar datos en el envío
-    // Usamos destructuring para sacar los campos que vamos a reestructurar
+    // 1. Extraemos datos del formulario
     const { residencia, pisoResidencia, letraResidencia, oficina, pisoOficina, letraOficina, local, pisoLocal, letraLocal, ...resto } = f;
 
-    // Extraemos los IDs originales del objeto que cargamos en getUser
-    // Para Residencia
+    // 2. SAFE ACCESS: Usamos optional chaining (?.) para que no explote si usuarioSeleccionado es null
+    const resOriginal = (this.usuarioSeleccionado?.residencia as any[])?.[0];
+    const ofciOriginal = (this.usuarioSeleccionado?.oficina as any[])?.[0];
+    const localOriginal = (this.usuarioSeleccionado?.local as any[])?.[0];
 
-    const resOriginal = (this.usuarioSeleccionado.residencia as unknown as any[])?.[0];
-    const resId = resOriginal?._id;
-
-    // Para Oficina
-
-    const ofciOriginal = (this.usuarioSeleccionado.oficina as unknown as any[])?.[0];
-    const oficId = ofciOriginal?._id;
-
-
-    // Para Local
-    const localOriginal = (this.usuarioSeleccionado.local as unknown as any[])?.[0];
-    const localId = localOriginal?._id;
-
-    const locData = (this.usuarioSeleccionado.local as unknown as any[])?.[0];
-    const locId = locData?._id;
-
-    // 2. Construimos el objeto final limpio
+    // 3. Construimos el objeto final limpio
     const data: any = {
       ...resto,
-      _id: this.usuarioSeleccionado._id,
-      // Enviamos el array de IDs que Mongoose espera
-      residencia: f.haveResidencia && resOriginal ? [{
-        _id: resOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
+      usuario: this.identityId, // El backend usa req.uid, pero no está de más enviarlo
+
+      // Quitamos el ID de la sub-colección si es un usuario nuevo (resOriginal es null)
+      residencia: f.haveResidencia ? [{
+        ...(resOriginal?._id ? { _id: resOriginal._id } : {}), // Solo incluye _id si YA existe
         edificio: f.residencia,
         piso: f.pisoResidencia,
         letra: f.letraResidencia
       }] : [],
-      oficina: f.haveOficina && ofciOriginal ? [{
-        _id: ofciOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
+
+      oficina: f.haveOficina ? [{
+        ...(ofciOriginal?._id ? { _id: ofciOriginal._id } : {}),
         edificio: f.oficina,
         piso: f.pisoOficina,
         letra: f.letraOficina
       }] : [],
-      local: f.haveLocal && localOriginal ? [{
-        _id: localOriginal._id, // EL ID ES CLAVE PARA EL CONTROLADOR DE NODE
+
+      local: f.haveLocal ? [{
+        ...(localOriginal?._id ? { _id: localOriginal._id } : {}),
         edificio: f.local,
         piso: f.pisoLocal,
         letra: f.letraLocal
       }] : [],
-
-
     };
-
-    // 3. Añadimos el ID si es actualización
-    if (this.usuarioSeleccionado) {
-      data._id = this.usuarioSeleccionado._id;
+    
+    if (!data._id || data._id === '') {
+      delete data._id;
     }
 
-    // 4. Llamada al servicio (unificada)
-    const peticion = this.usuarioSeleccionado
-      ? this.profileService.updateProfile(data)
-      : this.profileService.createProfile(data);
+    // 4. Decidimos si es Update o Create
+    // Si getByUser no devolvió nada, usuarioSeleccionado será null/undefined
+    const peticion = (this.usuarioSeleccionado && this.usuarioSeleccionado._id)
+    ? this.profileService.updateProfile(data)
+    : this.profileService.createProfile(data);
 
     peticion.subscribe({
       next: () => {
-        this.toastr.success(`Datos ${this.usuarioSeleccionado ? 'actualizados' : 'creados'} con éxito.`, '¡Excelente!');
+        this.toastr.success('Datos guardados con éxito.', '¡Excelente!');
         this.isLoading = false;
         this.getUser();
       },
-      error: () => {
+      error: (err) => {
+        console.error(err);
         this.isLoading = false;
-        this.toastr.error('Hubo un problema al guardar los cambios.', 'Error de Servidor');
+        this.toastr.error('Hubo un problema al guardar.', 'Error de Servidor');
       }
     });
   }

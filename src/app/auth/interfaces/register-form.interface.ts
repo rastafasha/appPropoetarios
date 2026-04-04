@@ -1,10 +1,9 @@
 export interface RegisterForm{
-  first_name: string,
-  last_name: string,
+  username: string,
+  numdoc: string,
   email: string,
   password: string,
   password2: string,
-  local: string,
   terminos: boolean
 }
 

@@ -1,13 +1,25 @@
 <app-header></app-header>
 <app-skeleton-loader *ngIf="isLoading" [rows]="10" [columns]="1"></app-skeleton-loader>
-<div class="container" *ngIf="!identity && !isLoading">
-    <h3>Inicia sesión para acceder</h3>
-</div>
-<div class="about animate fadeIn" id="page" *ngIf="identity && !isLoading">
+
+
+<div *ngIf="!identity && !isLoading"
+                class="alert alert-warning border-0 shadow-sm mx-3 mt-3 d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                <div>
+                    <h6 class="alert-heading mb-1 fw-bold">Perfil Incompleto</h6>
+                    <p class="mb-0 small">Debes completar tus datos para habilitar el registro de propiedades.</p>
+                </div>
+                <div class="clear"></div>
+                <button type="button" [routerLink]="['/my-account/perfil/', user.uid]" class="btn btn-sm btn-outline-success">
+                    Completar
+                </button>
+
+            </div>
+<div class="about animate fadeIn" id="page" *ngIf="!isLoading">
     <section>
-        <div class="container" style="margin-bottom: 100px;">
-            <h4 class="fw-bold mb-3 text-dark">Mi Cuenta</h4>
-            <div class="product_list" *ngIf="!isLoading">
+        <div class="container" style="margin-bottom: 100px;" >
+            <h4 class="fw-bold mb-3 text-dark" *ngIf="!isLoading && identity">Mi Cuenta</h4>
+            <div class="product_list" *ngIf="!isLoading && identity" >
                 <div class="div1">
                     <img [src]="(identity.img ?? '') | imagenPipe: 'profiles'" [alt]="identity.first_name">
                 </div>
@@ -19,21 +31,9 @@
             </div>
 
 
-            <div *ngIf="!identity.telmovil"
-                class="alert alert-warning border-0 shadow-sm mx-3 mt-3 d-flex align-items-center" role="alert">
-                <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
-                <div>
-                    <h6 class="alert-heading mb-1 fw-bold">Perfil Incompleto</h6>
-                    <p class="mb-0 small">Debes completar tus datos para habilitar el registro de propiedades.</p>
-                </div>
-                <div class="clear"></div>
-                <button type="button" class="btn btn-sm btn-outline-success">
-                    Completar
-                </button>
-
-            </div>
+            
             <!-- mis propiedades -->
-            <div class="mt-4 px-3 mb-5">
+            <div class="mt-4 px-3 mb-5" *ngIf="!isLoading && identity">
                 <h6 class="text-muted fw-bold mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">MIS PROPIEDADES
                 </h6>
 
@@ -62,7 +62,7 @@
             </div>
             <!-- mis propiedades -->
             <!-- configurar notificaciones push -->
-            <div class="setting-row" [class.loading]="pushService.isProcessing$ | async">
+            <div class="setting-row" *ngIf="!isLoading && identity" [class.loading]="pushService.isProcessing$ | async">
                 <div class="setting-info">
                     <i class="fas fa-bell"></i>
                     <div class="text-container">
@@ -106,7 +106,7 @@
             </div>
 
             <!-- agregar propiedades -->
-            <div class="container mt-4">
+            <div class="container mt-4" *ngIf="!isLoading && identity">
                 <h6 class="text-muted fw-bold text-uppercase mb-3" style="font-size: 0.75rem;">Gestión de
                     Propiedades</h6>
 

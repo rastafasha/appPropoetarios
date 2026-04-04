@@ -2,10 +2,21 @@
 <!-- Prueba quitando el *ngIf temporalmente para forzar que el botón se vea -->
 
 <ngx-pull-to-refresh (refresh)="myRefreshEvent($event)" [spinnerColor]="'#0d6efd'" [spinnerSize]="30">
+  <div *ngIf="!identity && !isLoading"
+                class="alert alert-warning border-0 shadow-sm mx-3 mt-3 d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                <div>
+                    <h6 class="alert-heading mb-1 fw-bold">Perfil Incompleto</h6>
+                    <p class="mb-0 small">Debes completar tus datos para habilitar el registro de propiedades.</p>
+                </div>
+                <div class="clear"></div>
+                <button type="button" [routerLink]="['/my-account/perfil/', user.uid]" class="btn btn-sm btn-outline-success">
+                    Completar
+                </button>
 
-  <div class="container pb-5 mb-5 animate fadeIn" style="padding-bottom: 100px;">
+            </div>
+  <div class="container pb-5 mb-5 animate fadeIn" *ngIf="identity" style="padding-bottom: 100px;">
     <div class="row">
-      <!-- <app-skeleton-loader *ngIf="isLoading" [rows]="10" [columns]="1"></app-skeleton-loader> -->
       <!-- SALUDO INICIAL -->
       <div class="mt-4 mb-4 px-2 animate fadeIn" *ngIf="!isLoading">
         <h2 class="fw-bold mb-1 text-dark">¡Hola, {{identity.first_name}}! 👋</h2>

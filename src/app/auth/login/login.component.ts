@@ -3,11 +3,9 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import Swal from 'sweetalert2';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { environment } from '../../../environments/environment';
 import { UserService } from '../../services/user.service';
 
 // declare const gapi: any;
-
 
 @Component({
   selector: 'app-login',
@@ -17,8 +15,6 @@ import { UserService } from '../../services/user.service';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    // HeaderComponent,
-    // FooterComponent,
     RouterModule,
   ],
   templateUrl: './login.component.html',

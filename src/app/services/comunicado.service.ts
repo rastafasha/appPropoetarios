@@ -52,9 +52,5 @@ export class ComunicadoService {
     return this.http.put(url, {}, this.headers);
   }
 
-  // 4. Enviar nuevo comunicado (Solo Admin)
-  enviarComunicado(comunicado: Comunicado) {
-    const url = `${base_url}/comunicados/enviar-global`;
-    return this.http.post(url, comunicado, this.headers);
-  }
+  
 }

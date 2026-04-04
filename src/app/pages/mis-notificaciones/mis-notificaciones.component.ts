@@ -116,8 +116,16 @@ public pageNotif = 1;
     }
   }
 
-  irAPagos() {
-    this.router.navigate(['/mis-pagos']);
+  
+
+  irAPagos(tipo: string) {
+    if (tipo === 'PAGO_RECHAZADO') {
+      this.router.navigate(['/mis-pagos'], {
+        queryParams: { status: 'RECHAZADO' }
+      });
+    }
   }
+
+  
 
 }

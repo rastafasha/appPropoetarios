@@ -4,7 +4,7 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { MenufooterComponent } from '../../shared/menufooter/menufooter.component';
 import { PaymentService } from '../../services/payment.service';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BusquedasService } from '../../services/busqueda.service';
 import { Payment } from '../../models/payment';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -31,12 +31,14 @@ export class MisPagosComponent implements OnInit {
   userId!: string;
   query: string = '';
   status!: string;
+  statusPago: string = '';
 
   pagoSeleccionado = signal<any>(null);
 
   private paymentService = inject(PaymentService);
   private router = inject(Router);
   private busquedasService = inject(BusquedasService);
+  private route = inject(ActivatedRoute);
 
   ngOnInit() {
     window.scrollTo(0, 0);
@@ -44,6 +46,18 @@ export class MisPagosComponent implements OnInit {
     this.userId = JSON.parse(USER || '{}').uid;
 
     this.getPagosUsuario();
+
+    // LEER PARÁMETROS DE LA URL
+    this.route.queryParams.subscribe(params => {
+      if (params['status']) {
+        // Asignamos 'RECHAZADO' según envíes desde el Home
+        this.status = params['status'];
+        this.isFilteringFactura.set(true);
+      }
+
+      // Ahora ejecutamos la carga (que ya usa this.status)
+      this.getPagosUsuario();
+    });
   }
 
   onScroll(): void {
@@ -70,6 +84,7 @@ export class MisPagosComponent implements OnInit {
           if (this.status) {
             filteredData = newData.filter(p => p.status === this.status);
           }
+           
 
           // 2. Agregamos los únicos a la lista visible
           this.payments.update(current => {

@@ -15,7 +15,7 @@ declare var bootstrap: any;
 })
 export class MisComunicadosComponent implements OnInit {
   title = 'Cartelera Digital';
-  public comunicados = signal<any[]>([]); 
+  public comunicados = signal<any[]>([]);
   public loading = signal(false);
   public hasMore = signal(true);
   public page = 1;
@@ -25,36 +25,36 @@ export class MisComunicadosComponent implements OnInit {
 
   ngOnInit() {
     window.scrollTo(0, 0);
-  this.cargarComunicados();
-}
+    this.cargarComunicados();
+  }
 
-cargarComunicados() {
-  if (this.loading() || !this.hasMore()) return;
-  
-  this.loading.set(true);
-  this.comunicadosService.obtenerMisComunicados(this.page).subscribe({
-    next: (resp: any) => {
-       const newData = resp.comunicados || [];
-      // Unimos y evitamos duplicados
-      this.comunicados.update(current => {
-        const ids = new Set(current.map(c => c._id));
-        const unique = resp.comunicados.filter((c: any) => !ids.has(c._id));
-        return [...current, ...unique];
-      });
+  cargarComunicados() {
+    if (this.loading() || !this.hasMore()) return;
 
-      // Gestionamos el fin de la lista (PH/Sótano)
-      this.hasMore.set(resp.proximo !== null);
-      if (resp.proximo) this.page = resp.proximo;
-      
-      this.loading.set(false);
-    },
-    error: () => this.loading.set(false)
-  });
-}
+    this.loading.set(true);
+    this.comunicadosService.obtenerMisComunicados(this.page).subscribe({
+      next: (resp: any) => {
+        const newData = resp.comunicados || [];
+        // Unimos y evitamos duplicados
+        this.comunicados.update(current => {
+          const ids = new Set(current.map(c => c._id));
+          const unique = resp.comunicados.filter((c: any) => !ids.has(c._id));
+          return [...current, ...unique];
+        });
 
-onScroll() {
-  this.cargarComunicados();
-}
+        // Gestionamos el fin de la lista (PH/Sótano)
+        this.hasMore.set(resp.proximo !== null);
+        if (resp.proximo) this.page = resp.proximo;
+
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+
+  onScroll() {
+    this.cargarComunicados();
+  }
   verDetalle(aviso: any) {
     this.avisoSeleccionado = aviso;
     // Abrimos el offcanvas manualmente

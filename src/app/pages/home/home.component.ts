@@ -59,6 +59,9 @@ export class HomeComponent {
     let USER = localStorage.getItem("user");
     this.user = JSON.parse(USER ? USER : '');
     this.identityId = this.user.uid;
+    if (this.identityId === null) {
+        this.router.navigateByUrl('/my-account');
+      }
 
     this.loadIdentity();
     this.obtenerMisComunicados();
@@ -67,15 +70,15 @@ export class HomeComponent {
 
   obtenerMisComunicados() {
     this.comunicadosService.obtenerMisComunicados().subscribe({
-  next: (res: any) => {
-    // ERROR: this.comunicados = res; <--- Esto causa el error NG02200
-    
-    // CORRECTO: Extrae solo la lista
-    this.listaComunicados = res.comunicados; 
+      next: (res: any) => {
+        // ERROR: this.comunicados = res; <--- Esto causa el error NG02200
+
+        // CORRECTO: Extrae solo la lista
+        this.listaComunicados = res.comunicados;
+      }
+    });
   }
-});
-  }
-  
+
   obetnerContadorPendiente() {
     this.notificacionService.obtenerContadorPendientes().subscribe({
       next: (res) => {
@@ -120,7 +123,7 @@ export class HomeComponent {
 
       this.identity = resp;
 
-      if (this.identity.telhome === null) {
+      if (this.identity === null) {
         this.router.navigateByUrl('/my-account');
       }
     } catch (error) {

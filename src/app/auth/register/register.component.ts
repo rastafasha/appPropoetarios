@@ -19,7 +19,7 @@ import { ImagenPipe } from '../../pipes/imagen.pipe';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
 
   public formSumitted = false;
   registerForm: FormGroup;
@@ -33,8 +33,7 @@ export class RegisterComponent implements OnInit {
     private usuarioService: UserService,
   ) {
     this.registerForm = this.fb.group({
-      first_name: ['', Validators.required],
-      last_name: ['', Validators.required],
+      username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       password2: ['', Validators.required],
@@ -47,22 +46,15 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-  }
-
- 
-
   nextStep() {
-    // Validate step 1 fields (first_name, last_name)
-    const firstName = this.registerForm.get('first_name');
-    const lastName = this.registerForm.get('last_name');
+    const username = this.registerForm.get('username');
+    const numdoc = this.registerForm.get('numdoc');
 
-    if (firstName?.invalid || lastName?.invalid) {
-      firstName?.markAsTouched();
-      lastName?.markAsTouched();
+    if (username?.invalid || numdoc?.invalid) {
+      username?.markAsTouched();
+      numdoc?.markAsTouched();
       return;
     }
-
     this.currentStep = 2;
   }
 
@@ -71,29 +63,39 @@ export class RegisterComponent implements OnInit {
   }
 
   crearUsuario() {
-    this.formSumitted = true;
-    //agregamos el id de la tienda a la respuesta
+  this.formSumitted = true;
+  if (this.registerForm.invalid) return;
 
-
-    if (this.registerForm.invalid) {
-      return;
-    }
-
-    //realizar el posteo del usuario
-    this.usuarioService.crearUsuario(this.registerForm.value).subscribe(
-      resp => {
-        console.log(resp);
-        this.usuarioService.getLocalStorage();
-        Swal.fire('Gracias por Registrate!, En breve te enviaremos a tu perfil para completar los datos requeridos')
-        if (localStorage.getItem('user')) {
-          this.router.navigateByUrl('/my-account');
-        }
-      }, (err) => {
-        Swal.fire('Error', err.error.msg, 'error');
+  this.usuarioService.crearUsuario(this.registerForm.value).subscribe({
+    next: (resp: any) => {
+      // 1. IMPORTANTE: Guarda los datos que vienen en la respuesta (ajusta según tu backend)
+      // Normalmente el backend devuelve { ok: true, usuario, token }
+      if (resp.token && resp.usuario) {
+        localStorage.setItem('token', resp.token);
+        localStorage.setItem('user', JSON.stringify(resp.usuario));
       }
-    );
 
-  }
+      // 2. Ahora sí actualizamos el estado del servicio
+      this.usuarioService.getLocalStorage();
+
+      // 3. Mostramos el Swal y redirigimos
+      Swal.fire({
+        title: '¡Gracias por Registrarte!',
+        text: 'En breve te enviaremos a tu perfil para completar los datos requeridos',
+        icon: 'success',
+        timer: 3000, // Le damos 3 segundos para que lea el mensaje
+        showConfirmButton: false
+      }).then(() => {
+        // Redirigimos después de que el Swal se cierre o pase el tiempo
+        this.router.navigateByUrl('/my-account');
+      });
+    },
+    error: (err) => {
+      Swal.fire('Error', err.error.msg || 'No se pudo completar el registro', 'error');
+    }
+  });
+}
+
 
   campoNoValido(campo: string): boolean {
     if (this.registerForm.get(campo)?.invalid && this.formSumitted) {
@@ -101,7 +103,6 @@ export class RegisterComponent implements OnInit {
     } else {
       return false;
     }
-
 
   }
 

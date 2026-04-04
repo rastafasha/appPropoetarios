@@ -69,9 +69,12 @@
     </div>
 
     <div class="offcanvas-body p-4" *ngIf="notifSeleccionada">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <span class="badge rounded-pill px-3 py-2" [ngClass]="{'bg-success-soft text-success': notifSeleccionada.tipo === 'PAGO_APROBADO', 
-                          'bg-danger-soft text-danger': notifSeleccionada.tipo === 'PAGO_RECHAZADO'}">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-column">
+            <span class="badge rounded-pill px-3 py-2" 
+            [ngClass]="{'bg-success-soft text-success': notifSeleccionada.tipo === 'PAGO_APROBADO', 
+                          'bg-danger-soft text-danger': notifSeleccionada.tipo === 'PAGO_RECHAZADO',
+                          'bg-warning-soft text-warning': notifSeleccionada.tipo === 'COMUNICADO_ADMIN',
+                          }">
                 {{ notifSeleccionada.tipo }}
             </span>
             <small class="text-muted">{{ notifSeleccionada.createdAt | date:'medium' }}</small>
@@ -82,7 +85,7 @@
 
         <!-- Botón de acción dinámica (Ej: Ir al pago si fue rechazado) -->
         <div class="mt-5" *ngIf="notifSeleccionada.tipo === 'PAGO_RECHAZADO'">
-            <button class="btn btn-primary w-100 py-3 rounded-4 fw-bold" (click)="irAPagos()"
+            <button class="btn btn-primary w-100 py-3 rounded-4 fw-bold" (click)="irAPagos(notifSeleccionada.tipo)"
                 data-bs-dismiss="offcanvas">
                 Revisar mis Pagos
             </button>
