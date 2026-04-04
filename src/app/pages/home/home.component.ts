@@ -15,6 +15,7 @@ import { PwaNotifInstallerComponent } from "../../shared/pwa-notif-installer/pwa
 import { ComunicadoService } from '../../services/comunicado.service';
 import { Comunicado } from '../../models/comunicado';
 import { NotificacionService } from '../../services/notificacion.service';
+import { ModalInstruccionesComponent } from "../../components/modal-instrucciones/modal-instrucciones.component";
 
 
 @Component({
@@ -26,7 +27,8 @@ import { NotificacionService } from '../../services/notificacion.service';
     CommonModule,
     NgClass,
     NgxPullToRefreshComponent,
-    PwaNotifInstallerComponent
+    PwaNotifInstallerComponent,
+    ModalInstruccionesComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -42,6 +44,18 @@ export class HomeComponent {
   swPush: boolean = false;
   listaComunicados!: Comunicado[]
   totalPendientes: any;
+   info = `
+  <h2>¡Bienvenido!</h2>
+  <p>Esta es tu <strong>Pantalla de Inicio</strong>, donde tendrás el control total de tu propiedad:</p>
+  <ul>
+    <li><strong>Notificaciones:</strong> El icono de la campana (superior derecha) te avisará con un indicador rojo sobre nuevos pagos procesados, avisos del condominio y alertas importantes.</li>
+    <li><strong>Estatus Financiero:</strong> Un resumen rápido de tu situación administrativa actual.</li>
+    <li><strong>Accesos Directos:</strong> Entra rápidamente a las secciones de <strong>'Mis Propiedades'</strong> y <strong>'Mis Pagos'</strong>.</li>
+    <li><strong>Cartelera Digital:</strong> Mantente al día con los comunicados y avisos oficiales de la administración.</li>
+  </ul>`;
+
+
+  
 
   private profileService = inject(ProfileService);
   public connectivity = inject(ConectividadService);
@@ -56,17 +70,25 @@ export class HomeComponent {
 
   ngOnInit() {
     window.scrollTo(0, 0);
-    let USER = localStorage.getItem("user");
-    this.user = JSON.parse(USER ? USER : '');
-    this.identityId = this.user.uid;
-    if (this.identityId === null) {
-        this.router.navigateByUrl('/my-account');
-      }
+    const USER = localStorage.getItem("user");
+    try {
+      this.user = USER ? JSON.parse(USER) : null;
+    } catch (e) {
+      console.warn('Invalid user data in localStorage:', e);
+      this.user = null;
+    }
+    this.identityId = this.user?.uid ?? null;
+    if (!this.identityId) {
+      this.router.navigateByUrl('/my-account');
+      return;
+    }
 
     this.loadIdentity();
     this.obtenerMisComunicados();
     this.obetnerContadorPendiente();
+    
   }
+ 
 
   obtenerMisComunicados() {
     this.comunicadosService.obtenerMisComunicados().subscribe({

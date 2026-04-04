@@ -8,12 +8,13 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BusquedasService } from '../../services/busqueda.service';
-import { PushNotificationService } from '../../services/push-notification.service';
 import { NotificacionService } from '../../services/notificacion.service';
+import { ModalInstruccionesComponent } from '../../components/modal-instrucciones/modal-instrucciones.component';
 declare var bootstrap: any;
 @Component({
   selector: 'app-mis-facturas',
   imports: [CommonModule, HeaderComponent, MenufooterComponent,
+    ModalInstruccionesComponent,
     FormsModule, InfiniteScrollModule],
   templateUrl: './mis-facturas.component.html',
   styleUrl: './mis-facturas.component.scss'
@@ -29,12 +30,24 @@ export class MisFacturasComponent {
   toastVisible = signal(false);
   showToastFactura = signal(false);
   isFilteringFactura = signal(false);
+  hasMoreFacturas = signal(true);
 
   // Variables para Facturas
   queryFactura: string = '';
   statusFactura: string = '';
   pageFactura: number = 1;
-  hasMoreFacturas = signal(true);
+
+  info = `
+  <h2>Sección: Mis Facturas</h2>
+  <p>En este apartado podrás gestionar tus recibos de la siguiente manera:</p>
+  <ul>
+    <li><strong>Control de Estatus:</strong> Visualiza todas tus facturas, identificadas por colores según su estado (Pendiente, Pagada o Anulada).</li>
+    <li><strong>Búsqueda y Filtros:</strong> Localiza facturas rápidamente por fecha, monto o referencia, y fíltralas según su situación administrativa.</li>
+    <li><strong>Detalle de Facturación:</strong> Accede al botón "Ver Detalles" para consultar conceptos cobrados, montos exactos y la tasa de cambio aplicada.</li>
+    <li><strong>Gestión de Documentos:</strong> Visualiza y descarga tus facturas en formato <strong>PDF</strong> para guardarlas o imprimirlas.</li>
+    <li><strong>Pago Directo:</strong> Si una factura aparece "Por Pagar", encontrarás un acceso directo para <strong>Registrar el Pago</strong> de forma inmediata.</li>
+  </ul>`;
+
 
   public toastr = inject(ToastrService);
   public facturaService = inject(FacturacionService);

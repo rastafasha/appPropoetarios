@@ -39,7 +39,7 @@ export const routes: Routes = [
         { path: 'cartelera', component: MisComunicadosComponent },
         { path: 'notificaciones', component: MisNotificacionesComponent },
 
-        { path: '', redirectTo: '/home', pathMatch: 'full' },
+        { path: '', redirectTo: '/login', pathMatch: 'full' },
           { path: '**', component: LoginComponent },
 
         

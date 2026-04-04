@@ -1,6 +1,14 @@
 <app-header></app-header>
 <div class="container mt-4 animate fadeIn" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="500" (scrolled)="onScroll()">
-  <h4 class="fw-bold mb-3 text-dark">Historial de Facturas</h4>
+ 
+  <div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Historial de Facturas</h4>
+  <button class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" 
+          (click)="instruccionesModal.open()" 
+          title="Ayuda de la sección">
+    <i class="fas fa-question"></i>
+  </button>
+</div>
 
   <!-- bloque de busqueda -->
   <div class="row mb-4 animate fadeIn fast">
@@ -249,3 +257,4 @@
 
 
 <app-menufooter></app-menufooter>
+<app-modal-instrucciones [info]="info" sectionId="misfacturas" #instruccionesModal></app-modal-instrucciones>

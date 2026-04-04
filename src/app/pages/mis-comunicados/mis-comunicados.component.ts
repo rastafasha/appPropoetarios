@@ -2,14 +2,15 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { ComunicadoService } from '../../services/comunicado.service';
 import { CommonModule } from '@angular/common';
 import { MenufooterComponent } from '../../shared/menufooter/menufooter.component';
-import { BackButtonComponent } from '../../shared/back-button/back-button.component';
-import { Comunicado } from '../../models/comunicado';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { ModalInstruccionesComponent } from '../../components/modal-instrucciones/modal-instrucciones.component';
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-mis-comunicados',
-  imports: [CommonModule, BackButtonComponent, MenufooterComponent, InfiniteScrollModule],
+  imports: [CommonModule,  MenufooterComponent,
+    ModalInstruccionesComponent,
+     InfiniteScrollModule],
   templateUrl: './mis-comunicados.component.html',
   styleUrl: './mis-comunicados.component.scss'
 })
@@ -20,6 +21,17 @@ export class MisComunicadosComponent implements OnInit {
   public hasMore = signal(true);
   public page = 1;
   public avisoSeleccionado: any;
+
+  info = `
+  <h2>Sección: Cartelera Digital</h2>
+  <p>Mantente al día con las comunicaciones oficiales de tu comunidad:</p>
+  <ul>
+    <li><strong>Avisos Segmentados:</strong> Visualiza información específica según tu tipo de propiedad (Residencias, Locales u Oficinas).</li> 
+    <li><strong>Comunicados Generales:</strong> Accede a las noticias y alertas globales del <strong>Complejo Parque Central</strong>.</li> 
+    <li><strong>Vista Previa:</strong> Cada anuncio muestra inicialmente un resumen rápido junto con su fecha de emisión.</li> 
+    <li><strong>Lectura Completa:</strong> Haz clic en el <strong>botón azul</strong> de cada tarjeta para desplegar el detalle completo de la información.</li>
+  </ul>`;
+
 
   public comunicadosService = inject(ComunicadoService);
 

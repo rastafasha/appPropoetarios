@@ -12,11 +12,14 @@ import { FileUploadService } from '../../services/file-upload.service';
 import { TiposdepagoService } from '../../services/tiposdepago.service';
 import { PaymentMethod } from '../../models/paymenthmethod.model';
 import { Profile } from '../../models/profile';
+import { ModalInstruccionesComponent } from '../../components/modal-instrucciones/modal-instrucciones.component';
 
 
 @Component({
   selector: 'app-reportar-pago',
-  imports: [CommonModule, SkeletonLoaderComponent, BackButtonComponent, ReactiveFormsModule],
+  imports: [CommonModule, SkeletonLoaderComponent, BackButtonComponent, ReactiveFormsModule,
+    ModalInstruccionesComponent
+  ],
   templateUrl: './reportar-pago.component.html',
   styleUrl: './reportar-pago.component.scss'
 })
@@ -34,6 +37,18 @@ export class ReportarPagoComponent {
   paymentSelected!: PaymentMethod;
   paymentMethods: PaymentMethod[] = [];
   user!: Profile;
+
+  info = `
+  <h2>Sección: Reportar Pago</h2>
+  <p><strong>Nota importante:</strong> Actualmente no utilizamos pasarelas de pago directo. Cualquier actualización sobre métodos de pago automatizados será informada oportunamente a través de la <strong>Cartelera</strong> o <strong>Notificaciones</strong>.</p>
+  
+  <p>Para reportar tu pago con éxito, sigue estas instrucciones:</p>
+  <ul>
+    <li><strong>Datos de Transferencia:</strong> Al seleccionar tu método de pago preferido, el sistema te mostrará automáticamente los datos bancarios del beneficiario para que realices la operación desde tu banca en línea.</li>
+    <li><strong>Registro de Información:</strong> Completa los campos solicitados: Banco de destino y los números o códigos de la <strong>Referencia Bancaria</strong>.</li>
+    <li><strong>Monto del Pago:</strong> El monto ya viene predeterminado según la factura que seleccionaste; no es necesario modificarlo.</li>
+    <li><strong>Comprobante Digital (Obligatorio):</strong> Es indispensable adjuntar la imagen o captura de pantalla de tu pago. Esto nos permite validar tu reporte de manera mucho más eficiente.</li>
+  </ul>`;
 
   private fb = inject(FormBuilder);
   private paymentService = inject(PaymentService);
@@ -97,11 +112,9 @@ export class ReportarPagoComponent {
   // metodo para el cambio del select 'tipo de transferencia'
   onChangePayment(event: Event) {
     const target = event.target as HTMLSelectElement; //obtengo el valor
-    // console.log(target.value)
 
     // guardo el metodo seleccionado en la variable de clase paymentSelected
     this.paymentSelected = this.paymentMethods.filter(method => method._id === target.value)[0]
-    console.log(this.paymentSelected)
   }
 
   getTasadelDia() {

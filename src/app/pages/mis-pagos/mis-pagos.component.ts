@@ -8,12 +8,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BusquedasService } from '../../services/busqueda.service';
 import { Payment } from '../../models/payment';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ModalInstruccionesComponent } from '../../components/modal-instrucciones/modal-instrucciones.component';
 
 declare var bootstrap: any;
 @Component({
   selector: 'app-mis-pagos',
   imports: [CommonModule, HeaderComponent, MenufooterComponent, InfiniteScrollModule,
-    FormsModule
+    FormsModule, ModalInstruccionesComponent
   ],
   templateUrl: './mis-pagos.component.html',
   styleUrl: './mis-pagos.component.scss'
@@ -27,13 +28,24 @@ export class MisPagosComponent implements OnInit {
   showToast = signal(false);
   showToastFactura = signal(false);
   isFilteringFactura = signal(false);
+  pagoSeleccionado = signal<any>(null);
   page = 1;
   userId!: string;
   query: string = '';
   status!: string;
   statusPago: string = '';
 
-  pagoSeleccionado = signal<any>(null);
+  info = `
+  <h2>Sección: Mis Pagos</h2>
+  <p>En este apartado podrás:</p>
+  <ul>
+    <li><strong>Consultar el historial</strong> de tus pagos, identificados con colores según su estatus (Pendiente, Aprobado o Rechazado).</li>
+    <li><strong>Localizar transacciones</strong> rápidamente buscando por fecha, número de referencia o monto.</li>
+    <li><strong>Filtrar la lista</strong> para ver solo los pagos que te interesen según su estado actual.</li>
+    <li><strong>Acceder al detalle</strong> completo de cada operación utilizando el botón "Ver Ticket".</li>
+  </ul>`;
+  
+
 
   private paymentService = inject(PaymentService);
   private router = inject(Router);
@@ -185,7 +197,6 @@ export class MisPagosComponent implements OnInit {
       this.router.navigate(['/reportar-pago', 'nuevo']);
     }
   }
-
 
 
 

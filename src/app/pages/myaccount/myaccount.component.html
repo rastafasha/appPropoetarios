@@ -1,25 +1,33 @@
 <app-header></app-header>
 <app-skeleton-loader *ngIf="isLoading" [rows]="10" [columns]="1"></app-skeleton-loader>
 
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Mi Cuenta</h4>
+  <button class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" 
+          (click)="instruccionesModal.open()" 
+          title="Ayuda de la sección">
+    <i class="fas fa-question"></i>
+  </button>
+</div>
+</div>
+<div *ngIf="!identity && !isLoading" class="alert alert-warning border-0 shadow-sm mx-3 mt-3 d-flex align-items-center"
+    role="alert">
+    <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+    <div>
+        <h6 class="alert-heading mb-1 fw-bold">Perfil Incompleto</h6>
+        <p class="mb-0 small">Debes completar tus datos para habilitar el registro de propiedades.</p>
+    </div>
+    <div class="clear"></div>
+    <button type="button" [routerLink]="['/my-account/perfil/', user.uid]" class="btn btn-sm btn-outline-success">
+        Completar
+    </button>
 
-<div *ngIf="!identity && !isLoading"
-                class="alert alert-warning border-0 shadow-sm mx-3 mt-3 d-flex align-items-center" role="alert">
-                <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
-                <div>
-                    <h6 class="alert-heading mb-1 fw-bold">Perfil Incompleto</h6>
-                    <p class="mb-0 small">Debes completar tus datos para habilitar el registro de propiedades.</p>
-                </div>
-                <div class="clear"></div>
-                <button type="button" [routerLink]="['/my-account/perfil/', user.uid]" class="btn btn-sm btn-outline-success">
-                    Completar
-                </button>
-
-            </div>
+</div>
 <div class="about animate fadeIn" id="page" *ngIf="!isLoading">
     <section>
-        <div class="container" style="margin-bottom: 100px;" >
-            <h4 class="fw-bold mb-3 text-dark" *ngIf="!isLoading && identity">Mi Cuenta</h4>
-            <div class="product_list" *ngIf="!isLoading && identity" >
+        <div class="container" style="margin-bottom: 100px;">
+            <div class="product_list" *ngIf="!isLoading && identity">
                 <div class="div1">
                     <img [src]="(identity.img ?? '') | imagenPipe: 'profiles'" [alt]="identity.first_name">
                 </div>
@@ -31,7 +39,7 @@
             </div>
 
 
-            
+
             <!-- mis propiedades -->
             <div class="mt-4 px-3 mb-5" *ngIf="!isLoading && identity">
                 <h6 class="text-muted fw-bold mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">MIS PROPIEDADES
@@ -173,3 +181,5 @@
         </div>
     </div>
 </div>
+
+<app-modal-instrucciones [info]="info" sectionId="micuenta" #instruccionesModal></app-modal-instrucciones>

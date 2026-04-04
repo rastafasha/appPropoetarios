@@ -1,7 +1,15 @@
 <div class="container mt-3 animate fadeIn">
-    <app-back-button [title]="title"></app-back-button>
+    <!-- <app-back-button [title]="title"></app-back-button> -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">🔔&nbsp; Mis Notificaciones</h4>
+    <button class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" 
+            (click)="instruccionesModal.open()" 
+            title="Ayuda de la sección">
+        <i class="fas fa-question"></i>
+    </button>
+    </div>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>🔔 Mis Notificaciones</h2>
         <button (click)="limpiarCampana()" class="btn btn-outline-primary btn-sm">
             <i class="fa fa-check-double"></i> Marcar todas como leídas
         </button>
@@ -29,7 +37,7 @@
                         </h6>
                         <small class="text-muted">{{ n.createdAt | date:'short' }}</small>
                     </div>
-                    <p class="card-text small mb-0">{{ n.mensaje }}</p>
+                    <p class="card-text small mb-0">{{ n.mensaje | slice:0:45 }}...</p>
                 </div>
             </div>
             } @empty {
@@ -91,4 +99,7 @@
             </button>
         </div>
     </div>
+    
 </div>
+<app-menufooter></app-menufooter>
+<app-modal-instrucciones [info]="info" sectionId="misnotificaciones" #instruccionesModal></app-modal-instrucciones>

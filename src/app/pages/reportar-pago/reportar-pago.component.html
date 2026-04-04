@@ -1,7 +1,15 @@
 <app-skeleton-loader *ngIf="isLoading" [rows]="4" [columns]="1"></app-skeleton-loader>
 
 <div class="container py-4 bg-light min-vh-100 animate fadeIn">
-  <app-back-button title="Reportar Pago"></app-back-button>
+  
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <app-back-button title="Reportar Pago"></app-back-button>
+  <button class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" 
+          (click)="instruccionesModal.open()" 
+          title="Ayuda de la sección">
+    <i class="fas fa-question"></i>
+  </button>
+</div>
 
   <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
     <div class="card-body p-4">
@@ -12,7 +20,7 @@
         <div class="p-3 bg-primary-subtle rounded-3 d-flex justify-content-between align-items-center">
           <div>
             <!-- Si no hay nroFactura en el state, mostramos "Pago de Factura" -->
-             
+
             <h6 class="mb-0 fw-bold text-primary">
               {{ factura()?.nroFactura ? 'Factura #' + factura().nroFactura : 'Pago de Deuda Total' }}
             </h6>
@@ -34,24 +42,56 @@
         <div class="row g-3">
           <!-- Método de Pago -->
           <!-- Tipo de Transferencia -->
-          <div class="col-12">
-            <label class="form-label text-muted small fw-bold">MÉTODO DE PAGO</label>
-            <select formControlName="metodo_pago" class="form-select form-select-lg rounded-3 border-light bg-light fs-6"
-             (change)="onChangePayment($event)"
-              name="metodo_pago" id="metodo_pago">
-              <option value="" disabled selected>Seleccione Método de Pago</option>
-              <option [value]="metodo_pago.tipo" *ngFor="let metodo_pago of paymentMethods">
-                {{metodo_pago.tipo}}
+          <!-- Selección Método de Pago -->
+          <div class="mb-4">
+            <label class="form-label fw-bold small text-muted">Método de Pago</label>
+            <select class="form-select" (change)="onChangePayment($event)">
+              <option value="">Seleccione un método de pago</option>
+              <!-- Usamos el _id como value para que sea único -->
+              <option [value]="metodo._id" *ngFor="let metodo of paymentMethods">
+                {{metodo.tipo}} - {{metodo.bankName}}
               </option>
             </select>
           </div>
 
+          <!-- Info del Beneficiario (Se muestra solo si hay selección) -->
+          <div class="card border-0 bg-info bg-opacity-10 mb-4" *ngIf="paymentSelected">
+            <div class="card-body">
+              <h6 class="fw-bold text-info-emphasis mb-3">
+                <i class="fas fa-university me-2"></i>Datos para el pago:
+              </h6>
+              <div class="row g-2 small text-dark">
+                <div class="col-6" *ngIf="paymentSelected.bankName">
+                  <strong>Banco:</strong> {{paymentSelected.bankName}}
+                </div>
+                <div class="col-6" *ngIf="paymentSelected.username">
+                  <strong>Titular:</strong> {{paymentSelected.username}}
+                </div>
+                <div class="col-12" *ngIf="paymentSelected.bankAccount">
+                  <strong>Cuenta:</strong>
+                  <code class="text-primary fw-bold">{{paymentSelected.bankAccount}}</code>
+                </div>
+                <div class="col-12" *ngIf="paymentSelected.phone">
+                  <strong>Teléfono:</strong>
+                  <code class="text-primary fw-bold">{{paymentSelected.phone}}</code>
+                </div>
+                <div class="col-6" *ngIf="paymentSelected.ciorif">
+                  <strong>RIF/CI:</strong> {{paymentSelected.ciorif}}
+                </div>
+                <div class="col-6" *ngIf="paymentSelected.email">
+                  <strong>Email:</strong> {{paymentSelected.email}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+
           <!-- Banco / Referencia -->
-          
+
           <div class="col-6">
             <label class="form-label text-muted small fw-bold">BANCO DESTINO</label>
-            <select formControlName="bank_destino" class="form-select form-select-lg rounded-3 border-light bg-light fs-6"
-             (change)="onChangePayment($event)"
+            <select formControlName="bank_destino"
+              class="form-select form-select-lg rounded-3 border-light bg-light fs-6" (change)="onChangePayment($event)"
               name="bank_destino" id="bank_destino">
               <option value="" disabled selected>Seleccione Banco</option>
               <option [value]="banco.bankName" *ngFor="let banco of paymentMethods">
@@ -120,3 +160,5 @@
     </div>
   </div>
 </div>
+
+<app-modal-instrucciones [info]="info" sectionId="reportepago" #instruccionesModal></app-modal-instrucciones>

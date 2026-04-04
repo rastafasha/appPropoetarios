@@ -1,6 +1,14 @@
 <div class="container mt-3 aanimate fadeIn">
-    <app-back-button [title]="title"></app-back-button>
+    <!-- <app-back-button [title]="title"></app-back-button> -->
   <!-- Cabecera de la sección -->
+   <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">📢 &nbsp; {{title}}</h4>
+    <button class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" 
+            (click)="instruccionesModal.open()" 
+            title="Ayuda de la sección">
+        <i class="fas fa-question"></i>
+    </button>
+    </div>
   
 
  <div infiniteScroll
@@ -36,7 +44,7 @@
 
         <h5 class="card-title fw-bold mb-2">{{ c.titulo }}</h5>
         <p class="card-text text-muted mb-3" style="line-height: 1.4;">
-          {{ c.mensaje }}
+          {{ c.mensaje | slice:0:50 }}...
         </p>
 
         <div class="d-flex align-items-center justify-content-between border-top pt-2 mt-2">
@@ -82,11 +90,20 @@
   
   <div class="offcanvas-body p-4" *ngIf="avisoSeleccionado">
     <div class="d-flex justify-content-between mb-3">
-        <span class="badge rounded-pill px-3 py-2 bg-info-soft text-info">
+
+        <span class="badge rounded-pill px-3" [ngClass]="{
+            'bg-danger-soft': avisoSeleccionado.tipo === 'URGENTE',
+            'bg-warning-soft': avisoSeleccionado.tipo === 'MANTENIMIENTO',
+            'bg-info-soft': avisoSeleccionado.tipo === 'CARTELERA',
+            'bg-success-soft': avisoSeleccionado.tipo === 'EVENTO'
+          }">
             {{ avisoSeleccionado.tipo }}
-        </span>
-        <small class="text-muted">{{ avisoSeleccionado.createdAt | date:'fullDate' }}</small>
-    </div>
+          </span>
+
+
+
+      </div>
+      <small class="text-muted">{{ avisoSeleccionado.createdAt | date:'fullDate' }}</small>
 
     <h3 class="fw-bold mb-3">{{ avisoSeleccionado.titulo }}</h3>
     
@@ -105,3 +122,5 @@
     </div>
   </div>
 </div>
+
+<app-modal-instrucciones [info]="info" sectionId="comunicados" #instruccionesModal></app-modal-instrucciones>

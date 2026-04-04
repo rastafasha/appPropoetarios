@@ -1,7 +1,16 @@
 <app-header></app-header>
 <div class="container mt-4 animate fadeIn" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="400"
   (scrolled)="onScroll()">
-  <h4 class="fw-bold mb-3 text-dark">Historial de Pagos</h4>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Mis Pagos</h4>
+  <button class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" 
+          (click)="instruccionesModal.open()" 
+          title="Ayuda de la sección">
+    <i class="fas fa-question"></i>
+  </button>
+</div>
+  
 
   <!-- CONTENEDOR DEL BUSCADOR -->
   <div class="row mb-4 animate fadeIn fast">
@@ -222,3 +231,5 @@
   </div>
 </div>
 }
+
+<app-modal-instrucciones [info]="info" sectionId="mispagos" #instruccionesModal ></app-modal-instrucciones>

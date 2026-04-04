@@ -1,17 +1,17 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { Notificacion } from '../../models/notificacion';
 import { CommonModule } from '@angular/common';
-import { BackButtonComponent } from '../../shared/back-button/back-button.component';
 import { Router } from '@angular/router';
 import { NotificacionService } from '../../services/notificacion.service';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ToastrService } from 'ngx-toastr';
+import { ModalInstruccionesComponent } from '../../components/modal-instrucciones/modal-instrucciones.component';
+import { MenufooterComponent } from "../../shared/menufooter/menufooter.component";
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-mis-notificaciones',
-  imports: [CommonModule, BackButtonComponent, InfiniteScrollModule],
+  imports: [CommonModule,  InfiniteScrollModule, ModalInstruccionesComponent, MenufooterComponent],
   templateUrl: './mis-notificaciones.component.html',
   styleUrl: './mis-notificaciones.component.scss'
 })
@@ -24,9 +24,19 @@ public pageNotif = 1;
 
   public cargando: boolean = true;
   title ='Notificaciones';
-
-
   public notifSeleccionada: any;
+
+  info = `
+  <h2>Sección: Notificaciones</h2>
+  <p>Mantente al día con el estatus de tu cuenta y los avisos de la comunidad:</p>
+  <ul>
+    <li><strong>Historial de Pagos:</strong> Consulta las actualizaciones en tiempo real sobre tus reportes (Aprobados o Rechazados).</li> 
+    <li><strong>Alertas del Complejo:</strong> Recibe avisos generales y comunicados oficiales del <strong>Complejo Parque Central</strong>.</li> 
+    <li><strong>Vista Rápida:</strong> Cada notificación muestra un resumen inicial y la fecha de emisión para tu control.</li> 
+    <li><strong>Gestión de Rechazos:</strong> Si un pago es rechazado, verás el <strong>motivo exacto</strong> y tendrás un botón directo para gestionar tus reportes pendientes de corrección.</li>
+    <li><strong>Acceso a Detalles:</strong> Utiliza el <strong>botón azul</strong> en cada tarjeta para ampliar la información recibida.</li>
+  </ul>`;
+
 
   public notificacionService = inject(NotificacionService);
   public router = inject(Router);

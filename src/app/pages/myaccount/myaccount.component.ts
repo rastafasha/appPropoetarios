@@ -16,6 +16,7 @@ import { SelectorUbicacionComponent } from '../../components/selector-ubicacion-
 import { SkeletonLoaderComponent } from '../../shared/skeleton-loader/skeleton-loader.component';
 import { PushNotificationService } from '../../services/push-notification.service';
 import { ImagenPipe } from '../../pipes/imagen.pipe';
+import { ModalInstruccionesComponent } from '../../components/modal-instrucciones/modal-instrucciones.component';
 
 declare var bootstrap: any;
 
@@ -39,7 +40,8 @@ interface PropiedadUnificada {
     SkeletonLoaderComponent,
     SelectorUbicacionComponent,
     ReactiveFormsModule,
-    ImagenPipe
+    ImagenPipe,
+    ModalInstruccionesComponent
 
   ],
   templateUrl: './myaccount.component.html',
@@ -74,6 +76,19 @@ export class MyaccountComponent implements OnInit, AfterViewInit {
   propiedadExtraForm!: FormGroup;
 
   public misPropiedades: PropiedadUnificada[] = [];
+
+   info = `
+  <h2>Sección: Mi Perfil</h2>
+  <p><strong>Nota importante:</strong> Si tu perfil está incompleto, verás un aviso para finalizar tu registro y habilitar todas las funciones de la aplicación.</p>
+  
+  <p>En este apartado podrás:</p>
+  <ul>
+    <li><strong>Gestionar tus inmuebles:</strong> Visualiza todas tus propiedades registradas, ya sean Residencias, Oficinas o Locales.</li> 
+    <li><strong>Actualizar datos:</strong> Edita tu información personal y mantén tu perfil al día.</li>
+    <li><strong>Configurar Notificaciones:</strong> Te recomendamos activarlas para recibir alertas en tiempo real sobre pagos, avisos y el estatus de tu cuenta.</li>
+    <li><strong>Registrar nuevas propiedades:</strong> Si posees inmuebles adicionales, puedes crearlos desde aquí. Ten en cuenta que, una vez creados, solo la <strong>Administración</strong> podrá editarlos si requieres algún cambio.</li>
+  </ul>`;
+
 
 
   constructor(
