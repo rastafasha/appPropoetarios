@@ -2,10 +2,15 @@
 .nav-link {
   transition: all 0.2s ease-in-out;
 }
-
+.fas{
+  transform: scale(1.2);
+}
+.navbar{
+  height:50px;
+}
 /* Agranda un poco el icono cuando está activo */
 .active-link i {
-  transform: scale(1.2);
+  transform: scale(1.4);
   display: inline-block;
   color: #007bff; /* Cambia el color del icono activo */
 }

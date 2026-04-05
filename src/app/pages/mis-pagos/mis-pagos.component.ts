@@ -9,12 +9,13 @@ import { BusquedasService } from '../../services/busqueda.service';
 import { Payment } from '../../models/payment';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalInstruccionesComponent } from '../../components/modal-instrucciones/modal-instrucciones.component';
+import { ImagenPipe } from '../../pipes/imagen.pipe';
 
 declare var bootstrap: any;
 @Component({
   selector: 'app-mis-pagos',
   imports: [CommonModule, HeaderComponent, MenufooterComponent, InfiniteScrollModule,
-    FormsModule, ModalInstruccionesComponent
+    FormsModule, ModalInstruccionesComponent,ImagenPipe
   ],
   templateUrl: './mis-pagos.component.html',
   styleUrl: './mis-pagos.component.scss'
