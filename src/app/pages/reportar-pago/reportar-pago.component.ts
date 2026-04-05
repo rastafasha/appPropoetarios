@@ -34,7 +34,7 @@ export class ReportarPagoComponent {
   imagePreview = signal<string | null>(null);
   selectedFile: File | null = null;
   userId!: string;
-  paymentSelected!: PaymentMethod;
+  paymentSelected!: any;
   paymentMethods: PaymentMethod[] = [];
   user!: Profile;
 
@@ -65,6 +65,7 @@ export class ReportarPagoComponent {
     bank_destino: ['', Validators.required],
     referencia: ['', [Validators.required, Validators.minLength(4)]],
     amount: [0, [Validators.required, Validators.min(0.01)]],
+    img: [null, Validators.required],
 
   });
 
@@ -110,11 +111,20 @@ export class ReportarPagoComponent {
   }
 
   // metodo para el cambio del select 'tipo de transferencia'
-  onChangePayment(event: Event) {
-    const target = event.target as HTMLSelectElement; //obtengo el valor
 
-    // guardo el metodo seleccionado en la variable de clase paymentSelected
-    this.paymentSelected = this.paymentMethods.filter(method => method._id === target.value)[0]
+  onChangePayment(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const idSeleccionado = target.value;
+
+    // Buscamos el objeto completo
+    this.paymentSelected = this.paymentMethods.find(method => method._id === idSeleccionado);
+
+    if (this.paymentSelected) {
+      // Seteamos automáticamente el valor en el campo 'bank_destino' del formulario
+      this.paymentForm.patchValue({
+        bank_destino: this.paymentSelected.bankName
+      });
+    }
   }
 
   getTasadelDia() {
@@ -134,6 +144,7 @@ export class ReportarPagoComponent {
   }
 
   enviarPago() {
+    debugger
     const facturaData = this.factura();
     if (!facturaData || this.loading()) return;
 
@@ -152,7 +163,7 @@ export class ReportarPagoComponent {
           amount: this.paymentForm.get('amount')?.value,
           tasaBCV: this.tasa(),
           referencia: this.paymentForm.get('referencia')?.value,
-          metodo_pago: this.paymentForm.get('metodo_pago')?.value,
+          metodo_pago: this.paymentSelected?.tipo,
           bank_destino: this.paymentForm.get('bank_destino')?.value,
           img: imgUrl
         };

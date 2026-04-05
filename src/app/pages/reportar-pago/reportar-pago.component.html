@@ -48,7 +48,7 @@
             <select formControlName="metodo_pago" name="metodo_pago" id="metodo_pago" class="form-select" (change)="onChangePayment($event)">
               <option value="">Seleccione un método de pago</option>
               <!-- Usamos el _id como value para que sea único -->
-              <option [value]="metodo.tipo" *ngFor="let metodo of paymentMethods">
+              <option [value]="metodo._id" *ngFor="let metodo of paymentMethods">
                 {{metodo.tipo}} - {{metodo.bankName}}
               </option>
             </select>
@@ -91,13 +91,15 @@
           <div class="col-6">
             <label class="form-label text-muted small fw-bold">BANCO DESTINO</label>
             <select formControlName="bank_destino"
-              class="form-select form-select-lg rounded-3 border-light bg-light fs-6" (change)="onChangePayment($event)"
-              name="bank_destino" id="bank_destino">
-              <option value="" disabled selected>Seleccione Banco</option>
-              <option [value]="banco.bankName" *ngFor="let banco of paymentMethods">
-                {{banco.bankName}}
-              </option>
-            </select>
+        class="form-select form-select-lg rounded-3 border-light bg-light fs-6"
+        name="bank_destino" 
+        id="bank_destino"
+        style="pointer-events: none; background-color: #e9ecef;"> <!-- El color es para que parezca desactivado -->
+  <option value="" disabled selected>Seleccione Banco</option>
+  <option [value]="banco.bankName" *ngFor="let banco of paymentMethods">
+    {{banco.bankName}}
+  </option>
+</select>
           </div>
           <div class="col-6">
             <label class="form-label text-muted small fw-bold">REFERENCIA</label>
