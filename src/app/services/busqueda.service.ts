@@ -65,8 +65,6 @@ export class BusquedasService {
     return resultados;
   }
   
-  
-
   private trasnformarFacturaciones(resultados: any[]): Facturacion[] {
   // Aquí podrías agregar lógica de fechas si tu modelo Facturacion la requiere
   return resultados; 
@@ -75,14 +73,11 @@ export class BusquedasService {
   // Aquí podrías agregar lógica de fechas si tu modelo Facturacion la requiere
   return resultados; 
 }
-  private trasnformarTransferencias(resultados: any[]): Transferencia[] {
-  // Aquí podrías agregar lógica de fechas si tu modelo Facturacion la requiere
-  return resultados; 
-}
+
   
 
  buscar(
-    tipo: 'usuarios' | 'oficinas' | 'locales' | 'residencias' | 'facturaciones' | 'payments' | 'transferencias', 
+    tipo: 'usuarios' | 'oficinas' | 'locales' | 'residencias' | 'facturaciones' | 'payments' , 
     termino: string = ''
   ) {
     // Si el término está vacío, podrías retornar un array vacío o manejarlo según tu UX
@@ -107,8 +102,6 @@ export class BusquedasService {
             return this.trasnformarFacturaciones(resp.resultados);
           case 'payments':
             return this.trasnformarPayments(resp.resultados);
-          case 'transferencias':
-            return this.trasnformarTransferencias(resp.resultados);
           default:
             return [];
         }

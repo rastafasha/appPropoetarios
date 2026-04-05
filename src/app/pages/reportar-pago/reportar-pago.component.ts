@@ -143,7 +143,7 @@ export class ReportarPagoComponent {
     this.loading.set(true);
 
     this.fileUploadService
-      .actualizarFoto(this.selectedFile!, 'payments', this.userId)
+      .actualizarFoto(this.selectedFile!, 'payments', facturaData._id)
       .then(imgUrl => {
         const payload = {
           factura: facturaId === 'DEUDA_TOTAL' ? null : facturaId, // Enviamos null si es abono general

@@ -150,17 +150,27 @@ export class MisFacturasComponent {
 
     // Si hay búsqueda por texto, usamos el buscador global
     if (this.queryFactura.trim() !== '') {
-      this.busquedasService.buscar('facturaciones', this.queryFactura).subscribe((res: any[]) => {
-        let filtered = res;
-        if (this.statusFactura) {
-          filtered = res.filter(f => f.status === this.statusFactura);
-        }
-        this.facturas.set(filtered);
+      this.busquedasService.buscar('facturaciones', this.queryFactura).subscribe({
+        next: (resultados: any[]) => {
+          let filtered = resultados;
+          // Si además de texto seleccionó un estatus, filtramos el array
+          if (this.statusFactura) {
+            filtered = resultados.filter((p: any) => p.status === this.statusFactura);
+          }
+          
+          this.facturas.set(filtered);
+          this.loading.set(false);
+        },
+        
+        error: () => this.loading.set(false)
       });
     } else {
       // Si no hay texto, usamos la carga paginada con filtro local
       this.getFacturas();
     }
+
+     
+      
   }
 
   clearFacturaFilters(): void {
@@ -267,8 +277,11 @@ export class MisFacturasComponent {
         const url = window.URL.createObjectURL(res);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `Factura_${factura.mes}_${factura.anio}.pdf`;
-        link.click();
+        link.download = `${factura.nroFactura}_${factura.mes}_${factura.anio}.pdf`;
+        // Añadimos estas dos para asegurar compatibilidad en móviles
+    document.body.appendChild(link); 
+    link.click();
+    document.body.removeChild(link); // Limpiamos después del click
         window.URL.revokeObjectURL(url);
         this.loading.set(false);
         this.toastr.success('Descarga iniciada');

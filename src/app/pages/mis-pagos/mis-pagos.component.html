@@ -86,7 +86,7 @@
         }
         @if (payment.status === 'RECHAZADO') {
         <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3">Rechazado</span>
-        <p>Motivo: {{payment.observaciones}}</p>
+        
         }
 
       </div>
@@ -173,6 +173,9 @@
       </span>
       <h2 class="display-6 fw-bold mb-0">${{ pagoSeleccionado().amount | number:'1.2-2' }}</h2>
       <p class="text-muted small">Ref: #{{ pagoSeleccionado().referencia }}</p>
+       @if (pagoSeleccionado().status === 'RECHAZADO') {
+        <p>Motivo: {{pagoSeleccionado().observaciones}}</p>
+        }
     </div>
 
     <!-- Datos de la Transacción -->

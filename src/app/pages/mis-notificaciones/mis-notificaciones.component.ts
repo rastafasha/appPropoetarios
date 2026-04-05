@@ -136,6 +136,14 @@ public pageNotif = 1;
     }
   }
 
+  irAFacturas(tipo: string){
+    if (tipo === 'NUEVA_FACTURA') {
+      this.router.navigate(['/mis-facturas'], {
+        queryParams: { estado: 'PENDIENTE' }
+      });
+    }
+  }
+
   
 
 }
